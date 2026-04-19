@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { asset } from '../../utils';
 ---
 
 <Page title="Modulebaan" hero="Modulebaan">
@@ -23,7 +24,7 @@ import Page from '../../layouts/Page.astro';
   <h2>Exposities</h2>
   <p>
     Door de modulaire opbouw is de baan ideaal voor transport naar exposities
-    zoals de <a href="/activiteiten/modelspoordagen">Noord-Hollandse Modelspoordagen</a>.
+    zoals de <a href={asset("/activiteiten/modelspoordagen")}>Noord-Hollandse Modelspoordagen</a>.
     Niet alle modules gaan altijd mee — als de Bergenbaan in groot onderhoud is,
     wordt bijvoorbeeld het Zijperspoor tentoongesteld.
   </p>

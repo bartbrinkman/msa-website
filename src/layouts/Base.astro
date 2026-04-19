@@ -11,13 +11,13 @@ const { title, description = 'Modelspoorclub Alkmaar — Sinds 1984 bouwen wij m
 const currentPath = Astro.url.pathname;
 
 const nav = [
-  { href: '/', label: 'Home' },
-  { href: '/de-club', label: 'De Club' },
-  { href: '/banen', label: 'Onze Banen' },
-  { href: '/activiteiten', label: 'Activiteiten' },
-  { href: '/agenda', label: 'Agenda' },
-  { href: '/links', label: 'Links & Sponsors' },
-  { href: '/contact', label: 'Contact' },
+  { href: asset('/'), label: 'Home' },
+  { href: asset('/de-club'), label: 'De Club' },
+  { href: asset('/banen'), label: 'Onze Banen' },
+  { href: asset('/activiteiten'), label: 'Activiteiten' },
+  { href: asset('/agenda'), label: 'Agenda' },
+  { href: asset('/links'), label: 'Links & Sponsors' },
+  { href: asset('/contact'), label: 'Contact' },
 ];
 ---
 
@@ -37,7 +37,7 @@ const nav = [
     <!-- Header -->
     <header class="bg-primary text-white shadow-lg">
       <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+        <a href={asset('/')} class="flex items-center gap-3 hover:opacity-90 transition-opacity">
           <img src={asset('/images/logo.png')} alt="MSA" class="h-10 w-auto" />
           <div>
             <div class="text-xl font-medium tracking-normal font-heading uppercase">Modelspoorclub Alkmaar</div>

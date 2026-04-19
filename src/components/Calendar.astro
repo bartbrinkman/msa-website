@@ -13,6 +13,7 @@ interface Props {
   events: Event[];
 }
 
+import { asset } from '../utils';
 const { events } = Astro.props;
 
 const typeColors: Record<string, string> = {
@@ -88,7 +89,7 @@ for (const event of upcomingEvents) {
                   </div>
                   <div>
                     {event.link ? (
-                      <a href={event.link} class="font-semibold underline underline-offset-2 hover:opacity-70">{event.title}</a>
+                      <a href={asset(event.link!)} class="font-semibold underline underline-offset-2 hover:opacity-70">{event.title}</a>
                     ) : (
                       <div class="font-semibold">{event.title}</div>
                     )}

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { asset } from '../../utils';
 ---
 
 <Base title="Activiteiten">
@@ -14,7 +15,7 @@ import Base from '../../layouts/Base.astro';
   <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="grid md:grid-cols-2 gap-6">
 
-      <a href="/activiteiten/clubavonden" class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
+      <a href={asset("/activiteiten/clubavonden")} class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">Wekelijks</span>
         </div>
@@ -25,7 +26,7 @@ import Base from '../../layouts/Base.astro';
         </div>
       </a>
 
-      <a href="/activiteiten/modelspoordagen" class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
+      <a href={asset("/activiteiten/modelspoordagen")} class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded font-medium">Jaarlijks</span>
         </div>
@@ -36,7 +37,7 @@ import Base from '../../layouts/Base.astro';
         </div>
       </a>
 
-      <a href="/activiteiten/darmstadt" class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
+      <a href={asset("/activiteiten/darmstadt")} class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs bg-amber-50 text-amber-800 px-2 py-0.5 rounded font-medium">Jaarlijks</span>
         </div>
@@ -47,7 +48,7 @@ import Base from '../../layouts/Base.astro';
         </div>
       </a>
 
-      <a href="/activiteiten/kinderbaan" class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
+      <a href={asset("/activiteiten/kinderbaan")} class="group block border border-gray-200 rounded-lg p-6 hover:shadow-lg hover:border-primary/30 transition-all">
         <div class="flex items-center gap-2 mb-2">
           <span class="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">Doorlopend</span>
         </div>
@@ -86,7 +87,7 @@ import Base from '../../layouts/Base.astro';
 
     <div class="mt-8 p-6 bg-warm rounded-lg">
       <p class="text-gray-700">
-        Bekijk de <a href="/agenda" class="text-primary-light underline font-medium">agenda</a> voor aankomende data.
+        Bekijk de <a href={asset("/agenda")} class="text-primary-light underline font-medium">agenda</a> voor aankomende data.
       </p>
     </div>
   </div>

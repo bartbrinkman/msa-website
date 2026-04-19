@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { asset } from '../../utils';
 ---
 
 <Page title="Bergen – Bergen aan Zee" hero="Bergen – Bergen aan Zee">
@@ -15,8 +16,8 @@ import Page from '../../layouts/Page.astro';
   <h2>Exposities</h2>
   <p>
     Door de modulaire opbouw kan deze baan zelfstandig naar exposities zoals de
-    <a href="/activiteiten/modelspoordagen">Noord-Hollandse Modelspoordagen</a>.
+    <a href={asset("/activiteiten/modelspoordagen")}>Noord-Hollandse Modelspoordagen</a>.
     Wanneer de Bergenbaan in groot onderhoud is, wordt het
-    <a href="/banen/modulebaan">Zijperspoor</a> tentoongesteld.
+    <a href={asset("/banen/modulebaan")}>Zijperspoor</a> tentoongesteld.
   </p>
 </Page>

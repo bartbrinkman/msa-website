@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { asset } from '../../utils';
 ---
 
 <Page title="Clubavonden" hero="Clubavonden" heroImage="/images/alkmaarbaan/archief_alkmaarbaan.jpg">
@@ -20,7 +21,7 @@ import Page from '../../layouts/Page.astro';
   <h2>Langskomen?</h2>
   <p>
     Geinteresseerd om een keer mee te kijken? Je bent welkom! Neem vooraf even
-    <a href="/contact">contact</a> op met onze secretaris zodat wij je kunnen
+    <a href={asset("/contact")}>contact</a> op met onze secretaris zodat wij je kunnen
     verwachten. De minimumleeftijd voor lidmaatschap is 16 jaar.
   </p>
 

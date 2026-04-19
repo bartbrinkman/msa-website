@@ -1,5 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
+import { asset } from '../utils';
 ---
 
 <Page title="Links & Sponsors" hero="Links & Sponsors">
@@ -32,7 +33,7 @@ import Page from '../layouts/Page.astro';
   </p>
   <p>
     <em>Bent u geinteresseerd in sponsoring van de MSA? Neem dan
-    <a href="/contact">contact</a> met ons op.</em>
+    <a href={asset("/contact")}>contact</a> met ons op.</em>
   </p>
 
   <h2>Modelspoormerken</h2>

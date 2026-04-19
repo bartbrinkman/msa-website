@@ -1,5 +1,6 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { asset } from '../../utils';
 ---
 
 <Page title="Nieuwe N-modulebaan" hero="Nieuwe N-modulebaan">
@@ -13,7 +14,7 @@ import Page from '../../layouts/Page.astro';
 
   <p>
     <em>Meer informatie volgt naarmate het project vordert. Kom gerust langs
-    op een <a href="/activiteiten/clubavonden">donderdagavond</a> om de
+    op een <a href={asset("/activiteiten/clubavonden")}>donderdagavond</a> om de
     voortgang te bekijken!</em>
   </p>
 </Page>

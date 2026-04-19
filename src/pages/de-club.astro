@@ -1,5 +1,6 @@
 ---
 import Page from '../layouts/Page.astro';
+import { asset } from '../utils';
 ---
 
 <Page title="De Club" hero="De Club" heroImage="/images/alkmaarbaan/archief_alkmaarbaan.jpg">
@@ -36,9 +37,9 @@ import Page from '../layouts/Page.astro';
     <li>Bouwen en onderhouden van zes modelspoorbanen (H0 en N-schaal)</li>
     <li>Digitale besturing met iTrain</li>
     <li>3D-printen van seinen, gebouwen en details</li>
-    <li>Deelname aan de <a href="/activiteiten/modelspoordagen">Noord-Hollandse Modelspoordagen</a></li>
-    <li>Jaarlijks bezoek aan het <a href="/activiteiten/darmstadt">spoorwegmuseum in Darmstadt</a> (zusterstad van Alkmaar)</li>
-    <li><a href="/activiteiten/kinderbaan">Educatieve activiteiten</a> voor kinderen</li>
+    <li>Deelname aan de <a href={asset("/activiteiten/modelspoordagen")}>Noord-Hollandse Modelspoordagen</a></li>
+    <li>Jaarlijks bezoek aan het <a href={asset("/activiteiten/darmstadt")}>spoorwegmuseum in Darmstadt</a> (zusterstad van Alkmaar)</li>
+    <li><a href={asset("/activiteiten/kinderbaan")}>Educatieve activiteiten</a> voor kinderen</li>
     <li>Jaarlijkse open dag</li>
   </ul>
 
@@ -53,7 +54,7 @@ import Page from '../layouts/Page.astro';
   <h2>Lid worden?</h2>
   <p>
     Ben je 16 jaar of ouder en geinteresseerd in de modelspoorbouw?
-    Neem dan <a href="/contact">contact</a> op met onze secretaris om een
+    Neem dan <a href={asset("/contact")}>contact</a> op met onze secretaris om een
     keer langs te komen op een donderdagavond. Je bent van harte welkom!
   </p>
 </Page>

@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
+import { asset } from '../../utils';
 
 const images = [
   { src: '/images/darmstadt/darmstad_1.jpg', title: 'Stoomlocomotief 23 042', description: 'Op de draaischijf van het museum' },
@@ -36,6 +37,6 @@ const images = [
     Bekijk de website van het museum: <a href="https://www.bahnwelt.de" target="_blank" rel="noopener">bahnwelt.de</a>.
   </p>
   <p>
-    De eerstvolgende excursie staat in de <a href="/agenda">agenda</a>.
+    De eerstvolgende excursie staat in de <a href={asset("/agenda")}>agenda</a>.
   </p>
 </Page>

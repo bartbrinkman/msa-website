@@ -7,10 +7,11 @@ interface Props {
   status?: string;
 }
 
+import { asset } from '../utils';
 const { title, href, scale, description, status } = Astro.props;
 ---
 
-<a href={href} class="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all">
+<a href={asset(href)} class="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all">
   <div class="p-6">
     <div class="flex items-start justify-between mb-2">
       <h3 class="text-lg font-semibold text-primary group-hover:text-primary-light transition-colors">{title}</h3>

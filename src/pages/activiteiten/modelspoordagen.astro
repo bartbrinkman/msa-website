@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
+import { asset } from '../../utils';
 
 const images = [
   { src: '/images/modelspoordagen/nmd_2025_1.jpg', title: 'Stoomtrein in landschap', description: 'NMD 2025' },
@@ -31,7 +32,7 @@ const images = [
   <ul>
     <li>Modelspoorbanen in diverse schalen en thema's</li>
     <li>Live demonstraties van digitale besturing</li>
-    <li>De <a href="/activiteiten/kinderbaan">kinderbaan</a> — waar jonge bezoekers zelf treinen mogen besturen</li>
+    <li>De <a href={asset("/activiteiten/kinderbaan")}>kinderbaan</a> — waar jonge bezoekers zelf treinen mogen besturen</li>
     <li>Treinsimulator</li>
     <li>Stands van modelspoorwinkels en leveranciers</li>
   </ul>
@@ -49,6 +50,6 @@ const images = [
 
   <h2>Volgende editie</h2>
   <p>
-    Bekijk de <a href="/agenda">agenda</a> voor de eerstvolgende data.
+    Bekijk de <a href={asset("/agenda")}>agenda</a> voor de eerstvolgende data.
   </p>
 </Page>

@@ -1,5 +1,6 @@
 ---
 import Base from './Base.astro';
+import { asset } from '../utils';
 
 interface Props {
   title: string;
@@ -16,7 +17,7 @@ const { title, description, hero, heroImage } = Astro.props;
     <div class="relative overflow-hidden bg-gradient-to-r from-primary-dark to-primary">
       {heroImage && (
         <>
-          <img src={heroImage} alt="" class="absolute inset-0 w-full h-full object-cover opacity-20" />
+          <img src={asset(heroImage!)} alt="" class="absolute inset-0 w-full h-full object-cover opacity-20" />
         </>
       )}
       <div class="relative text-white py-12">

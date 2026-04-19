@@ -2,12 +2,13 @@
 import Base from '../layouts/Base.astro';
 import LayoutCard from '../components/LayoutCard.astro';
 import banen from '../content/banen.json';
+import { asset } from '../utils';
 ---
 
 <Base title="Home">
   <!-- Hero -->
   <section class="relative overflow-hidden">
-    <img src="/images/alkmaarbaan/archief_alkmaarbaan.jpg" alt="" class="absolute inset-0 w-full h-full object-cover" />
+    <img src={asset('/images/alkmaarbaan/alkmaar_bouw9.jpg')} alt="" class="absolute inset-0 w-full h-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary-dark/90 to-primary/70"></div>
     <div class="relative text-white py-16 md:py-24">
       <div class="max-w-6xl mx-auto px-4">
@@ -43,7 +44,7 @@ import banen from '../content/banen.json';
           <p class="text-gray-600 text-sm">Iedere donderdagavond<br/>19:30 tot ca. 23:00 uur</p>
         </div>
         <div class="bg-white rounded-lg p-6 shadow-sm">
-          <div class="text-2xl mb-2"><img src="/images/logo-dark.png" alt="MSA" class="h-7 w-auto" /></div>
+          <div class="text-2xl mb-2"><img src={asset('/images/logo-dark.png')} alt="MSA" class="h-7 w-auto" /></div>
           <h3 class="font-semibold text-primary mb-1">Onze banen</h3>
           <p class="text-gray-600 text-sm">H0, N-schaal en meer<br/>Van stationsmodellen tot industriecomplexen</p>
         </div>

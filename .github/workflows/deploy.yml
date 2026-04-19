@@ -24,7 +24,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx astro build
+      - run: npx astro build --site https://bartbrinkman.github.io --base /msa-website
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/

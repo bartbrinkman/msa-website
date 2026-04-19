@@ -10,6 +10,7 @@ interface Props {
   id: string;
 }
 
+import { asset } from '../utils';
 const { images, id } = Astro.props;
 ---
 
@@ -18,7 +19,7 @@ const { images, id } = Astro.props;
     {images.map((img, i) => (
       <div class="carousel-slide min-w-full">
         <img
-          src={img.src}
+          src={asset(img.src)}
           alt={img.title}
           class="carousel-img w-full h-64 md:h-96 object-contain bg-gray-900 cursor-zoom-in"
           loading={i === 0 ? 'eager' : 'lazy'}

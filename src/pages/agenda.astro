@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import Calendar from '../components/Calendar.astro';
+import events from '../content/events.json';
+---
+
+<Base title="Agenda">
+  <div class="bg-gradient-to-r from-primary-dark to-primary text-white py-12">
+    <div class="max-w-4xl mx-auto px-4">
+      <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">Agenda</h1>
+      <p class="mt-3 text-white/80">Aankomende exposities en excursies.</p>
+    </div>
+  </div>
+
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Legend -->
+    <div class="flex flex-wrap gap-4 mb-8 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-emerald-200"></span>
+        <span>Expositie</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-amber-200"></span>
+        <span>Excursie</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-sky-200"></span>
+        <span>Open dag</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-violet-200"></span>
+        <span>Beurs</span>
+      </div>
+    </div>
+
+    <Calendar events={events} />
+
+    <div class="mt-12 p-6 bg-warm rounded-lg">
+      <h2 class="text-lg font-semibold text-primary mb-2">Vaste activiteiten</h2>
+      <p class="text-gray-700">
+        Naast deze evenementen hebben wij iedere week een
+        <a href="/activiteiten/clubavonden" class="text-primary-light underline font-medium">clubavond</a>
+        op donderdagavond. Bekijk al onze
+        <a href="/activiteiten" class="text-primary-light underline font-medium">activiteiten</a>.
+      </p>
+    </div>
+  </div>
+</Base>

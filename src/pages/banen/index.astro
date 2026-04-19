@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import LayoutCard from '../../components/LayoutCard.astro';
+import banen from '../../content/banen.json';
+
+const vast = banen.filter(b => b.category === 'vast');
+const modules = banen.filter(b => b.category === 'module');
+const educatie = banen.filter(b => b.category === 'educatie');
+---
+
+<Base title="Onze Banen">
+  <div class="bg-gradient-to-r from-primary-dark to-primary text-white py-12">
+    <div class="max-w-4xl mx-auto px-4">
+      <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">Onze Banen</h1>
+      <p class="mt-3 text-white/80 max-w-2xl">
+        De MSA beschikt over meerdere modelspoorbanen, elk met een eigen karakter
+        en schaal. Van historisch station tot industriecomplex, van kinderbaan
+        tot 45 meter lange modulebaan.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <h2 class="text-xl font-medium font-heading uppercase text-primary mb-4">Vaste banen</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      {vast.map((baan) => (
+        <LayoutCard
+          title={baan.title}
+          href={baan.href}
+          scale={baan.scale}
+          description={baan.description}
+          status={baan.status}
+        />
+      ))}
+    </div>
+
+    <h2 class="text-xl font-medium font-heading uppercase text-primary mt-10 mb-4">Modulebanen</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      {modules.map((baan) => (
+        <LayoutCard
+          title={baan.title}
+          href={baan.href}
+          scale={baan.scale}
+          description={baan.description}
+          status={baan.status}
+        />
+      ))}
+    </div>
+
+    <h2 class="text-xl font-medium font-heading uppercase text-primary mt-10 mb-4">Educatie</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      {educatie.map((baan) => (
+        <LayoutCard
+          title={baan.title}
+          href={baan.href}
+          scale={baan.scale}
+          description={baan.description}
+          status={baan.status}
+        />
+      ))}
+    </div>
+  </div>
+</Base>

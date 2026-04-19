@@ -1,0 +1,65 @@
+---
+import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+
+const images = [
+  { src: '/images/alkmaarbaan/Alkmaar-Stationsbord.jpg', title: 'Stationsbord Alkmaar' },
+  { src: '/images/alkmaarbaan/Alkmaar-Kanaal.jpg', title: 'Noordhollands Kanaal', description: 'Met de karakteristieke draaibrug' },
+  { src: '/images/alkmaarbaan/Alkmaar-Draaischijf.jpg', title: 'Draaischijf', description: 'Volledig vernieuwd met stappenmotor en 3D-geprinte onderdelen' },
+  { src: '/images/alkmaarbaan/Alkmaar-Huisje.jpg', title: 'Huisje langs het spoor' },
+  { src: '/images/alkmaarbaan/Alkmaar-Mannetjes.jpg', title: 'Miniatuurfiguren' },
+  { src: '/images/alkmaarbaan/Alkmaar-Roeiboot.jpg', title: 'Roeiboot op het kanaal' },
+  { src: '/images/alkmaarbaan/Alkmaar-Seintjes.jpg', title: 'Seinen', description: 'Zelf ontworpen en 3D-geprint door clubleden' },
+  { src: '/images/alkmaarbaan/Alkmaar-Speeltuin.jpg', title: 'Speeltuin' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw1.jpg', title: 'Verwijderen oude rails', description: 'De ballast moet nog verwijderd worden' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw2.jpg', title: 'Perron vrijgemaakt', description: 'Alle rails en ballast voor het perron verwijderd' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw3.jpg', title: 'Eerste nieuwe spoor', description: 'Het eerste spoor ligt alweer op zijn plaats' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw4.jpg', title: 'Zuidkant station' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw5.jpg', title: 'Nieuwe overkapping', description: 'Met een groot deel van de rails er weer in' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw6.jpg', title: 'Nieuwe rails met ballast' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw7.jpg', title: 'Wisselstraat en stoomdepot' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw8.jpg', title: 'De oude loopbrug' },
+  { src: '/images/alkmaarbaan/alkmaar_bouw9.jpg', title: 'Uitzicht vanaf de locloods' },
+  { src: '/images/alkmaarbaan/archief_alkmaarbaan.jpg', title: 'De Alkmaarbaan op zolder', description: 'Foto: Regionaal Archief Alkmaar' },
+];
+---
+
+<Page title="Alkmaarbaan" hero="Alkmaarbaan" heroImage="/images/alkmaarbaan/Alkmaar-Kanaal.jpg">
+  <p><strong>Schaal:</strong> H0 (1:87) | <strong>Systeem:</strong> 2-rail DC | <strong>Besturing:</strong> iTrain</p>
+
+  <h2>Het verhaal</h2>
+  <p>
+    De Alkmaarbaan is de oudste baan van de club en stelt station Alkmaar
+    voor in de jaren vijftig. Het historische stationsgebouw, de draaibrug
+    over het Noordhollands Kanaal en de klapbrug over het kanaal
+    Alkmaar-Kolhorn zijn herkenbare elementen uit die tijd.
+  </p>
+
+  <Carousel images={images} id="alkmaarbaan" />
+
+  <h2>Bijzondere kenmerken</h2>
+  <ul>
+    <li>Historisch stationsgebouw van Alkmaar met voetgangersbrug</li>
+    <li>Draaibrug over het Noordhollands Kanaal</li>
+    <li>Klapbrug over het kanaal Alkmaar-Kolhorn</li>
+    <li>Draaischijf met stappenmotor en 3D-geprinte onderdelen</li>
+    <li>Depotgebied met rangeerterrein</li>
+    <li>Volledig computergestuurd via iTrain</li>
+  </ul>
+
+  <h2>Techniek</h2>
+  <p>
+    Oorspronkelijk werd de baan bestuurd met het Dinamo-systeem, een hybride
+    analoog/digitaal systeem. Inmiddels is de baan volledig overgegaan op
+    digitale besturing met iTrain.
+  </p>
+
+  <h2>Lopende projecten</h2>
+  <ul>
+    <li>Station Heerhugowaard wordt vervangen door een nieuw ontwerp</li>
+    <li>Aanleg van een tweede schaduwstation</li>
+    <li>Vervanging van oude Roco code 100 rails door Piko-A rails</li>
+    <li>Vernieuwing van het landschap</li>
+    <li>3D-printen van seinen en andere componenten door clubleden</li>
+  </ul>
+</Page>

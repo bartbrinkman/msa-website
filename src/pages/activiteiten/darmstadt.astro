@@ -1,0 +1,41 @@
+---
+import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+
+const images = [
+  { src: '/images/darmstadt/darmstad_1.jpg', title: 'Stoomlocomotief 23 042', description: 'Op de draaischijf van het museum' },
+  { src: '/images/darmstadt/darmstad_2.jpg', title: 'De MSA-wagon', description: 'Met Nederlandse en Alkmaarse vlag' },
+  { src: '/images/darmstadt/darmstad_3.jpg', title: 'Onze baan in de wagon', description: 'Bezoekers bekijken de MSA-modelspoorbaan' },
+  { src: '/images/darmstadt/darmstad_4.jpg', title: 'Museumterrein Kranichstein', description: 'Overzicht met locomotieven en publiek' },
+  { src: '/images/darmstadt/darmstad_5.jpg', title: 'Draaischijf en locomotiefloodsen' },
+];
+---
+
+<Page title="Excursie Darmstadt" hero="Excursie Darmstadt" heroImage="/images/darmstadt/darmstad_4.jpg">
+  <p><strong>Wanneer:</strong> Jaarlijks, voorjaar | <strong>Waar:</strong> Eisenbahnmuseum Darmstadt-Kranichstein, Duitsland</p>
+
+  <h2>Het museum</h2>
+  <p>
+    Ieder jaar bezoeken leden van de MSA het Eisenbahnmuseum in Darmstadt.
+    Dit spoorwegmuseum huisvest een indrukwekkende collectie van historisch
+    spoorwegmaterieel en modelspoorbanen.
+  </p>
+
+  <Carousel images={images} id="darmstadt" />
+
+  <h2>Onze bijdrage</h2>
+  <p>
+    Het bezoek is meer dan alleen kijken — tijdens de open dagen van het
+    museum exposeren wij een van onze eigen banen in een museumwagon,
+    compleet met Nederlandse vlag. Zo kunnen ook Duitse
+    bezoekers genieten van het werk van de MSA.
+  </p>
+
+  <h2>Meer informatie</h2>
+  <p>
+    Bekijk de website van het museum: <a href="https://www.bahnwelt.de" target="_blank" rel="noopener">bahnwelt.de</a>.
+  </p>
+  <p>
+    De eerstvolgende excursie staat in de <a href="/agenda">agenda</a>.
+  </p>
+</Page>

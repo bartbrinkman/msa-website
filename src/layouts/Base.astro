@@ -1,0 +1,137 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Modelspoorclub Alkmaar — Sinds 1984 bouwen wij met passie aan modelspoorbanen in diverse schalen.' } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/de-club', label: 'De Club' },
+  { href: '/banen', label: 'Onze Banen' },
+  { href: '/activiteiten', label: 'Activiteiten' },
+  { href: '/agenda', label: 'Agenda' },
+  { href: '/links', label: 'Links & Sponsors' },
+  { href: '/contact', label: 'Contact' },
+];
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>{title} | MSA</title>
+  </head>
+  <body class="min-h-screen flex flex-col bg-white text-gray-800 font-sans">
+    <!-- Header -->
+    <header class="bg-primary text-white shadow-lg">
+      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <img src="/images/logo.png" alt="MSA" class="h-10 w-auto" />
+          <div>
+            <div class="text-xl font-medium tracking-normal font-heading uppercase">Modelspoorclub Alkmaar</div>
+            <div class="text-sm text-white/70">Sinds 1984</div>
+          </div>
+        </a>
+
+        <!-- Mobile menu button -->
+        <button
+          id="menu-toggle"
+          class="md:hidden p-2 rounded hover:bg-white/10"
+          aria-label="Menu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <!-- Desktop nav -->
+        <nav class="hidden md:flex gap-1">
+          {nav.map(({ href, label }) => (
+            <a
+              href={href}
+              class:list={[
+                'px-3 py-2 rounded text-sm font-medium transition-colors',
+                currentPath === href || (href !== '/' && currentPath.startsWith(href))
+                  ? 'bg-white/20 text-white'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white',
+              ]}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <!-- Mobile nav -->
+      <nav id="mobile-menu" class="hidden md:hidden border-t border-white/10">
+        <div class="max-w-6xl mx-auto px-4 py-2">
+          {nav.map(({ href, label }) => (
+            <a
+              href={href}
+              class:list={[
+                'block px-3 py-2 rounded text-sm font-medium transition-colors',
+                currentPath === href || (href !== '/' && currentPath.startsWith(href))
+                  ? 'bg-white/20 text-white'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white',
+              ]}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+
+    <footer class="bg-primary-dark text-white/70 text-sm">
+      <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="grid md:grid-cols-3 gap-8">
+          <div>
+            <div class="font-semibold text-white mb-2">Modelspoorclub Alkmaar</div>
+            <p>Koornlaan 23, 1815 GE Alkmaar</p>
+            <p>Iedere donderdagavond vanaf 19:30</p>
+          </div>
+          <div>
+            <div class="font-semibold text-white mb-2">Navigatie</div>
+            <div class="flex flex-col gap-1">
+              {nav.map(({ href, label }) => (
+                <a href={href} class="hover:text-white transition-colors">{label}</a>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div class="font-semibold text-white mb-2">Volg ons</div>
+            <p><a href="https://www.facebook.com/modelspoorclubalkmaar/" target="_blank" rel="noopener" class="hover:text-white transition-colors underline">Facebook</a></p>
+            <p class="mt-2">info@modelspoorclubalkmaar.nl</p>
+          </div>
+        </div>
+        <div class="mt-8 pt-4 border-t border-white/10 text-center">
+          &copy; {new Date().getFullYear()} Modelspoorclub Alkmaar
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('menu-toggle')?.addEventListener('click', () => {
+        document.getElementById('mobile-menu')?.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+---
+import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+
+const images = [
+  { src: '/images/hoogovenbaan/hoogoven_1oven.jpg', title: 'De hoogoven', description: 'Met rook- en lichteffecten' },
+  { src: '/images/hoogovenbaan/hoogoven_2overzicht.jpg', title: 'Overzicht staalcomplex' },
+  { src: '/images/hoogovenbaan/hoogoven_3sik.jpg', title: 'Sik rangeerlocomotief' },
+  { src: '/images/hoogovenbaan/hoogoven_4bulk.jpg', title: 'Bulktransport' },
+  { src: '/images/hoogovenbaan/hoogoven_5kranen.jpg', title: 'Kranen bij de laad- en losplaats' },
+];
+---
+
+<Page title="Hoogovenbaan" hero="Hoogovenbaan" heroImage="/images/hoogovenbaan/hoogoven_2overzicht.jpg">
+  <p><strong>Schaal:</strong> H0 (1:87) | <strong>Systeem:</strong> Marklin 3-rail AC</p>
+
+  <h2>Het verhaal</h2>
+  <p>
+    Het hoogovencomplex heeft altijd een grote uitstraling gehad in de regio
+    rond Alkmaar. Deze bedrijfstak neemt dan ook een prominente plek in op
+    onze zolder. Het staalcomplex omvat een oxystaalfabriek, de imposante
+    hoogoven en een gedetailleerd model van de cokesfabriek.
+  </p>
+
+  <Carousel images={images} id="hoogovenbaan" />
+
+  <h2>Bijzondere kenmerken</h2>
+  <ul>
+    <li>Oxystaalfabriek, hoogovens en cokesfabriek</li>
+    <li>Lange goederentreinen die grondstoffen en producten vervoeren</li>
+    <li>Rook-, licht- en geluidseffecten</li>
+    <li>Verborgen figuren in de fabrieken</li>
+    <li>Voorheen verbonden met de Marklinbaan, nu zelfstandig opererend</li>
+  </ul>
+</Page>

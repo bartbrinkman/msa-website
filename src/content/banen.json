@@ -1,0 +1,59 @@
+[
+  {
+    "title": "Alkmaarbaan",
+    "href": "/banen/alkmaarbaan",
+    "scale": "H0 (1:87), 2-rail DC",
+    "description": "Station Alkmaar in de jaren '50 — de oudste baan van de club. Met draaischijf, klapbrug over het Noordhollands Kanaal en historisch stationsgebouw.",
+    "category": "vast"
+  },
+  {
+    "title": "Marklinbaan",
+    "href": "/banen/marklinbaan",
+    "scale": "H0, Marklin 3-rail AC",
+    "description": "Fictieve baan met bergen, tunnels, rijdende auto's en bewegende figuren. Besturing via iTrain met 15+ locomotieven.",
+    "category": "vast"
+  },
+  {
+    "title": "Hoogovenbaan",
+    "href": "/banen/hoogovenbaan",
+    "scale": "H0, Marklin 3-rail AC",
+    "description": "Indrukwekkend industriecomplex met hoogovens, cokesfabriek en oxystaalfabriek. Rook-, licht- en geluidseffecten.",
+    "category": "vast"
+  },
+  {
+    "title": "N-baan",
+    "href": "/banen/nbaan",
+    "scale": "N (1:160), 2-rail DC",
+    "description": "Duits stadsbeeld en Eifellandschap op 1,70 x 6,00 meter. Met dag/nacht LED-cyclus en geluidseffecten.",
+    "category": "vast"
+  },
+  {
+    "title": "Modulebaan",
+    "href": "/banen/modulebaan",
+    "scale": "H0 (1:87)",
+    "description": "45 meter Noord-Hollandse stoomtramlijnen door het West-Friese landschap.",
+    "category": "module"
+  },
+  {
+    "title": "Bergen – Bergen aan Zee",
+    "href": "/banen/bergen",
+    "scale": "H0 (1:87)",
+    "description": "Deelbaan van de modulebaan, momenteel in grondige renovatie met nieuwe modules en digitalisering.",
+    "category": "module"
+  },
+  {
+    "title": "N-modulebaan",
+    "href": "/banen/n-modulebaan",
+    "scale": "N (1:160)",
+    "description": "Nieuwe modulebaan in N-schaal.",
+    "category": "module",
+    "status": "In ontwikkeling"
+  },
+  {
+    "title": "Kinderbaan",
+    "href": "/banen/kinderbaan",
+    "scale": "H0, Marklin 3-rail AC",
+    "description": "Educatieve baan voor kinderen vanaf 5-6 jaar. Treinen besturen en een Machinistendiploma verdienen!",
+    "category": "educatie"
+  }
+]

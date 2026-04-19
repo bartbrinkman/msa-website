@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #001888;
+  --color-primary-dark: #00105c;
+  --color-primary-light: #3347a8;
+  --color-accent: #c8102e;
+  --color-warm: #f4f5f9;
+  --color-warm-dark: #dde0eb;
+  --color-msa-yellow: #fef902;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Gabarito', system-ui, sans-serif;
+}
+
+/* Markdown content styling */
+.prose h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: normal;
+  color: var(--color-primary);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--color-warm-dark);
+}
+
+.prose h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-primary-light);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+  line-height: 1.75;
+}
+
+.prose a {
+  color: var(--color-primary-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  color: var(--color-accent);
+}
+
+.prose img {
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.prose th,
+.prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-warm-dark);
+  text-align: left;
+}
+
+.prose th {
+  background: var(--color-warm);
+  font-weight: 600;
+  color: var(--color-primary);
+}

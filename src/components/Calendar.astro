@@ -1,0 +1,118 @@
+---
+interface Event {
+  date: string;       // YYYY-MM-DD (start date)
+  endDate?: string;   // YYYY-MM-DD (optional end date)
+  title: string;
+  description?: string;
+  location?: string;
+  type?: 'clubavond' | 'expositie' | 'excursie' | 'opendag' | 'beurs' | 'overig';
+  link?: string;
+}
+
+interface Props {
+  events: Event[];
+}
+
+const { events } = Astro.props;
+
+const typeColors: Record<string, string> = {
+  clubavond: 'bg-primary/10 border-primary/30 text-primary',
+  expositie: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+  excursie: 'bg-amber-50 border-amber-200 text-amber-800',
+  opendag: 'bg-sky-50 border-sky-200 text-sky-800',
+  beurs: 'bg-violet-50 border-violet-200 text-violet-800',
+  overig: 'bg-gray-50 border-gray-200 text-gray-700',
+};
+
+const typeLabels: Record<string, string> = {
+  clubavond: 'Clubavond',
+  expositie: 'Expositie',
+  excursie: 'Excursie',
+  opendag: 'Open dag',
+  beurs: 'Beurs',
+  overig: 'Overig',
+};
+
+const months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+const days = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
+
+function formatDate(d: Date) {
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+// Filter to future events (using endDate if available, otherwise date)
+const now = new Date();
+now.setHours(0, 0, 0, 0);
+
+const upcomingEvents = events
+  .filter(e => new Date(e.endDate || e.date) >= now)
+  .sort((a, b) => a.date.localeCompare(b.date));
+
+const grouped: Record<string, Event[]> = {};
+for (const event of upcomingEvents) {
+  const d = new Date(event.date);
+  const key = `${months[d.getMonth()]} ${d.getFullYear()}`;
+  if (!grouped[key]) grouped[key] = [];
+  grouped[key].push(event);
+}
+---
+
+{Object.keys(grouped).length === 0 ? (
+  <p class="text-gray-500 italic">Geen aankomende evenementen gepland.</p>
+) : (
+  <div class="space-y-8">
+    {Object.entries(grouped).map(([month, monthEvents]) => (
+      <div>
+        <h3 class="text-lg font-semibold text-primary capitalize mb-3">{month}</h3>
+        <div class="space-y-3">
+          {monthEvents.map((event) => {
+            const startD = new Date(event.date);
+            const endD = event.endDate ? new Date(event.endDate) : null;
+            const type = event.type || 'overig';
+            const colors = typeColors[type] || typeColors.overig;
+            return (
+              <div class={`border rounded-lg p-4 ${colors}`}>
+                <div class="flex items-start gap-4">
+                  <div class="text-center min-w-[3rem]">
+                    {endD && endD.getTime() !== startD.getTime() ? (
+                      <>
+                        <div class="text-2xl font-bold">{startD.getDate()}–{endD.getDate()}</div>
+                        <div class="text-xs capitalize">{days[startD.getDay()]}–{days[endD.getDay()]}</div>
+                      </>
+                    ) : (
+                      <>
+                        <div class="text-2xl font-bold">{startD.getDate()}</div>
+                        <div class="text-xs capitalize">{days[startD.getDay()]}</div>
+                      </>
+                    )}
+                  </div>
+                  <div>
+                    {event.link ? (
+                      <a href={event.link} class="font-semibold underline underline-offset-2 hover:opacity-70">{event.title}</a>
+                    ) : (
+                      <div class="font-semibold">{event.title}</div>
+                    )}
+                    {event.description && <p class="text-sm mt-1 opacity-80">{event.description}</p>}
+                    <div class="flex gap-3 mt-2 text-xs items-center">
+                      <span class={`inline-block px-2 py-0.5 rounded-full font-medium ${
+                        type === 'expositie' ? 'bg-emerald-100 text-emerald-800' :
+                        type === 'excursie' ? 'bg-amber-100 text-amber-800' :
+                        type === 'opendag' ? 'bg-sky-100 text-sky-800' :
+                        type === 'beurs' ? 'bg-violet-100 text-violet-800' :
+                        type === 'clubavond' ? 'bg-primary/20 text-primary' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>{typeLabels[type]}</span>
+                      {event.location && (
+                        <span class="opacity-60">{event.location}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+)}

@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  href: string;
+  scale: string;
+  description: string;
+  status?: string;
+}
+
+const { title, href, scale, description, status } = Astro.props;
+---
+
+<a href={href} class="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all">
+  <div class="p-6">
+    <div class="flex items-start justify-between mb-2">
+      <h3 class="text-lg font-semibold text-primary group-hover:text-primary-light transition-colors">{title}</h3>
+      <span class="text-xs bg-warm px-2 py-1 rounded font-medium text-primary">{scale}</span>
+    </div>
+    {status && (
+      <span class="inline-block text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded mb-2">{status}</span>
+    )}
+    <p class="text-gray-600 text-sm">{description}</p>
+    <div class="mt-4 text-sm text-primary-light font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+      Meer lezen &rarr;
+    </div>
+  </div>
+</a>

@@ -1,0 +1,54 @@
+---
+import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+
+const images = [
+  { src: '/images/modelspoordagen/nmd_2025_1.jpg', title: 'Stoomtrein in landschap', description: 'NMD 2025' },
+  { src: '/images/modelspoordagen/nmd_2025_2.jpg', title: 'Publiek bij Het Waeghspoor', description: 'NMD 2025' },
+  { src: '/images/modelspoordagen/nmd_2025_3.jpg', title: 'Speelgoedtreinen', description: 'NMD 2025' },
+  { src: '/images/modelspoordagen/nmd_2025_4.jpg', title: 'Treinsimulator', description: 'HCC TrainSim stand, NMD 2025' },
+  { src: '/images/modelspoordagen/nmd_2024_1.jpg', title: 'Stoomtrein op platteland', description: 'NMD 2024' },
+  { src: '/images/modelspoordagen/nmd_2024_2.jpg', title: 'Modulebaan met ophaalbrug', description: 'NMD 2024' },
+  { src: '/images/modelspoordagen/nmd_2024_3.jpg', title: 'Brits plattelandsstation', description: 'NMD 2024' },
+  { src: '/images/modelspoordagen/nmd_kinderbaan.jpg', title: 'Kinderbaan', description: 'Dorpsgezicht met molen' },
+];
+---
+
+<Page title="Noord-Hollandse Modelspoordagen" hero="Noord-Hollandse Modelspoordagen" heroImage="/images/modelspoordagen/nmd_2025_2.jpg">
+  <p><strong>Wanneer:</strong> Jaarlijks, najaar | <strong>Waar:</strong> Alkmaar</p>
+
+  <h2>Het evenement</h2>
+  <p>
+    De Noord-Hollandse Modelspoordagen (NMD) is het jaarlijkse publieksevenement
+    waar meerdere modelspoorclubs uit Noord-Holland hun banen tonen aan een
+    breed publiek. Het is een weekend vol rijdende treinen, gedetailleerde
+    landschappen en enthousiaste bouwers.
+  </p>
+
+  <Carousel images={images} id="modelspoordagen" />
+
+  <h2>Wat is er te zien?</h2>
+  <ul>
+    <li>Modelspoorbanen in diverse schalen en thema's</li>
+    <li>Live demonstraties van digitale besturing</li>
+    <li>De <a href="/activiteiten/kinderbaan">kinderbaan</a> — waar jonge bezoekers zelf treinen mogen besturen</li>
+    <li>Treinsimulator</li>
+    <li>Stands van modelspoorwinkels en leveranciers</li>
+  </ul>
+
+  <h2>Organisatie</h2>
+  <p>
+    De NMD wordt georganiseerd in samenwerking met
+    <a href="https://www.hetwaeghspoor.nl" target="_blank" rel="noopener">Het Waeghspoor</a>
+    en andere regionale clubs. Samen zorgen wij voor een gevarieerd programma
+    voor zowel liefhebbers als nieuwsgierige bezoekers.
+  </p>
+  <p>
+    Meer informatie op <a href="https://www.nhmd.nl" target="_blank" rel="noopener">nhmd.nl</a>.
+  </p>
+
+  <h2>Volgende editie</h2>
+  <p>
+    Bekijk de <a href="/agenda">agenda</a> voor de eerstvolgende data.
+  </p>
+</Page>

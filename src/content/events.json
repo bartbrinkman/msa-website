@@ -1,0 +1,48 @@
+[
+  {
+    "date": "2026-05-14",
+    "endDate": "2026-05-17",
+    "title": "Excursie Darmstadt",
+    "description": "Jaarlijks bezoek aan het spoorwegmuseum",
+    "location": "Darmstadt, Duitsland",
+    "type": "excursie",
+    "link": "/activiteiten/darmstadt"
+  },
+  {
+    "date": "2026-07-07",
+    "title": "Bello Festival",
+    "description": "Deelname met modulebaan",
+    "location": "Hoorn",
+    "type": "expositie"
+  },
+  {
+    "date": "2026-09-12",
+    "title": "Open Monumentendag",
+    "description": "De MSA exposeert in de Grote Kerk van Alkmaar",
+    "location": "Grote Kerk, Alkmaar",
+    "type": "opendag"
+  },
+  {
+    "date": "2026-10-25",
+    "title": "Open Dag MSA",
+    "description": "Alle banen te bezichtigen, kinderen gratis onder 12 jaar",
+    "location": "Koornlaan 23, Alkmaar",
+    "type": "opendag"
+  },
+  {
+    "date": "2026-11-08",
+    "title": "Ruilbeurs",
+    "description": "Modelspoorbeurs voor kopers en verkopers",
+    "location": "OSG Willem Blaeu, Robonsbosweg 11, Alkmaar",
+    "type": "beurs"
+  },
+  {
+    "date": "2027-02-27",
+    "endDate": "2027-02-28",
+    "title": "Noord-Hollandse Modelspoordagen",
+    "description": "15e editie van de jaarlijkse modelspoorexpositie",
+    "location": "OSG Willem Blaeu, Robonsbosweg 11, Alkmaar",
+    "type": "expositie",
+    "link": "/activiteiten/modelspoordagen"
+  }
+]

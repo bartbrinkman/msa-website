@@ -1,0 +1,41 @@
+---
+import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+
+const images = [
+  { src: '/images/nbaan/N_spoorplan.png', title: 'Sporenplan', description: 'Dubbelspoors acht-configuratie met enkelsporige lus' },
+  { src: '/images/nbaan/N_1stoomloc.jpg', title: 'Stoomlocomotief' },
+  { src: '/images/nbaan/N_2station.jpg', title: 'Kopstation', description: 'Met 5 sporen' },
+  { src: '/images/nbaan/N_3stationboven.jpg', title: 'Station bovenaanzicht' },
+  { src: '/images/nbaan/N_4emplacement.jpg', title: 'Emplacement', description: 'Met locomotiefdepot, draaischijf en rangeerterrein' },
+  { src: '/images/nbaan/N_5bergen.jpg', title: 'Berglandschap', description: 'Geinspireerd op de Eifel' },
+];
+---
+
+<Page title="N-baan" hero="N-baan" heroImage="/images/nbaan/N_2station.jpg">
+  <p><strong>Schaal:</strong> N (1:160) | <strong>Systeem:</strong> 2-rail DC, 9mm | <strong>Afmetingen:</strong> ca. 1,70 x 6,00 meter</p>
+
+  <h2>Het verhaal</h2>
+  <p>
+    De N-baan toont een Duits stadsbeeld gecombineerd met het landschap van de
+    Eifel. Ondanks het compacte formaat biedt deze baan een verrassende
+    hoeveelheid detail en sfeer.
+  </p>
+
+  <Carousel images={images} id="nbaan" />
+
+  <h2>Bijzondere kenmerken</h2>
+  <ul>
+    <li>Dubbelspoors acht-configuratie met enkelsporige lus</li>
+    <li>Groot kopstation met 5 sporen</li>
+    <li>Locomotiefdepot met draaischijf en rangeerterrein</li>
+    <li>LED dag/nacht-cyclus</li>
+    <li>Geluidseffecten: onweer, hanengekraai en meer</li>
+  </ul>
+
+  <h2>Techniek</h2>
+  <p>
+    De besturing loopt via Dinamo-elektronica, een hybride systeem dat
+    zowel analoge als digitale treinen ondersteunt.
+  </p>
+</Page>

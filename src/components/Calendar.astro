@@ -2,6 +2,8 @@
 interface Event {
   date: string;       // YYYY-MM-DD (start date)
   endDate?: string;   // YYYY-MM-DD (optional end date)
+  startTime?: string; // HH:MM (optional)
+  endTime?: string;   // HH:MM (optional)
   title: string;
   description?: string;
   location?: string;
@@ -87,14 +89,14 @@ for (const event of upcomingEvents) {
                       </>
                     )}
                   </div>
-                  <div>
+                  <div class="flex-1 min-w-0">
                     {event.link ? (
                       <a href={asset(event.link!)} class="font-semibold underline underline-offset-2 hover:opacity-70">{event.title}</a>
                     ) : (
                       <div class="font-semibold">{event.title}</div>
                     )}
                     {event.description && <p class="text-sm mt-1 opacity-80">{event.description}</p>}
-                    <div class="flex gap-3 mt-2 text-xs items-center">
+                    <div class="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs items-center">
                       <span class={`inline-block px-2 py-0.5 rounded-full font-medium ${
                         type === 'expositie' ? 'bg-emerald-100 text-emerald-800' :
                         type === 'excursie' ? 'bg-amber-100 text-amber-800' :
@@ -106,8 +108,18 @@ for (const event of upcomingEvents) {
                       {event.location && (
                         <span class="opacity-60">{event.location}</span>
                       )}
+                      {(event.startTime || event.endTime) && (
+                        <span class="opacity-70">
+                          {event.startTime}{event.startTime && event.endTime ? '–' : ''}{event.endTime}
+                        </span>
+                      )}
                     </div>
                   </div>
+                  {event.link && (
+                    <a href={asset(event.link!)} class="self-center text-sm font-semibold hover:underline whitespace-nowrap">
+                      Meer info →
+                    </a>
+                  )}
                 </div>
               </div>
             );

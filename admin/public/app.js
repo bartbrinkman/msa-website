@@ -415,13 +415,205 @@ function openLightbox(src) {
   lightbox.hidden = false;
 }
 
+// --- tab manager --------------------------------------------------------
+
+const tabs = {
+  carousels: { body: $('#tab-carousels'), dirty: () => state.dirty },
+  banen: { body: $('#tab-banen'), dirty: () => banenEditor.dirty },
+  events: { body: $('#tab-events'), dirty: () => eventsEditor.dirty },
+};
+let currentTab = 'carousels';
+
+function switchTab(name) {
+  if (name === currentTab) return;
+  if (tabs[currentTab].dirty() && !confirm('Unsaved changes in this tab will be lost. Continue?')) return;
+  currentTab = name;
+  for (const [k, t] of Object.entries(tabs)) t.body.hidden = k !== name;
+  document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
+  if (name === 'banen' && !banenEditor.loaded) banenEditor.load();
+  if (name === 'events' && !eventsEditor.loaded) eventsEditor.load();
+}
+
+document.querySelectorAll('.tab').forEach((b) => {
+  b.onclick = () => switchTab(b.dataset.tab);
+});
+
+// --- row editor factory (banen, events) ---------------------------------
+
+function createRowEditor({ dataset, listEl, addBtn, saveBtn, blank, renderRow }) {
+  const ed = {
+    rows: [],
+    dirty: false,
+    loaded: false,
+    async load() {
+      try {
+        ed.rows = await api('GET', `/api/data/${dataset}`);
+        ed.dirty = false;
+        ed.loaded = true;
+        ed.render();
+      } catch (err) {
+        setStatus(`Load ${dataset} failed: ` + err.message, 'err');
+      }
+    },
+    markDirty() {
+      if (!ed.dirty) ed.dirty = true;
+    },
+    render() {
+      const frag = document.createDocumentFragment();
+      ed.rows.forEach((row, i) => frag.append(renderRow(row, i, ed)));
+      listEl.replaceChildren(frag);
+    },
+    move(from, to) {
+      if (to < 0 || to >= ed.rows.length || from === to) return;
+      const [m] = ed.rows.splice(from, 1);
+      ed.rows.splice(to, 0, m);
+      ed.markDirty();
+      ed.render();
+    },
+    remove(i) {
+      if (!confirm('Delete this row?')) return;
+      ed.rows.splice(i, 1);
+      ed.markDirty();
+      ed.render();
+    },
+    add() {
+      ed.rows.push({ ...blank });
+      ed.markDirty();
+      ed.render();
+    },
+    async save() {
+      try {
+        await api('PUT', `/api/data/${dataset}`, ed.rows);
+        ed.dirty = false;
+        setStatus('Saved.', 'ok');
+      } catch (err) {
+        setStatus('Save failed: ' + err.message, 'err');
+      }
+    },
+  };
+  addBtn.onclick = () => ed.add();
+  saveBtn.onclick = () => ed.save();
+  return ed;
+}
+
+function rowActions(i, total, ed) {
+  return el('div', { class: 'row-actions' }, [
+    el('button', { title: 'Move up', disabled: i === 0 ? '' : null, onclick: () => ed.move(i, i - 1), html: '↑' }),
+    el('button', { title: 'Move down', disabled: i === total - 1 ? '' : null, onclick: () => ed.move(i, i + 1), html: '↓' }),
+    el('button', { class: 'delete', title: 'Delete', onclick: () => ed.remove(i), html: '×' }),
+  ]);
+}
+
+function wrapSpan(labelEl, extraClass) {
+  if (extraClass) labelEl.classList.add(extraClass);
+  return labelEl;
+}
+
+function inputField(label, row, key, opts = {}, ed) {
+  return el('label', { text: label }, [
+    el(opts.tag || 'input', {
+      type: opts.type || 'text',
+      placeholder: opts.placeholder || '',
+      value: row[key] || '',
+      oninput: (e) => { row[key] = e.target.value; ed.markDirty(); },
+      ...(opts.attrs || {}),
+    }),
+  ]);
+}
+
+function selectField(label, row, key, options, ed) {
+  const sel = el('select', {
+    onchange: (e) => { row[key] = e.target.value; ed.markDirty(); },
+  });
+  for (const opt of options) {
+    const o = el('option', { value: opt.value, text: opt.label });
+    if ((row[key] || '') === opt.value) o.selected = true;
+    sel.append(o);
+  }
+  return el('label', { text: label }, [sel]);
+}
+
+// --- banen editor -------------------------------------------------------
+
+const BANEN_CATEGORIES = [
+  { value: 'vast', label: 'vast' },
+  { value: 'module', label: 'module' },
+  { value: 'educatie', label: 'educatie' },
+];
+
+const banenEditor = createRowEditor({
+  dataset: 'banen',
+  listEl: $('#banen-list'),
+  addBtn: $('#banen-add'),
+  saveBtn: $('#banen-save'),
+  blank: { title: '', href: '', scale: '', description: '', category: 'vast' },
+  renderRow(row, i, ed) {
+    return el('div', { class: 'row' }, [
+      el('div', { class: 'row-body' }, [
+        el('div', { class: 'row-grid cols-4' }, [
+          inputField('Titel', row, 'title', { placeholder: 'Alkmaarbaan' }, ed),
+          inputField('Href', row, 'href', { placeholder: '/banen/alkmaarbaan' }, ed),
+          selectField('Categorie', row, 'category', BANEN_CATEGORIES, ed),
+          inputField('Status', row, 'status', { placeholder: 'optioneel' }, ed),
+        ]),
+        el('div', { class: 'row-grid cols-3' }, [
+          wrapSpan(inputField('Schaal', row, 'scale', { placeholder: 'H0, 2-rail DC' }, ed), ''),
+          wrapSpan(inputField('Beschrijving', row, 'description', { tag: 'textarea', placeholder: 'Korte beschrijving' }, ed), 'span-2'),
+        ]),
+      ]),
+      rowActions(i, ed.rows.length, ed),
+    ]);
+  },
+});
+
+// --- events editor ------------------------------------------------------
+
+const EVENT_TYPES = [
+  { value: 'expositie', label: 'expositie' },
+  { value: 'excursie', label: 'excursie' },
+  { value: 'opendag', label: 'opendag' },
+  { value: 'beurs', label: 'beurs' },
+];
+
+const eventsEditor = createRowEditor({
+  dataset: 'events',
+  listEl: $('#events-list'),
+  addBtn: $('#events-add'),
+  saveBtn: $('#events-save'),
+  blank: { date: '', title: '', type: 'expositie' },
+  renderRow(row, i, ed) {
+    return el('div', { class: 'row' }, [
+      el('div', { class: 'row-body' }, [
+        el('div', { class: 'row-grid cols-4' }, [
+          inputField('Titel', row, 'title', { placeholder: 'Open Dag MSA' }, ed),
+          selectField('Type', row, 'type', EVENT_TYPES, ed),
+          inputField('Locatie', row, 'location', { placeholder: 'Alkmaar' }, ed),
+          inputField('Link', row, 'link', { placeholder: '/activiteiten/…' }, ed),
+        ]),
+        el('div', { class: 'row-grid cols-4' }, [
+          inputField('Startdatum', row, 'date', { type: 'date' }, ed),
+          inputField('Einddatum', row, 'endDate', { type: 'date' }, ed),
+          inputField('Starttijd', row, 'startTime', { type: 'time' }, ed),
+          inputField('Eindtijd', row, 'endTime', { type: 'time' }, ed),
+        ]),
+        el('div', { class: 'row-grid cols-2' }, [
+          wrapSpan(inputField('Beschrijving', row, 'description', { tag: 'textarea', placeholder: 'Toelichting (optioneel)' }, ed), 'span-full'),
+        ]),
+      ]),
+      rowActions(i, ed.rows.length, ed),
+    ]);
+  },
+});
+
 // --- global keys --------------------------------------------------------
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && !lightbox.hidden) lightbox.hidden = true;
   if ((e.metaKey || e.ctrlKey) && e.key === 's') {
     e.preventDefault();
-    if (state.dirty) save();
+    if (currentTab === 'carousels' && state.dirty) save();
+    else if (currentTab === 'banen' && banenEditor.dirty) banenEditor.save();
+    else if (currentTab === 'events' && eventsEditor.dirty) eventsEditor.save();
   }
 });
 
@@ -431,7 +623,9 @@ $('#save-btn').onclick = save;
 $('#new-carousel-form').onsubmit = addCarousel;
 
 window.addEventListener('beforeunload', (e) => {
-  if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
+  if (state.dirty || banenEditor.dirty || eventsEditor.dirty) {
+    e.preventDefault(); e.returnValue = '';
+  }
 });
 
 load().catch((err) => setStatus('Load failed: ' + err.message, 'err'));

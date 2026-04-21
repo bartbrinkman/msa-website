@@ -38,6 +38,14 @@
       "title": "Verfen"
     },
     {
+      "src": "/images/alkmaarbaan-verbouwing/20251204_232103.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251204_232105.jpg",
+      "title": ""
+    },
+    {
       "src": "/images/alkmaarbaan-verbouwing/20251211_202301.jpg",
       "title": "Verfen"
     },
@@ -76,6 +84,22 @@
     {
       "src": "/images/alkmaarbaan-verbouwing/20260129_230138.jpg",
       "title": "Meer spoor"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002232.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002239.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002243.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002252.jpg",
+      "title": ""
     }
   ],
   "alkmaarbaan": [
@@ -201,6 +225,42 @@
     {
       "src": "/images/marklinbaan/marklin_6schaduwstation.jpg",
       "title": "Het schaduwstation"
+    },
+    {
+      "src": "/images/marklinbaan/20250220_230424.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20250220_230430.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20250220_230434.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20250220_230448.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20250220_234945.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20251003_000159.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20251026_110829.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20251026_110831.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/marklinbaan/20251026_110833.jpg",
+      "title": ""
     }
   ],
   "hoogovenbaan": [
@@ -544,7 +604,24 @@
       "title": ""
     }
   ],
-  "opendag": [],
+  "opendag": [
+    {
+      "src": "/images/opendag/20251026_110513.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/opendag/20251026_110836.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/opendag/20251026_151657.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/opendag/20251028_112714.jpg",
+      "title": ""
+    }
+  ],
   "kinderbaan": [],
   "bergenbaan": [],
   "bergenbaan-verbouwing": [

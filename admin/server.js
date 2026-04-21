@@ -6,9 +6,37 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const PUBLIC_IMAGES = path.join(REPO_ROOT, 'public', 'images');
-const CAROUSELS_JSON = path.join(REPO_ROOT, 'src', 'content', 'carousels.json');
+const CONTENT_DIR = path.join(REPO_ROOT, 'src', 'content');
+const CAROUSELS_JSON = path.join(CONTENT_DIR, 'carousels.json');
 const PORT = Number(process.env.PORT) || 5179;
 const PENDING = 'pending';
+
+// Array-shaped data files the admin can edit. Each has a validator that
+// coerces/cleans incoming rows before writing.
+const DATA_FILES = {
+  banen: {
+    file: path.join(CONTENT_DIR, 'banen.json'),
+    clean(row) {
+      const out = {};
+      for (const k of ['title', 'href', 'scale', 'description', 'category', 'status']) {
+        const v = row[k];
+        if (typeof v === 'string' && v.trim()) out[k] = v.trim();
+      }
+      return out;
+    },
+  },
+  events: {
+    file: path.join(CONTENT_DIR, 'events.json'),
+    clean(row) {
+      const out = {};
+      for (const k of ['date', 'endDate', 'startTime', 'endTime', 'title', 'description', 'location', 'type', 'link']) {
+        const v = row[k];
+        if (typeof v === 'string' && v.trim()) out[k] = v.trim();
+      }
+      return out;
+    },
+  },
+};
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -182,9 +210,38 @@ app.post('/api/delete-image', async (req, res) => {
   }
 });
 
+// --- generic JSON array data (banen, events) ----------------------------
+
+app.get('/api/data/:name', async (req, res) => {
+  const entry = DATA_FILES[req.params.name];
+  if (!entry) return res.status(404).json({ error: 'unknown dataset' });
+  try {
+    const raw = await fs.readFile(entry.file, 'utf8').catch((err) => {
+      if (err.code === 'ENOENT') return '[]';
+      throw err;
+    });
+    res.json(JSON.parse(raw));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/data/:name', async (req, res) => {
+  const entry = DATA_FILES[req.params.name];
+  if (!entry) return res.status(404).json({ error: 'unknown dataset' });
+  if (!Array.isArray(req.body)) return res.status(400).json({ error: 'body must be array' });
+  try {
+    const cleaned = req.body.map(entry.clean);
+    await fs.writeFile(entry.file, JSON.stringify(cleaned, null, 2) + '\n', 'utf8');
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const server = app.listen(PORT, () => {
-  console.log(`\n  MSA carousel admin → http://localhost:${PORT}\n`);
-  console.log(`  Editing: ${CAROUSELS_JSON}`);
+  console.log(`\n  MSA admin → http://localhost:${PORT}\n`);
+  console.log(`  Content: ${CONTENT_DIR}`);
   console.log(`  Images:  ${PUBLIC_IMAGES}\n`);
 });
 

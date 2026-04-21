@@ -11,11 +11,15 @@
     "preview": "astro preview",
     "astro": "astro",
     "admin": "cd admin && (test -d node_modules || npm install) && npm start",
-    "resize": "cd admin && (test -d node_modules || npm install) && npm run resize"
+    "resize": "cd admin && (test -d node_modules || npm install) && npm run resize",
+    "test:edit": "node --test integrations/edit/*.test.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.8",
     "tailwindcss": "^4.2.2"
+  },
+  "devDependencies": {
+    "jsdom": "^29.0.2"
   }
 }

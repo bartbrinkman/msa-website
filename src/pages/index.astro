@@ -116,7 +116,14 @@ const upcomingEvents = events
                     <div class="font-semibold text-primary">{event.title}</div>
                   )}
                   {event.description && <p class="text-sm text-gray-600 mt-1">{event.description}</p>}
-                  {event.location && <p class="text-xs text-gray-500 mt-2">{event.location}</p>}
+                  {(event.startTime || event.endTime || event.location) && (
+                    <p class="text-xs text-gray-500 mt-2 flex flex-wrap gap-x-3">
+                      {event.location && <span>{event.location}</span>}
+                      {(event.startTime || event.endTime) && (
+                        <span>{event.startTime}{event.startTime && event.endTime ? '–' : ''}{event.endTime}</span>
+                      )}
+                    </p>
+                  )}
                 </div>
               </div>
             );

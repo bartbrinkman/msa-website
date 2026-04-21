@@ -3,16 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MSA Carousel Admin</title>
+  <title>Admin</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <header>
-    <h1>MSA Carousel Admin</h1>
+    <div class="brand">
+      <h1>Admin</h1>
+      <nav class="tabs">
+        <button class="tab active" data-tab="carousels">Carousels</button>
+        <button class="tab" data-tab="banen">Banen</button>
+        <button class="tab" data-tab="events">Agenda</button>
+      </nav>
+    </div>
     <div id="status" class="status"></div>
   </header>
 
-  <main>
+  <!-- Carousels tab -->
+  <main id="tab-carousels" class="tab-body">
     <aside class="sidebar">
       <section>
         <h2>Carousels</h2>
@@ -48,6 +56,40 @@
       <p class="hint">Drag onto a carousel row to add, or drag a slide here to remove. Run <code>npm run resize</code> to shrink these to 2000px max.</p>
       <div id="pending-grid" class="pending-grid"></div>
     </aside>
+  </main>
+
+  <!-- Banen tab -->
+  <main id="tab-banen" class="tab-body single-pane" hidden>
+    <section class="editor">
+      <div class="editor-header">
+        <div>
+          <h2>Banen</h2>
+          <p class="hint">Cards used on the homepage and <code>/banen</code> overview. Saved to <code>src/content/banen.json</code>.</p>
+        </div>
+        <div class="editor-actions">
+          <button id="banen-save" class="primary">Save</button>
+        </div>
+      </div>
+      <div id="banen-list" class="row-list"></div>
+      <button id="banen-add" class="add-row">+ Add baan</button>
+    </section>
+  </main>
+
+  <!-- Events tab -->
+  <main id="tab-events" class="tab-body single-pane" hidden>
+    <section class="editor">
+      <div class="editor-header">
+        <div>
+          <h2>Agenda</h2>
+          <p class="hint">Events shown on <code>/agenda</code>. Saved to <code>src/content/events.json</code>.</p>
+        </div>
+        <div class="editor-actions">
+          <button id="events-save" class="primary">Save</button>
+        </div>
+      </div>
+      <div id="events-list" class="row-list"></div>
+      <button id="events-add" class="add-row">+ Add event</button>
+    </section>
   </main>
 
   <div id="lightbox" class="lightbox" hidden><img alt="" /></div>

@@ -2,7 +2,28 @@
 import Base from '../layouts/Base.astro';
 import LayoutCard from '../components/LayoutCard.astro';
 import banen from '../content/banen.json';
+import events from '../content/events.json';
 import { asset } from '../utils';
+
+const months = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+const days = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
+
+const typeLabels: Record<string, string> = {
+  clubavond: 'Clubavond',
+  expositie: 'Expositie',
+  excursie: 'Excursie',
+  opendag: 'Open dag',
+  beurs: 'Beurs',
+  overig: 'Overig',
+};
+
+const now = new Date();
+now.setHours(0, 0, 0, 0);
+
+const upcomingEvents = events
+  .filter(e => new Date(e.endDate || e.date) >= now)
+  .sort((a, b) => a.date.localeCompare(b.date))
+  .slice(0, 3);
 ---
 
 <Base title="Home">
@@ -52,21 +73,191 @@ import { asset } from '../utils';
     </div>
   </section>
 
+  <!-- Upcoming activities -->
+  {upcomingEvents.length > 0 && (
+    <section class="py-12 bg-warm">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="flex items-baseline justify-between mb-6 flex-wrap gap-2">
+          <h2 class="text-2xl font-medium text-primary font-heading uppercase tracking-normal">Aankomende activiteiten</h2>
+          <a href={asset("/agenda")} class="text-primary hover:underline text-sm font-semibold">Volledige agenda →</a>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          {upcomingEvents.map((event) => {
+            const startD = new Date(event.date);
+            const endD = event.endDate ? new Date(event.endDate) : null;
+            const type = event.type || 'overig';
+            const badgeClass =
+              type === 'expositie' ? 'bg-emerald-100 text-emerald-800' :
+              type === 'excursie' ? 'bg-amber-100 text-amber-800' :
+              type === 'opendag' ? 'bg-sky-100 text-sky-800' :
+              type === 'beurs' ? 'bg-violet-100 text-violet-800' :
+              type === 'clubavond' ? 'bg-primary/20 text-primary' :
+              'bg-gray-100 text-gray-600';
+            return (
+              <div class="bg-white rounded-lg p-6 shadow-sm flex gap-4">
+                <div class="text-center min-w-[3.5rem]">
+                  {endD && endD.getTime() !== startD.getTime() ? (
+                    <>
+                      <div class="text-2xl font-bold text-primary">{startD.getDate()}–{endD.getDate()}</div>
+                      <div class="text-xs text-gray-500 capitalize">{months[startD.getMonth()]}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div class="text-2xl font-bold text-primary">{startD.getDate()}</div>
+                      <div class="text-xs text-gray-500 capitalize">{months[startD.getMonth()]}</div>
+                    </>
+                  )}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <span class={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${badgeClass}`}>{typeLabels[type]}</span>
+                  {event.link ? (
+                    <a href={asset(event.link!)} class="block font-semibold text-primary hover:underline">{event.title}</a>
+                  ) : (
+                    <div class="font-semibold text-primary">{event.title}</div>
+                  )}
+                  {event.description && <p class="text-sm text-gray-600 mt-1">{event.description}</p>}
+                  {event.location && <p class="text-xs text-gray-500 mt-2">{event.location}</p>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
   <!-- Featured layouts -->
   <section class="py-12">
     <div class="max-w-6xl mx-auto px-4">
-      <h2 class="text-2xl font-medium text-primary mb-6 font-heading uppercase tracking-normal">Onze banen</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {banen.map((baan) => (
-          <LayoutCard
-            title={baan.title}
-            href={baan.href}
-            scale={baan.scale}
-            description={baan.description}
-            status={baan.status}
-          />
-        ))}
+      <div class="flex items-baseline justify-between mb-6 flex-wrap gap-2">
+        <h2 class="text-2xl font-medium text-primary font-heading uppercase tracking-normal">Onze banen</h2>
+        <a href={asset("/banen")} class="text-primary hover:underline text-sm font-semibold">Bekijk alle banen →</a>
+      </div>
+      <div class="banen-carousel" data-total={banen.length}>
+        <div class="relative">
+          <div class="banen-viewport overflow-hidden -mx-2 px-2 py-2">
+            <div class="banen-track flex transition-transform duration-300 ease-in-out gap-6">
+              {banen.map((baan) => (
+                <div class="banen-slide shrink-0 basis-full md:basis-[calc((100%-1.5rem)/2)] lg:basis-[calc((100%-3rem)/3)]">
+                  <LayoutCard
+                    title={baan.title}
+                    href={baan.href}
+                    scale={baan.scale}
+                    description={baan.description}
+                    status={baan.status}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <button
+            class="banen-prev hidden md:flex absolute -left-16 top-1/2 -translate-y-1/2 bg-white shadow-md hover:shadow-lg border border-gray-200 text-primary w-10 h-10 rounded-full items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed z-10"
+            aria-label="Vorige banen"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            class="banen-next hidden md:flex absolute -right-16 top-1/2 -translate-y-1/2 bg-white shadow-md hover:shadow-lg border border-gray-200 text-primary w-10 h-10 rounded-full items-center justify-center transition-all disabled:opacity-30 disabled:cursor-not-allowed z-10"
+            aria-label="Volgende banen"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <div class="banen-dots flex justify-center gap-1.5 mt-6"></div>
       </div>
     </div>
   </section>
+
+  <script>
+    document.querySelectorAll('.banen-carousel').forEach((carousel) => {
+      const track = carousel.querySelector('.banen-track') as HTMLElement;
+      const slides = carousel.querySelectorAll('.banen-slide');
+      const prev = carousel.querySelector('.banen-prev') as HTMLButtonElement;
+      const next = carousel.querySelector('.banen-next') as HTMLButtonElement;
+      const dotsContainer = carousel.querySelector('.banen-dots') as HTMLElement;
+      const total = slides.length;
+      let current = 0;
+
+      function perView() {
+        const w = window.innerWidth;
+        if (w >= 1024) return 3;
+        if (w >= 768) return 2;
+        return 1;
+      }
+
+      function maxIndex() {
+        return Math.max(0, total - perView());
+      }
+
+      function renderDots() {
+        dotsContainer.innerHTML = '';
+        const pages = maxIndex() + 1;
+        for (let i = 0; i < pages; i++) {
+          const dot = document.createElement('button');
+          dot.className = 'w-2 h-2 rounded-full transition-colors';
+          dot.setAttribute('aria-label', `Pagina ${i + 1}`);
+          dot.addEventListener('click', () => goTo(i));
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      function update() {
+        const slide = slides[0] as HTMLElement;
+        const slideWidth = slide.offsetWidth;
+        const gap = 24;
+        track.style.transform = `translateX(-${current * (slideWidth + gap)}px)`;
+        prev.disabled = current === 0;
+        next.disabled = current >= maxIndex();
+        dotsContainer.querySelectorAll('button').forEach((dot, i) => {
+          dot.classList.toggle('bg-primary', i === current);
+          dot.classList.toggle('bg-gray-300', i !== current);
+        });
+      }
+
+      function goTo(i: number) {
+        current = Math.max(0, Math.min(i, maxIndex()));
+        update();
+      }
+
+      prev.addEventListener('click', () => goTo(current - 1));
+      next.addEventListener('click', () => goTo(current + 1));
+
+      let startX = 0;
+      let startY = 0;
+      let swiped = false;
+      track.addEventListener('touchstart', (e) => {
+        startX = (e as TouchEvent).touches[0].clientX;
+        startY = (e as TouchEvent).touches[0].clientY;
+        swiped = false;
+      });
+      track.addEventListener('touchmove', (e) => {
+        const t = (e as TouchEvent).touches[0];
+        if (Math.abs(t.clientX - startX) > 10 && Math.abs(t.clientX - startX) > Math.abs(t.clientY - startY)) {
+          swiped = true;
+        }
+      });
+      track.addEventListener('touchend', (e) => {
+        const diff = startX - (e as TouchEvent).changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) goTo(current + (diff > 0 ? 1 : -1));
+      });
+      track.addEventListener('click', (e) => {
+        if (swiped) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
+
+      window.addEventListener('resize', () => {
+        renderDots();
+        goTo(current);
+      });
+
+      renderDots();
+      update();
+    });
+  </script>
 </Base>

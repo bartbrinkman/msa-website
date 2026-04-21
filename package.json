@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "admin": "cd admin && (test -d node_modules || npm install) && npm start",
+    "resize": "cd admin && (test -d node_modules || npm install) && npm run resize"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",

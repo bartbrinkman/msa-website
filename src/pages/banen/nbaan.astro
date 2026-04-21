@@ -1,15 +1,9 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 
-const images = [
-  { src: '/images/nbaan/N_spoorplan.png', title: 'Sporenplan', description: 'Dubbelspoors acht-configuratie met enkelsporige lus' },
-  { src: '/images/nbaan/N_1stoomloc.jpg', title: 'Stoomlocomotief' },
-  { src: '/images/nbaan/N_2station.jpg', title: 'Kopstation', description: 'Met 5 sporen' },
-  { src: '/images/nbaan/N_3stationboven.jpg', title: 'Station bovenaanzicht' },
-  { src: '/images/nbaan/N_4emplacement.jpg', title: 'Emplacement', description: 'Met locomotiefdepot, draaischijf en rangeerterrein' },
-  { src: '/images/nbaan/N_5bergen.jpg', title: 'Berglandschap', description: 'Geinspireerd op de Eifel' },
-];
+const images = carousels.nbaan;
 ---
 
 <Page title="N-baan" hero="N-baan" heroImage="/images/nbaan/N_2station.jpg">

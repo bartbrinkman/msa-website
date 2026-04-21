@@ -17,19 +17,28 @@ const { images, id } = Astro.props;
 <div class="carousel relative overflow-hidden rounded-lg mb-8" id={id} tabindex="0">
   <div class="carousel-track flex transition-transform duration-300 ease-in-out">
     {images.map((img, i) => (
-      <div class="carousel-slide min-w-full">
+      <div
+        class="carousel-slide min-w-full"
+        data-title={img.title || ''}
+        data-description={img.description || ''}
+      >
         <img
           src={asset(img.src)}
-          alt={img.title}
-          class="carousel-img w-full h-64 md:h-96 object-contain bg-gray-900 cursor-zoom-in"
+          alt={img.title || ''}
+          class="carousel-img w-full h-64 md:h-96 object-cover bg-gray-900 cursor-zoom-in"
           loading={i === 0 ? 'eager' : 'lazy'}
         />
-        <div class="px-4 py-2.5 bg-white text-center">
-          <span class="font-semibold text-primary text-sm">{img.title}</span>
-          {img.description && (
-            <span class="text-sm text-gray-500"> — {img.description}</span>
-          )}
-        </div>
+        {(img.title || img.description) && (
+          <div class="px-4 py-2.5 bg-white text-center">
+            {img.title && (
+              <span class="font-semibold text-primary text-sm">{img.title}</span>
+            )}
+            {img.title && img.description && <span class="text-sm text-gray-500"> — </span>}
+            {img.description && (
+              <span class="text-sm text-gray-500">{img.description}</span>
+            )}
+          </div>
+        )}
       </div>
     ))}
   </div>
@@ -37,7 +46,7 @@ const { images, id } = Astro.props;
   {images.length > 1 && (
     <>
       <button
-        class="carousel-prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+        class="carousel-prev absolute left-2 top-40 md:top-56 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors"
         aria-label="Vorige foto"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +54,7 @@ const { images, id } = Astro.props;
         </svg>
       </button>
       <button
-        class="carousel-next absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+        class="carousel-next absolute right-2 top-40 md:top-56 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors"
         aria-label="Volgende foto"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,13 +127,29 @@ const { images, id } = Astro.props;
     });
 
     let startX = 0;
+    let startY = 0;
+    let swiped = false;
     track.addEventListener('touchstart', (e) => {
       startX = (e as TouchEvent).touches[0].clientX;
+      startY = (e as TouchEvent).touches[0].clientY;
+      swiped = false;
+    });
+    track.addEventListener('touchmove', (e) => {
+      const t = (e as TouchEvent).touches[0];
+      if (Math.abs(t.clientX - startX) > 10 && Math.abs(t.clientX - startX) > Math.abs(t.clientY - startY)) {
+        swiped = true;
+      }
     });
     track.addEventListener('touchend', (e) => {
       const diff = startX - (e as TouchEvent).changedTouches[0].clientX;
       if (Math.abs(diff) > 50) goTo(diff > 0 ? current + 1 : current - 1);
     });
+    track.addEventListener('click', (e) => {
+      if (swiped) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
   });
 
   // Lightbox logic (singleton)
@@ -161,7 +186,10 @@ const { images, id } = Astro.props;
       const img = lbImages[lbIndex];
       lbImg.src = img.src;
       lbImg.alt = img.title;
-      lbCaption.innerHTML = `<strong>${img.title}</strong>${img.description ? ' — ' + img.description : ''}`;
+      const parts = [];
+      if (img.title) parts.push(`<strong>${img.title}</strong>`);
+      if (img.description) parts.push(img.description);
+      lbCaption.innerHTML = parts.join(' — ');
       lbPrev.style.display = lbImages.length > 1 ? '' : 'none';
       lbNext.style.display = lbImages.length > 1 ? '' : 'none';
     }
@@ -191,12 +219,11 @@ const { images, id } = Astro.props;
       const images: Slide[] = [];
       slides.forEach((slide) => {
         const img = slide.querySelector('img') as HTMLImageElement;
-        const titleEl = slide.querySelector('.font-semibold');
-        const descEl = slide.querySelector('.text-gray-500');
+        const s = slide as HTMLElement;
         images.push({
           src: img.src,
-          title: titleEl?.textContent || '',
-          description: descEl?.textContent?.replace(/^ — /, '') || undefined,
+          title: s.dataset.title || '',
+          description: s.dataset.description || undefined,
         });
       });
       slides.forEach((slide, i) => {

@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# admin tool staging folder (not for publish)
+public/images/pending/

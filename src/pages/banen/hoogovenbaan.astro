@@ -1,14 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 
-const images = [
-  { src: '/images/hoogovenbaan/hoogoven_1oven.jpg', title: 'De hoogoven', description: 'Met rook- en lichteffecten' },
-  { src: '/images/hoogovenbaan/hoogoven_2overzicht.jpg', title: 'Overzicht staalcomplex' },
-  { src: '/images/hoogovenbaan/hoogoven_3sik.jpg', title: 'Sik rangeerlocomotief' },
-  { src: '/images/hoogovenbaan/hoogoven_4bulk.jpg', title: 'Bulktransport' },
-  { src: '/images/hoogovenbaan/hoogoven_5kranen.jpg', title: 'Kranen bij de laad- en losplaats' },
-];
+const images = carousels.hoogovenbaan;
+const prototypeImages = carousels['hoogovenbaan-prototype'];
 ---
 
 <Page title="Hoogovenbaan" hero="Hoogovenbaan" heroImage="/images/hoogovenbaan/hoogoven_2overzicht.jpg">
@@ -32,4 +28,31 @@ const images = [
     <li>Verborgen figuren in de fabrieken</li>
     <li>Voorheen verbonden met de Marklinbaan, nu zelfstandig opererend</li>
   </ul>
+
+  <h2>Het prototype</h2>
+  <p>
+    De baan is geinspireerd op het imposante staalcomplex van de Hoogovens
+    bij Beverwijk — tegenwoordig Tata Steel — dat al decennia lang het
+    landschap van de regio bepaalt. Een hoogoven is een grote schachtoven
+    waarin uit ijzererts ruwijzer wordt gewonnen. In de oven worden
+    ijzererts, cokes en kalksteen van bovenaf gestort, terwijl onderin hete
+    lucht wordt ingeblazen. De cokes verbrandt en verhit het erts tot ruim
+    1500 graden, waarbij het ijzer smelt en als vloeibaar ruwijzer onderin
+    de oven wordt afgetapt. De onzuiverheden vormen een slaklaag die bovenop
+    het ruwijzer drijft en apart wordt afgevoerd.
+  </p>
+  <p>
+    Het vloeibare ruwijzer gaat vervolgens naar de oxystaalfabriek, waar
+    door het inblazen van zuivere zuurstof koolstof en andere verontreinigingen
+    worden verwijderd. Zo ontstaat staal, dat uiteindelijk in plakken,
+    rollen of profielen wordt gegoten en gewalst. De benodigde cokes wordt
+    gemaakt in de cokesfabriek, waar steenkool zonder zuurstof wordt
+    verhit tot het grootste deel van de vluchtige stoffen verdwenen is.
+    Samen vormen cokesfabriek, hoogoven en oxystaalfabriek de kern van
+    het geintegreerde staalcomplex bij Beverwijk.
+  </p>
+
+  {prototypeImages.length > 0 && (
+    <Carousel images={prototypeImages} id="hoogovenbaan-prototype" />
+  )}
 </Page>

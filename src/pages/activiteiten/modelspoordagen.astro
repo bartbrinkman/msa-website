@@ -2,17 +2,9 @@
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import { asset } from '../../utils';
+import carousels from '../../content/carousels.json';
 
-const images = [
-  { src: '/images/modelspoordagen/nmd_2025_1.jpg', title: 'Stoomtrein in landschap', description: 'NMD 2025' },
-  { src: '/images/modelspoordagen/nmd_2025_2.jpg', title: 'Publiek bij Het Waeghspoor', description: 'NMD 2025' },
-  { src: '/images/modelspoordagen/nmd_2025_3.jpg', title: 'Speelgoedtreinen', description: 'NMD 2025' },
-  { src: '/images/modelspoordagen/nmd_2025_4.jpg', title: 'Treinsimulator', description: 'HCC TrainSim stand, NMD 2025' },
-  { src: '/images/modelspoordagen/nmd_2024_1.jpg', title: 'Stoomtrein op platteland', description: 'NMD 2024' },
-  { src: '/images/modelspoordagen/nmd_2024_2.jpg', title: 'Modulebaan met ophaalbrug', description: 'NMD 2024' },
-  { src: '/images/modelspoordagen/nmd_2024_3.jpg', title: 'Brits plattelandsstation', description: 'NMD 2024' },
-  { src: '/images/modelspoordagen/nmd_kinderbaan.jpg', title: 'Kinderbaan', description: 'Dorpsgezicht met molen' },
-];
+const images = carousels.modelspoordagen;
 ---
 
 <Page title="Noord-Hollandse Modelspoordagen" hero="Noord-Hollandse Modelspoordagen" heroImage="/images/modelspoordagen/nmd_2025_2.jpg">

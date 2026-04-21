@@ -1,27 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 
-const images = [
-  { src: '/images/alkmaarbaan/Alkmaar-Stationsbord.jpg', title: 'Stationsbord Alkmaar' },
-  { src: '/images/alkmaarbaan/Alkmaar-Kanaal.jpg', title: 'Noordhollands Kanaal', description: 'Met de karakteristieke draaibrug' },
-  { src: '/images/alkmaarbaan/Alkmaar-Draaischijf.jpg', title: 'Draaischijf', description: 'Volledig vernieuwd met stappenmotor en 3D-geprinte onderdelen' },
-  { src: '/images/alkmaarbaan/Alkmaar-Huisje.jpg', title: 'Huisje langs het spoor' },
-  { src: '/images/alkmaarbaan/Alkmaar-Mannetjes.jpg', title: 'Miniatuurfiguren' },
-  { src: '/images/alkmaarbaan/Alkmaar-Roeiboot.jpg', title: 'Roeiboot op het kanaal' },
-  { src: '/images/alkmaarbaan/Alkmaar-Seintjes.jpg', title: 'Seinen', description: 'Zelf ontworpen en 3D-geprint door clubleden' },
-  { src: '/images/alkmaarbaan/Alkmaar-Speeltuin.jpg', title: 'Speeltuin' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw1.jpg', title: 'Verwijderen oude rails', description: 'De ballast moet nog verwijderd worden' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw2.jpg', title: 'Perron vrijgemaakt', description: 'Alle rails en ballast voor het perron verwijderd' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw3.jpg', title: 'Eerste nieuwe spoor', description: 'Het eerste spoor ligt alweer op zijn plaats' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw4.jpg', title: 'Zuidkant station' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw5.jpg', title: 'Nieuwe overkapping', description: 'Met een groot deel van de rails er weer in' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw6.jpg', title: 'Nieuwe rails met ballast' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw7.jpg', title: 'Wisselstraat en stoomdepot' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw8.jpg', title: 'De oude loopbrug' },
-  { src: '/images/alkmaarbaan/alkmaar_bouw9.jpg', title: 'Uitzicht vanaf de locloods' },
-  { src: '/images/alkmaarbaan/archief_alkmaarbaan.jpg', title: 'De Alkmaarbaan op zolder', description: 'Foto: Regionaal Archief Alkmaar' },
-];
+const images = carousels.alkmaarbaan;
+const verbouwingImages = carousels['alkmaarbaan-verbouwing'];
 ---
 
 <Page title="Alkmaarbaan" hero="Alkmaarbaan" heroImage="/images/alkmaarbaan/Alkmaar-Kanaal.jpg">
@@ -62,4 +45,8 @@ const images = [
     <li>Vernieuwing van het landschap</li>
     <li>3D-printen van seinen en andere componenten door clubleden</li>
   </ul>
+
+  {verbouwingImages.length > 0 && (
+    <Carousel images={verbouwingImages} id="alkmaarbaan-verbouwing" />
+  )}
 </Page>

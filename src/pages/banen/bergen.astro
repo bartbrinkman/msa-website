@@ -1,6 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
+
+const verbouwingImages = carousels['bergenbaan-verbouwing'];
 ---
 
 <Page title="Bergen – Bergen aan Zee" hero="Bergen – Bergen aan Zee">
@@ -20,4 +24,17 @@ import { asset } from '../../utils';
     Wanneer de Bergenbaan in groot onderhoud is, wordt het
     <a href={asset("/banen/modulebaan")}>Zijperspoor</a> tentoongesteld.
   </p>
+
+  <h2>Lopende projecten</h2>
+  <p>
+    Alle modules van de Bergenbaan worden vanaf de grond opnieuw opgebouwd.
+    De onderbouw, het spoor en de bedrading worden volledig vernieuwd en
+    gedigitaliseerd. Alleen enkele bijzondere stukken landschap en
+    karakteristieke gebouwen blijven behouden en krijgen een plek op de
+    nieuwe modules.
+  </p>
+
+  {verbouwingImages.length > 0 && (
+    <Carousel images={verbouwingImages} id="bergenbaan-verbouwing" />
+  )}
 </Page>

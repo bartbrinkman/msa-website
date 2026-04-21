@@ -1,15 +1,9 @@
 ---
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 
-const images = [
-  { src: '/images/marklinbaan/marklin_1station.jpg', title: 'Het station' },
-  { src: '/images/marklinbaan/marklin_2tunnels.jpg', title: 'De tunnels' },
-  { src: '/images/marklinbaan/marklin_3brug.jpg', title: 'De verkeersbrug', description: 'Compleet met rijdende auto\'s' },
-  { src: '/images/marklinbaan/marklin_4huizen.jpg', title: 'Bebouwing rondom het station' },
-  { src: '/images/marklinbaan/marklin_5kerk.jpg', title: 'Kerk op de heuvel' },
-  { src: '/images/marklinbaan/marklin_6schaduwstation.jpg', title: 'Het schaduwstation' },
-];
+const images = carousels.marklinbaan;
 ---
 
 <Page title="Marklinbaan" hero="Marklinbaan" heroImage="/images/marklinbaan/marklin_1station.jpg">

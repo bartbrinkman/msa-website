@@ -2,14 +2,9 @@
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import { asset } from '../../utils';
+import carousels from '../../content/carousels.json';
 
-const images = [
-  { src: '/images/darmstadt/darmstad_1.jpg', title: 'Stoomlocomotief 23 042', description: 'Op de draaischijf van het museum' },
-  { src: '/images/darmstadt/darmstad_2.jpg', title: 'De MSA-wagon', description: 'Met Nederlandse en Alkmaarse vlag' },
-  { src: '/images/darmstadt/darmstad_3.jpg', title: 'Onze baan in de wagon', description: 'Bezoekers bekijken de MSA-modelspoorbaan' },
-  { src: '/images/darmstadt/darmstad_4.jpg', title: 'Museumterrein Kranichstein', description: 'Overzicht met locomotieven en publiek' },
-  { src: '/images/darmstadt/darmstad_5.jpg', title: 'Draaischijf en locomotiefloodsen' },
-];
+const images = carousels.darmstadt;
 ---
 
 <Page title="Excursie Darmstadt" hero="Excursie Darmstadt" heroImage="/images/darmstadt/darmstad_4.jpg">

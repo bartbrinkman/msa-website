@@ -5,7 +5,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lineColToOffset, rewriteTag, parseOpeningTagEnd, findAttributeValueBounds, rewriteAnchor, readAnchorHref } from './rewrite.mjs';
+import { lineColToOffset, rewriteTag, parseOpeningTagEnd, findAttributeValueBounds, rewriteAnchor, readAnchorHref, rewriteBlock, cleanTiptapHtml, reshapeOuterForSave, formatBlock, indentBefore } from './rewrite.mjs';
 
 // --- lineColToOffset ----------------------------------------------------
 
@@ -278,6 +278,128 @@ test('rewriteTag: new content can contain HTML entities and special chars', () =
 
 // --- end-to-end: real-looking Astro page --------------------------------
 
+// --- cleanTiptapHtml ----------------------------------------------------
+
+test('cleanTiptapHtml: unwraps <li><p>…</p></li> → <li>…</li>', () => {
+  const input = '<ul><li><p>One</p></li><li><p>Two</p></li></ul>';
+  assert.equal(cleanTiptapHtml(input), '<ul><li>One</li><li>Two</li></ul>');
+});
+
+test('cleanTiptapHtml: strips trailing empty <p> selection anchor', () => {
+  const input = '<ul><li>One</li></ul><p></p>';
+  assert.equal(cleanTiptapHtml(input), '<ul><li>One</li></ul>');
+});
+
+test('cleanTiptapHtml: strips ProseMirror trailing <br>', () => {
+  const input = '<ul><li>One</li></ul><p><br class="ProseMirror-trailingBreak"></p>';
+  assert.equal(cleanTiptapHtml(input), '<ul><li>One</li></ul>');
+});
+
+test('cleanTiptapHtml: real-world Tiptap output from <ul> edit matches expected shape', () => {
+  const input = [
+    '<ul>',
+    '<li><p>Historisch stationsgebouw van Alkmaar met voetgangersbrug</p></li>',
+    '<li><p>Draaibrug over het Noordhollands Kanaal</p></li>',
+    '<li><p>Klapbrug over het kanaal Alkmaar-Kolhorn</p></li>',
+    '</ul>',
+    '<p><br class="ProseMirror-trailingBreak"></p>',
+  ].join('');
+  const cleaned = cleanTiptapHtml(input);
+  assert.equal(cleaned, [
+    '<ul>',
+    '<li>Historisch stationsgebouw van Alkmaar met voetgangersbrug</li>',
+    '<li>Draaibrug over het Noordhollands Kanaal</li>',
+    '<li>Klapbrug over het kanaal Alkmaar-Kolhorn</li>',
+    '</ul>',
+  ].join(''));
+});
+
+test('cleanTiptapHtml: leaves non-list content alone', () => {
+  const input = '<p>Just a paragraph.</p>';
+  assert.equal(cleanTiptapHtml(input), '<p>Just a paragraph.</p>');
+});
+
+test('cleanTiptapHtml: preserves <li> with inline formatting (does not mangle)', () => {
+  const input = '<ul><li><p>Hello <strong>bold</strong> text</p></li></ul>';
+  assert.equal(cleanTiptapHtml(input), '<ul><li>Hello <strong>bold</strong> text</li></ul>');
+});
+
+test('cleanTiptapHtml: does NOT unwrap when <li> has multiple children', () => {
+  // Tiptap only produces one <p> per <li> from our config, but guard anyway.
+  const input = '<ul><li><p>First</p><p>Second</p></li></ul>';
+  assert.equal(cleanTiptapHtml(input), '<ul><li><p>First</p><p>Second</p></li></ul>');
+});
+
+test('cleanTiptapHtml: multiline <li><p> with whitespace still unwraps', () => {
+  const input = '<ul>\n  <li>\n    <p>Nested</p>\n  </li>\n</ul>';
+  // Inner whitespace is preserved but <p> wrapper is gone.
+  assert.match(cleanTiptapHtml(input), /<li>\s*Nested\s*<\/li>/);
+  assert.doesNotMatch(cleanTiptapHtml(input), /<p>/);
+});
+
+test('cleanTiptapHtml: ordered lists get the same treatment', () => {
+  const input = '<ol><li><p>Step 1</p></li><li><p>Step 2</p></li></ol>';
+  assert.equal(cleanTiptapHtml(input), '<ol><li>Step 1</li><li>Step 2</li></ol>');
+});
+
+// --- rewriteBlock -------------------------------------------------------
+
+function contentOffsetFor(src, tag) {
+  const re = new RegExp('<' + tag + '[\\s>/]', 'i');
+  const m = re.exec(src);
+  if (!m) throw new Error(`no <${tag}>`);
+  return parseOpeningTagEnd(src, m.index) + 1;
+}
+
+test('rewriteBlock: replaces entire <p> with new outer', () => {
+  const src = '<p>Old</p>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'p'), 'p', '<p>New</p>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, '<p>New</p>');
+});
+
+test('rewriteBlock: preserves surrounding content', () => {
+  const src = '---\nimport X from "y";\n---\n<h2>Title</h2>\n<p>Old</p>\n<span>after</span>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'p'), 'p', '<p>New</p>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, '---\nimport X from "y";\n---\n<h2>Title</h2>\n<p>New</p>\n<span>after</span>');
+});
+
+test('rewriteBlock: <ul> edit can add / remove <li>s (pretty-prints to match .astro style)', () => {
+  const src = '<ul>\n  <li>One</li>\n  <li>Two</li>\n</ul>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'ul'), 'ul', '<ul><li>One</li><li>Two</li><li>Three</li></ul>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, '<ul>\n  <li>One</li>\n  <li>Two</li>\n  <li>Three</li>\n</ul>');
+});
+
+test('rewriteBlock: tag mismatch is rejected', () => {
+  const src = '<p>hi</p>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'p'), 'h2', '<h2>x</h2>');
+  assert.equal(r.ok, false);
+  assert.match(r.error, /expected <h2>/);
+});
+
+test('rewriteBlock: refuses if inner contains Astro expression', () => {
+  const src = '<p>{title}</p>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'p'), 'p', '<p>new</p>');
+  assert.equal(r.ok, false);
+  assert.match(r.error, /expression/);
+});
+
+test('rewriteBlock: nested <ul> inside <ul> is handled via depth counter', () => {
+  const src = '<ul><li>a<ul><li>nested</li></ul></li></ul>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'ul'), 'ul', '<ul><li>flat</li></ul>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, '<ul>\n  <li>flat</li>\n</ul>');
+});
+
+test('rewriteBlock: newly-added content can include inline markup', () => {
+  const src = '<p>Old</p>';
+  const r = rewriteBlock(src, contentOffsetFor(src, 'p'), 'p', '<p>With <strong>bold</strong> text</p>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, '<p>With <strong>bold</strong> text</p>');
+});
+
 // --- findAttributeValueBounds -------------------------------------------
 
 function parseTag(src) {
@@ -511,4 +633,171 @@ test('rewriteTag: edits a real-looking Astro page', () => {
   assert.match(r2.out, /<h2>Over ons<\/h2>/);
   assert.match(r2.out, /<h2>Word lid<\/h2>/);
   assert.match(r2.out, /<p>We zijn een club\.<\/p>/);
+});
+
+// --- reshapeOuterForSave ------------------------------------------------
+//
+// Bubble-menu heading-level changes rely on this: we keep the original tag
+// for the rewriteBlock safety check, but the content Tiptap emits may be a
+// different heading level (or paragraph). These tests lock in that the user's
+// choice wins for p/h* blocks, while lists can't accidentally change tag.
+
+test('reshapeOuterForSave: paragraph kept as paragraph', () => {
+  assert.equal(reshapeOuterForSave('p', '<p>hello</p>'), '<p>hello</p>');
+});
+
+test('reshapeOuterForSave: user changed h2 → h1 (new tag wins)', () => {
+  assert.equal(reshapeOuterForSave('h2', '<h1>Title</h1>'), '<h1>Title</h1>');
+});
+
+test('reshapeOuterForSave: user changed h3 → paragraph', () => {
+  assert.equal(reshapeOuterForSave('h3', '<p>just text</p>'), '<p>just text</p>');
+});
+
+test('reshapeOuterForSave: user changed p → h2', () => {
+  assert.equal(reshapeOuterForSave('p', '<h2>Promoted</h2>'), '<h2>Promoted</h2>');
+});
+
+test('reshapeOuterForSave: heading with attrs is still recognized', () => {
+  assert.equal(
+    reshapeOuterForSave('h2', '<h1 class="x">Title</h1>'),
+    '<h1 class="x">Title</h1>'
+  );
+});
+
+test('reshapeOuterForSave: <ul> keeps ul even if content is already a <ul>', () => {
+  assert.equal(
+    reshapeOuterForSave('ul', '<ul><li>a</li></ul>'),
+    '<ul><li>a</li></ul>'
+  );
+});
+
+test('reshapeOuterForSave: <ol> output preserved when original was <ol>', () => {
+  assert.equal(
+    reshapeOuterForSave('ol', '<ol><li>a</li></ol>'),
+    '<ol><li>a</li></ol>'
+  );
+});
+
+test('reshapeOuterForSave: list fallback when Tiptap emits bare content', () => {
+  // Defensive path — if Tiptap gave us something that doesn't start with a
+  // list tag, wrap it so the saved source stays a list.
+  assert.equal(
+    reshapeOuterForSave('ul', '<li>a</li>'),
+    '<ul><li>a</li></ul>'
+  );
+});
+
+test('reshapeOuterForSave: p fallback when content has no recognized outer tag', () => {
+  // Shouldn't happen in practice — Tiptap always wraps in a block — but if it
+  // somehow returns bare text, don't silently drop the tag.
+  assert.equal(
+    reshapeOuterForSave('p', 'bare text'),
+    '<p>bare text</p>'
+  );
+});
+
+test('reshapeOuterForSave: does not mistake a span/div prefix for a block', () => {
+  // Regression guard: the regex must match only p / h1-h6 at the top level.
+  assert.equal(
+    reshapeOuterForSave('p', '<span>x</span>'),
+    '<p><span>x</span></p>'
+  );
+});
+
+// --- formatBlock --------------------------------------------------------
+//
+// Tiptap emits flat HTML. The .astro source in this repo puts each block
+// child on its own line, indented one step past its parent. The save path
+// pretty-prints to match that convention.
+
+test('formatBlock: inline-only <p> stays on one line', () => {
+  assert.equal(formatBlock('<p>hello</p>'), '<p>hello</p>');
+});
+
+test('formatBlock: <p> with inline markup stays on one line', () => {
+  assert.equal(
+    formatBlock('<p>foo <strong>bold</strong> bar</p>'),
+    '<p>foo <strong>bold</strong> bar</p>'
+  );
+});
+
+test('formatBlock: heading stays on one line', () => {
+  assert.equal(formatBlock('<h2>Title</h2>'), '<h2>Title</h2>');
+});
+
+test('formatBlock: <ul> breaks each <li> onto its own line', () => {
+  assert.equal(
+    formatBlock('<ul><li>a</li><li>b</li></ul>'),
+    '<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>'
+  );
+});
+
+test('formatBlock: <ol> breaks each <li> onto its own line', () => {
+  assert.equal(
+    formatBlock('<ol><li>first</li><li>second</li></ol>'),
+    '<ol>\n  <li>first</li>\n  <li>second</li>\n</ol>'
+  );
+});
+
+test('formatBlock: <li> inline content stays on the <li> line', () => {
+  // Regression guard: inline content inside a leaf <li> must NOT get split.
+  assert.equal(
+    formatBlock('<ul><li>text with <a href="/x">link</a> and <strong>bold</strong></li></ul>'),
+    '<ul>\n  <li>text with <a href="/x">link</a> and <strong>bold</strong></li>\n</ul>'
+  );
+});
+
+test('formatBlock: list indent composes with outer indent', () => {
+  assert.equal(
+    formatBlock('<ul><li>a</li></ul>', '    '),
+    '<ul>\n      <li>a</li>\n    </ul>'
+  );
+});
+
+test('formatBlock: non-block outer returns input unchanged', () => {
+  // Safety: we only pretty-print our known editable blocks. Anything else
+  // (e.g. a <div> wrapper we don't own) passes through.
+  assert.equal(formatBlock('<div>x</div>'), '<div>x</div>');
+});
+
+test('formatBlock: malformed HTML returns input unchanged', () => {
+  // If parsing fails, don't risk corrupting the save — leave it to rewriteBlock
+  // to reject further downstream.
+  assert.equal(formatBlock('<p>unclosed'), '<p>unclosed');
+});
+
+test('rewriteBlock: formats using the source indent of the element', () => {
+  // The <ul> is indented 4 spaces in the source; children should land at 6.
+  const src = 'prefix\n    <ul>\n      <li>One</li>\n    </ul>\nsuffix';
+  const offset = src.indexOf('<ul>') + '<ul>'.length;
+  const r = rewriteBlock(src, offset, 'ul', '<ul><li>One</li><li>Two</li></ul>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, 'prefix\n    <ul>\n      <li>One</li>\n      <li>Two</li>\n    </ul>\nsuffix');
+});
+
+test('rewriteBlock: <p> with inline markup is NOT split across lines', () => {
+  const src = '  <p>Old</p>';
+  const offset = src.indexOf('<p>') + '<p>'.length;
+  const r = rewriteBlock(src, offset, 'p', '<p>With <strong>bold</strong> text</p>');
+  assert.ok(r.ok, r.error);
+  assert.equal(r.out, '  <p>With <strong>bold</strong> text</p>');
+});
+
+// --- indentBefore -------------------------------------------------------
+
+test('indentBefore: returns the whitespace prefix of the line', () => {
+  const src = 'line one\n    <p>hi</p>';
+  assert.equal(indentBefore(src, src.indexOf('<p>')), '    ');
+});
+
+test('indentBefore: element at start of file has no indent', () => {
+  assert.equal(indentBefore('<p>x</p>', 0), '');
+});
+
+test('indentBefore: returns empty when other non-whitespace precedes on same line', () => {
+  // If the <p> shares a line with other content, we can't safely assume its
+  // "indent" — return '' so formatBlock collapses to single-line output.
+  const src = 'text before <p>hi</p>';
+  assert.equal(indentBefore(src, src.indexOf('<p>')), '');
 });

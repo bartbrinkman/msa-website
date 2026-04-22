@@ -2,6 +2,178 @@
 
 export const EDITABLE_TAGS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
+// Given Tiptap's cleaned HTML output and the original block's tag, return the
+// HTML string to send to rewriteBlock as `newOuter`. Rules:
+//   - Lists (<ul>/<ol>) keep their tag. If Tiptap didn't produce a list (e.g.
+//     content got transformed), wrap with the original tag.
+//   - For p/h1-h6, trust whatever top-level p/h* Tiptap produced (the user
+//     may have changed the heading level via the bubble-menu dropdown). If
+//     Tiptap produced something else, fall back to wrapping in the original tag.
+export function reshapeOuterForSave(tag, newContent) {
+  if (tag === 'ul' || tag === 'ol') {
+    return /^<(ul|ol)[\s>]/i.test(newContent) ? newContent : `<${tag}>${newContent}</${tag}>`;
+  }
+  if (/^<(p|h[1-6])(?:\s|>)/i.test(newContent)) return newContent;
+  return `<${tag}>${newContent}</${tag}>`;
+}
+
+// Pretty-print a block element so its direct block children go on their own
+// line, indented one step past the outer tag — matches how every .astro file
+// in this repo is written. Inline content (text, <strong>, <a>, …) stays on
+// the same line as its parent's opening tag.
+//
+// `indent` is the whitespace prefix of the outer block's opening `<` in the
+// source file. `indentStep` is what to add for each nesting level.
+//
+// Conservative on failure: if parsing runs into anything unexpected, return
+// the input unchanged rather than risk corrupting the save.
+const BLOCK_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li']);
+const VOID_TAGS = new Set(['br', 'hr', 'img', 'input', 'meta', 'link']);
+
+export function formatBlock(html, indent = '', indentStep = '  ') {
+  const trimmed = html.trim();
+  const open = parseOpenTag(trimmed, 0);
+  if (!open || !BLOCK_TAGS.has(open.name.toLowerCase())) return html;
+
+  const closeTag = '</' + open.name;
+  const lower = trimmed.toLowerCase();
+  if (!lower.endsWith(closeTag + '>')) return html;
+  const innerStart = open.end;
+  const innerEnd = trimmed.length - (closeTag.length + 1);
+  const inner = trimmed.slice(innerStart, innerEnd);
+
+  const children = splitChildren(inner);
+  if (children === null) return html;
+
+  // If every child is inline (or whitespace), keep the block on a single line.
+  const hasBlockChild = children.some((c) => c.type === 'element' && BLOCK_TAGS.has(c.name.toLowerCase()));
+  if (!hasBlockChild) {
+    const innerCompact = children.map((c) => c.raw).join('').trim();
+    return `${open.raw}${innerCompact}</${open.name}>`;
+  }
+
+  const childIndent = indent + indentStep;
+  const lines = [];
+  for (const c of children) {
+    if (c.type === 'text') {
+      if (!c.raw.trim()) continue;
+      lines.push(childIndent + c.raw.trim());
+    } else {
+      lines.push(childIndent + formatBlock(c.raw, childIndent, indentStep));
+    }
+  }
+  return `${open.raw}\n${lines.join('\n')}\n${indent}</${open.name}>`;
+}
+
+// Parse an opening tag at `i` in `src`. Returns { name, raw, end, selfClosing }
+// or null if `src[i]` isn't `<` or parsing fails. `end` is the index right
+// after `>`.
+function parseOpenTag(src, i) {
+  if (src[i] !== '<') return null;
+  if (!/[a-zA-Z]/.test(src[i + 1] || '')) return null;
+  let j = i + 1;
+  while (j < src.length && /[a-zA-Z0-9]/.test(src[j])) j++;
+  const name = src.slice(i + 1, j);
+  // Scan to `>` respecting quotes.
+  let quote = null;
+  while (j < src.length) {
+    const ch = src[j];
+    if (quote) { if (ch === quote) quote = null; j++; continue; }
+    if (ch === '"' || ch === "'") { quote = ch; j++; continue; }
+    if (ch === '>') {
+      const selfClosing = src[j - 1] === '/' || VOID_TAGS.has(name.toLowerCase());
+      return { name, raw: src.slice(i, j + 1), end: j + 1, selfClosing };
+    }
+    j++;
+  }
+  return null;
+}
+
+// Split the inner HTML of a block into a flat list of direct children:
+//   { type: 'text', raw } or { type: 'element', name, raw }
+// Nested elements keep their own inner contents in `raw` verbatim.
+// Returns null on parse failure.
+function splitChildren(inner) {
+  const children = [];
+  let i = 0;
+  let textStart = 0;
+  while (i < inner.length) {
+    if (inner[i] !== '<') { i++; continue; }
+    // Flush any pending text.
+    if (i > textStart) children.push({ type: 'text', raw: inner.slice(textStart, i) });
+
+    const open = parseOpenTag(inner, i);
+    if (!open) { i++; textStart = i; continue; }
+    if (open.selfClosing) {
+      children.push({ type: 'element', name: open.name, raw: open.raw });
+      i = open.end;
+      textStart = i;
+      continue;
+    }
+    // Find matching closer, counting nested same-named tags.
+    const close = '</' + open.name;
+    const lower = inner.toLowerCase();
+    const nameLen = open.name.length;
+    let depth = 1, k = open.end;
+    while (k < inner.length) {
+      if (lower.startsWith('<' + open.name.toLowerCase(), k) && /[\s>/]/.test(inner[k + 1 + nameLen] || '')) {
+        depth++; k += 1 + nameLen; continue;
+      }
+      if (lower.startsWith(close.toLowerCase(), k) && /[\s>]/.test(inner[k + close.length] || '')) {
+        depth--;
+        if (depth === 0) {
+          const gt = inner.indexOf('>', k);
+          if (gt < 0) return null;
+          children.push({ type: 'element', name: open.name, raw: inner.slice(i, gt + 1) });
+          i = gt + 1;
+          textStart = i;
+          break;
+        }
+        k += close.length; continue;
+      }
+      k++;
+    }
+    if (depth !== 0) return null;
+  }
+  if (textStart < inner.length) children.push({ type: 'text', raw: inner.slice(textStart) });
+  return children;
+}
+
+// Given the full source and an offset to the opening `<` of an element, return
+// the whitespace prefix on that line up to the `<`. Used to match the source's
+// existing indent when we pretty-print a replacement block. Returns an empty
+// string if the line has non-whitespace before the `<` (unusual — means the
+// element shares a line with other code).
+export function indentBefore(src, ltIndex) {
+  let lineStart = ltIndex;
+  while (lineStart > 0 && src[lineStart - 1] !== '\n') lineStart--;
+  const prefix = src.slice(lineStart, ltIndex);
+  return /^\s*$/.test(prefix) ? prefix : '';
+}
+
+// Clean Tiptap's getHTML output before it hits disk:
+//   - Drop trailing empty <p> selection anchors (<p></p>, <p><br ...></p>).
+//   - Unwrap single <p> children inside <li> so list items stay as plain text.
+//   - Strip Tiptap-internal helper classes (e.g. ProseMirror-trailingBreak).
+export function cleanTiptapHtml(html) {
+  let out = html;
+
+  out = out.replace(/\s*<br\s+class="ProseMirror-trailingBreak"[^>]*>\s*/gi, '');
+
+  // Repeatedly strip trailing empty <p>…</p> blocks.
+  let prev;
+  do {
+    prev = out;
+    out = out.replace(/<p>\s*<\/p>\s*$/i, '').trim();
+  } while (out !== prev);
+
+  // Unwrap <li><p>text</p></li>  →  <li>text</li>. Only when the <li> contains
+  // exactly one <p> and nothing else. The inner must not itself contain </p>.
+  out = out.replace(/<li>\s*<p>((?:(?!<\/?p[\s>]).)*?)<\/p>\s*<\/li>/gis, (_m, inner) => `<li>${inner}</li>`);
+
+  return out;
+}
+
 // Within a slice of source starting at `<tag` and ending at `>`, find the
 // bounds of the value portion of the named attribute. Returns
 // { valueStart, valueEnd } with absolute offsets into the full source, or
@@ -86,6 +258,74 @@ export function findAttributeValueBounds(src, ltIndex, gtIndex, attrName) {
     i++;
   }
   return null;
+}
+
+// Replace the entire outer element (opening tag + inner + closing tag) whose
+// content starts at `offset`. `newOuter` must be valid HTML (an element).
+// Unlike rewriteTag this preserves nothing about the original element — the
+// caller is expected to produce a reasonable replacement.
+//
+// The caller still specifies `tag` as a safety check: we only rewrite if the
+// element at `offset` matches. This prevents a stale (line,col) accidentally
+// overwriting the wrong element after a file edit.
+export function rewriteBlock(src, offset, tag, newOuter) {
+  const innerStart = offset;
+  if (innerStart < 0 || innerStart > src.length) return { ok: false, error: 'offset out of range' };
+
+  let gt = innerStart - 1;
+  while (gt > 0 && /\s/.test(src[gt])) gt--;
+  if (src[gt] !== '>') return { ok: false, error: 'did not find end of opening tag before loc' };
+
+  let lt = -1;
+  for (let k = gt - 1; k >= 0; k--) {
+    if (src[k] !== '<') continue;
+    if (src[k + 1] === '!' || src[k + 1] === '/') continue;
+    if (!/[a-zA-Z]/.test(src[k + 1] || '')) continue;
+    if (parseOpeningTagEnd(src, k) === gt) { lt = k; break; }
+  }
+  if (lt < 0) return { ok: false, error: 'opening tag start not found' };
+
+  const opener = src.slice(lt, gt + 1);
+  const tagMatch = opener.match(/^<\s*([a-zA-Z][a-zA-Z0-9]*)/);
+  if (!tagMatch || tagMatch[1].toLowerCase() !== tag.toLowerCase()) {
+    return { ok: false, error: `expected <${tag}>, found ${opener.slice(0, 40)}` };
+  }
+
+  const closeTag = '</' + tag;
+  const lower = src.toLowerCase();
+  const tagLen = tag.length;
+  let depth = 0;
+  let j = innerStart;
+  while (j < src.length) {
+    if (lower.startsWith('<' + tag, j) && /[\s>/]/.test(src[j + 1 + tagLen] || '')) {
+      depth++;
+      j += 1 + tagLen;
+      continue;
+    }
+    if (lower.startsWith(closeTag, j)) {
+      if (depth === 0) break;
+      depth--;
+      j += closeTag.length;
+      continue;
+    }
+    j++;
+  }
+  if (j >= src.length) return { ok: false, error: 'closing tag not found' };
+  // Advance past `</tag>`
+  const closeStart = j;
+  let closeEnd = j + closeTag.length;
+  while (closeEnd < src.length && src[closeEnd] !== '>') closeEnd++;
+  if (closeEnd >= src.length) return { ok: false, error: 'unterminated closing tag' };
+  const elementEnd = closeEnd + 1;
+
+  // Refuse if the current inner contains an Astro expression — same policy as rewriteTag.
+  const currentInner = src.slice(innerStart, closeStart);
+  if (/[{}]/.test(currentInner)) {
+    return { ok: false, error: 'element contains an expression; edit source directly' };
+  }
+
+  const formatted = formatBlock(newOuter, indentBefore(src, lt));
+  return { ok: true, out: src.slice(0, lt) + formatted + src.slice(elementEnd) };
 }
 
 // Read the raw `href` attribute source (quotes/braces included) for the

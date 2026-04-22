@@ -12,7 +12,7 @@
     "astro": "astro",
     "admin": "cd admin && (test -d node_modules || npm install) && npm start",
     "resize": "cd admin && (test -d node_modules || npm install) && npm run resize",
-    "test:edit": "node --test integrations/edit/*.test.mjs"
+    "test:edit": "node --test --test-reporter=spec 'integrations/edit/rewrite.test.mjs' 'integrations/edit/client.test.mjs'"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
@@ -20,6 +20,10 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
+    "@tiptap/core": "^3.22.4",
+    "@tiptap/extension-bubble-menu": "^3.22.4",
+    "@tiptap/extension-link": "^3.22.4",
+    "@tiptap/starter-kit": "^3.22.4",
     "jsdom": "^29.0.2"
   }
 }

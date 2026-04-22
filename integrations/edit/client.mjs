@@ -1,17 +1,31 @@
-// Client-side logic for the edit toolbar app. Split out so it can be
-// exercised by jsdom-based tests — see `client.test.mjs`.
-//
-// Exports a factory `createEditor(doc, { fetchImpl, win })` that returns an
-// object with `enable()`, `disable()`, and for tests: `_state()`.
-//
-// Nothing in here references `window` or global `document` directly; both
-// come in as params so tests can substitute them.
+import { Editor } from '@tiptap/core';
+import StarterKit from '@tiptap/starter-kit';
+import Document from '@tiptap/extension-document';
+import Heading from '@tiptap/extension-heading';
+import Link from '@tiptap/extension-link';
+import BubbleMenu from '@tiptap/extension-bubble-menu';
+import { cleanTiptapHtml, reshapeOuterForSave } from './rewrite.mjs';
 
-export const EDITABLE_TEXT_TAGS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'span', 'div'];
-// Legacy export name kept for existing test imports
+// Constrain the document to exactly one top-level block. The source element
+// we're editing is a single block (one <p>, one <h2>, one <ul>, …) and we
+// write back a single block. Allowing `block+` (StarterKit's default) means
+// Enter on a heading splits into `<h3>x</h3><h3></h3>`, the trailing empty
+// block lands in the saved source, and list Enter behaves erratically.
+const SingleBlockDocument = Document.extend({ content: 'block' });
+
+// WYSIWYG: turn off the `# ` / `## ` markdown-style heading input rules.
+// Users pick heading levels from the bubble-menu select; auto-conversion
+// while typing surprises them.
+const HeadingNoMarkdown = Heading.extend({
+  addInputRules() { return []; },
+  addPasteRules() { return []; },
+});
+
+export const EDITABLE_TEXT_TAGS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'span', 'div', 'ul', 'ol'];
 export const EDITABLE = EDITABLE_TEXT_TAGS;
 const TEXT_ATTR = 'data-editable';
 const ANCHOR_ATTR = 'data-editable-anchor';
+const ACTIVE_ATTR = 'data-edit-active';
 
 export function createEditor(doc, opts = {}) {
   const fetchImpl = opts.fetchImpl || (globalThis.fetch && globalThis.fetch.bind(globalThis));
@@ -21,6 +35,7 @@ export function createEditor(doc, opts = {}) {
   let mo = null;
   let clickHandler = null;
   let currentPopover = null;
+  let currentTiptap = null; // { editor, host, originalOuter, tag }
 
   function hasSourceInfo(el) {
     return (el.getAttribute('data-edit-src-file') || el.getAttribute('data-astro-source-file'))
@@ -34,41 +49,67 @@ export function createEditor(doc, opts = {}) {
     };
   }
 
-  // Treat an element as a "text leaf" when its only children are text nodes
-  // (or `<br>`). We'd corrupt layout if we marked a wrapping div editable.
+  // An element is a "text leaf" when the only children are text nodes, <br>,
+  // or anchors nested inside the paragraph/list-item. We explicitly allow
+  // anchors so Tiptap can edit <p>foo <a>bar</a> baz</p> as a rich text node.
   function isTextLeaf(el) {
     for (const child of el.childNodes) {
-      if (child.nodeType === 3 /* text */) continue;
-      if (child.nodeType === 1 /* element */) {
+      if (child.nodeType === 3) continue; // text
+      if (child.nodeType === 1) {
         const tag = child.tagName.toLowerCase();
-        if (tag === 'br') continue;
+        if (tag === 'br' || tag === 'a' || tag === 'strong' || tag === 'em' || tag === 'b' || tag === 'i') continue;
         return false;
       }
     }
     return true;
   }
 
+  // Lists: a <ul>/<ol> is editable if every direct <li> child is itself a leaf.
+  function isEditableList(el) {
+    for (const child of el.childNodes) {
+      if (child.nodeType === 3) continue;
+      if (child.nodeType === 1) {
+        if (child.tagName.toLowerCase() !== 'li') return false;
+        if (!isTextLeaf(child)) return false;
+      }
+    }
+    return true;
+  }
+
+  // Elements inside the site header (logo, nav, etc.) are out of scope —
+  // that's template scaffolding, not page content. Also skip the Astro dev
+  // toolbar itself.
+  function inSkippedRegion(el) {
+    return !!el.closest('header, astro-dev-toolbar, astro-dev-overlay');
+  }
+
   function markEditable() {
     for (const n of doc.querySelectorAll(EDITABLE_TEXT_TAGS.join(','))) {
       if (!hasSourceInfo(n)) continue;
-      if (n.closest('astro-dev-toolbar, astro-dev-overlay')) continue;
-      if (!isTextLeaf(n)) continue;
+      if (inSkippedRegion(n)) continue;
+      const tag = n.tagName.toLowerCase();
+      if (tag === 'ul' || tag === 'ol') {
+        if (!isEditableList(n)) continue;
+      } else {
+        if (!isTextLeaf(n)) continue;
+        if (tag === 'li') continue;
+      }
       n.setAttribute(TEXT_ATTR, '');
     }
     for (const a of doc.querySelectorAll('a')) {
       if (!hasSourceInfo(a)) continue;
-      if (a.closest('astro-dev-toolbar, astro-dev-overlay')) continue;
-      // Anchors can coexist with an editable parent paragraph. onClick gives
-      // anchors priority, so clicking the link body opens the popover, while
-      // clicking surrounding text engages the paragraph text editor.
+      if (inSkippedRegion(a)) continue;
+      // Anchors inside a text-editable block are owned by Tiptap's bubble
+      // menu (🔗 button). Don't expose a separate popover for them.
+      if (a.closest('[' + TEXT_ATTR + ']')) continue;
       a.setAttribute(ANCHOR_ATTR, '');
     }
   }
 
   function unmarkEditable() {
+    closeTiptap(); // persist anything in progress
     for (const n of doc.querySelectorAll('[' + TEXT_ATTR + ']')) {
       n.removeAttribute(TEXT_ATTR);
-      n.removeAttribute('contenteditable');
     }
     for (const a of doc.querySelectorAll('[' + ANCHOR_ATTR + ']')) {
       a.removeAttribute(ANCHOR_ATTR);
@@ -78,57 +119,274 @@ export function createEditor(doc, opts = {}) {
 
   const lastResults = [];
 
-  // --- text edits (p, h*) ------------------------------------------------
+  // --- Tiptap block editor ----------------------------------------------
 
-  async function saveText(el, originalHtml) {
-    const { file, loc } = sourceOf(el);
-    const tag = el.tagName.toLowerCase();
-    const newHtml = el.innerHTML;
-    if (newHtml === originalHtml) return { ok: true, noop: true };
+  // Tiptap StarterKit-minus-stuff-we-don't-allow. The schema IS the whitelist:
+  // anything not declared here cannot be produced by the editor.
+  function makeTiptapExtensions(bubbleEl) {
+    const exts = [
+      StarterKit.configure({
+        document: false,
+        blockquote: false,
+        codeBlock: false,
+        code: false,
+        horizontalRule: false,
+        heading: false,
+        strike: false,
+      }),
+      SingleBlockDocument,
+      HeadingNoMarkdown.configure({ levels: [1, 2, 3, 4] }),
+      Link.configure({
+        openOnClick: false,
+        autolink: false,
+        HTMLAttributes: { rel: 'noopener', target: null },
+      }),
+    ];
+    if (bubbleEl) {
+      exts.push(BubbleMenu.configure({
+        element: bubbleEl,
+        options: {
+          placement: 'top',
+          offset: 8,
+        },
+      }));
+    }
+    return exts;
+  }
+
+  // Build the floating formatting toolbar that appears above the selection.
+  function buildBubbleMenu() {
+    const bar = doc.createElement('div');
+    bar.className = 'edit-bubble-menu';
+    bar.style.cssText = `
+      display: flex;
+      gap: 2px;
+      padding: 4px;
+      background: #1a1a1a;
+      border-radius: 6px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+      font: 12px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      z-index: 2147483600;
+    `;
+    return bar;
+  }
+
+  function addBubbleButton(bar, label, title, onClick, isActive) {
+    const btn = doc.createElement('button');
+    btn.type = 'button';
+    btn.textContent = label;
+    btn.title = title;
+    btn.dataset.cmd = title;
+    btn.style.cssText = `
+      padding: 4px 9px;
+      background: transparent;
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      cursor: pointer;
+      font: inherit;
+      min-width: 28px;
+    `;
+    btn.addEventListener('mousedown', (e) => {
+      // mousedown, not click — Tiptap's view loses selection on click otherwise
+      e.preventDefault();
+      onClick();
+    });
+    btn._isActive = isActive;
+    bar.append(btn);
+    return btn;
+  }
+
+  function closeTiptap({ cancel = false } = {}) {
+    if (!currentTiptap) return;
+    const { editor, host, originalOuter, tag, file, loc, bubble } = currentTiptap;
+    const newContent = cleanTiptapHtml(editor.getHTML());
+    editor.destroy();
+    if (bubble && bubble.parentNode) bubble.parentNode.removeChild(bubble);
+
+    const newOuter = reshapeOuterForSave(tag, newContent);
+
+    // Replace the Tiptap host with the element that matches the final state:
+    //   - on cancel → original outer
+    //   - on save   → the new outer (so there's no "flash of original" before HMR reloads)
+    const finalHtml = cancel ? originalOuter : newOuter;
+    const replacement = templateElement(finalHtml);
+    if (replacement.nodeType === 1) {
+      replacement.setAttribute('data-edit-src-file', file);
+      replacement.setAttribute('data-edit-src-loc', loc);
+    }
+    host.replaceWith(replacement);
+    currentTiptap = null;
+    if (active) markEditable();
+
+    if (!cancel && newOuter !== originalOuter) {
+      saveBlock({ file, loc, tag, newOuter, originalOuter }).then((r) => lastResults.push(r));
+    }
+  }
+
+async function saveBlock({ file, loc, tag, newOuter, originalOuter }) {
+    if (newOuter === originalOuter) return { ok: true, noop: true };
     try {
-      const res = await fetchImpl('/__edit', {
+      const res = await fetchImpl('/__edit/block', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ file, loc, tag, newHtml }),
+        body: JSON.stringify({ file, loc, tag, newOuter }),
       });
       if (!res.ok) {
         let err = {};
         try { err = await res.json(); } catch {}
-        el.innerHTML = originalHtml;
         return { ok: false, error: err.error || res.statusText };
       }
       return { ok: true };
     } catch (err) {
-      el.innerHTML = originalHtml;
       return { ok: false, error: err.message };
     }
   }
 
   function beginTextEdit(el) {
-    if (el.getAttribute('contenteditable') === 'true') return;
-    const original = el.innerHTML;
-    el.setAttribute('contenteditable', 'true');
-    el.focus();
+    if (currentTiptap) closeTiptap();
+    const tag = el.tagName.toLowerCase();
+    const { file, loc } = sourceOf(el);
+    const originalOuter = el.outerHTML;
 
-    const done = async () => {
-      el.removeEventListener('blur', done);
-      el.removeEventListener('keydown', onKey);
-      el.removeAttribute('contenteditable');
-      const result = await saveText(el, original);
-      lastResults.push(result);
+    const host = doc.createElement(tag);
+    host.setAttribute(ACTIVE_ATTR, '');
+    if (el.className) host.className = el.className;
+    const inlineStyle = el.getAttribute('style');
+    if (inlineStyle) host.setAttribute('style', inlineStyle);
+    el.replaceWith(host);
+
+    // Build the floating toolbar (rendered by the BubbleMenu extension).
+    const bubble = buildBubbleMenu();
+    bubble.style.visibility = 'hidden'; // Tiptap shows/hides this for us
+    doc.body.append(bubble);
+
+    const seedContent = originalOuter;
+    let editor;
+    const buttons = [];
+    try {
+      editor = new Editor({
+        element: host,
+        extensions: makeTiptapExtensions(bubble),
+        content: seedContent,
+        autofocus: 'end',
+        editorProps: {
+          handleKeyDown(_view, ev) {
+            if (ev.key === 'Escape') {
+              ev.preventDefault();
+              closeTiptap({ cancel: true });
+              return true;
+            }
+            return false;
+          },
+        },
+        // We don't close on blur — bubble-menu mousedown and transient focus
+        // loss would tear down the editor mid-edit. Instead we close when the
+        // user clicks outside host+bubble or starts editing a different
+        // element (see onClick and the outside-click handler below).
+      });
+    } catch (err) {
+      host.replaceWith(templateElement(originalOuter));
+      bubble.remove();
+      // eslint-disable-next-line no-console
+      console.error('[edit] Tiptap init failed:', err);
+      return;
+    }
+
+    // Populate the toolbar now that `editor` exists.
+    const blockSelect = doc.createElement('select');
+    blockSelect.title = 'Block type';
+    blockSelect.style.cssText = `
+      padding: 3px 6px;
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      cursor: pointer;
+      font: inherit;
+      margin-right: 4px;
+    `;
+    // Lists don't get a block-type switcher — it would fight with list nodes.
+    if (tag === 'ul' || tag === 'ol') blockSelect.style.display = 'none';
+    for (const [val, label] of [
+      ['p', 'Paragraph'],
+      ['h1', 'Heading 1'],
+      ['h2', 'Heading 2'],
+      ['h3', 'Heading 3'],
+      ['h4', 'Heading 4'],
+    ]) {
+      const opt = doc.createElement('option');
+      opt.value = val;
+      opt.textContent = label;
+      blockSelect.append(opt);
+    }
+    blockSelect.addEventListener('mousedown', (e) => e.stopPropagation());
+    blockSelect.addEventListener('change', () => {
+      const v = blockSelect.value;
+      if (v === 'p') editor.chain().focus().setParagraph().run();
+      else editor.chain().focus().setHeading({ level: Number(v[1]) }).run();
+    });
+    bubble.append(blockSelect);
+
+    const refreshBlockSelect = () => {
+      for (const level of [1, 2, 3, 4]) {
+        if (editor.isActive('heading', { level })) {
+          blockSelect.value = `h${level}`;
+          return;
+        }
+      }
+      blockSelect.value = 'p';
     };
-    const onKey = (ev) => {
-      if (ev.key === 'Escape') { ev.preventDefault(); el.innerHTML = original; el.blur(); }
-      else if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); el.blur(); }
+
+    buttons.push(
+      addBubbleButton(bubble, 'B', 'Bold (Cmd+B)',
+        () => editor.chain().focus().toggleBold().run(),
+        () => editor.isActive('bold')),
+      addBubbleButton(bubble, 'I', 'Italic (Cmd+I)',
+        () => editor.chain().focus().toggleItalic().run(),
+        () => editor.isActive('italic')),
+      addBubbleButton(bubble, '•', 'Bulleted list',
+        () => editor.chain().focus().toggleBulletList().run(),
+        () => editor.isActive('bulletList')),
+      addBubbleButton(bubble, '1.', 'Numbered list',
+        () => editor.chain().focus().toggleOrderedList().run(),
+        () => editor.isActive('orderedList')),
+      addBubbleButton(bubble, '🔗', 'Link (Cmd+K)',
+        () => {
+          const prev = editor.getAttributes('link').href || '';
+          const next = win.prompt('URL', prev);
+          if (next === null) return;
+          if (next === '') editor.chain().focus().extendMarkRange('link').unsetLink().run();
+          else editor.chain().focus().extendMarkRange('link').setLink({ href: next }).run();
+        },
+        () => editor.isActive('link')),
+    );
+
+    // Highlight active buttons on selection change.
+    const refreshButtons = () => {
+      for (const btn of buttons) {
+        btn.style.background = btn._isActive() ? '#ffc400' : 'transparent';
+        btn.style.color = btn._isActive() ? '#001' : '#fff';
+      }
+      refreshBlockSelect();
     };
-    el.addEventListener('blur', done);
-    el.addEventListener('keydown', onKey);
+    editor.on('selectionUpdate', refreshButtons);
+    editor.on('transaction', refreshButtons);
+    refreshButtons();
+
+    currentTiptap = { editor, host, originalOuter, tag, file, loc, bubble };
   }
 
-  // --- anchor edits (popover) --------------------------------------------
+  // Build an Element from an HTML string. Used to restore the original DOM
+  // when an edit is cancelled.
+  function templateElement(html) {
+    const tpl = doc.createElement('template');
+    tpl.innerHTML = html.trim();
+    return tpl.content.firstElementChild || doc.createTextNode(html);
+  }
 
-  // Read the raw source attribute `href` value for this anchor so the user
-  // sees the literal source (e.g. `{asset("/agenda")}` or `"/agenda"`).
+  // --- anchor edits (unchanged popover) ---------------------------------
+
   async function fetchRawHref(el) {
     const { file, loc } = sourceOf(el);
     try {
@@ -229,7 +487,6 @@ export function createEditor(doc, opts = {}) {
     doc.body.append(pop);
     currentPopover = pop;
 
-    // Fetch the raw href; fall back to resolved href if the endpoint isn't available.
     fetchRawHref(a).then((raw) => {
       if (pop !== currentPopover) return;
       hrefIn.disabled = false;
@@ -259,14 +516,12 @@ export function createEditor(doc, opts = {}) {
       else if (ev.key === 'Enter') { ev.preventDefault(); submit(); }
     });
 
-    // Click outside popover closes it.
     const outside = (ev) => {
       if (currentPopover && !currentPopover.contains(ev.target)) {
         doc.removeEventListener('click', outside, true);
         close();
       }
     };
-    // Defer so the click that opened the popover doesn't immediately close it.
     setTimeout(() => {
       if (currentPopover) doc.addEventListener('click', outside, true);
     }, 0);
@@ -275,21 +530,38 @@ export function createEditor(doc, opts = {}) {
   function onClick(e) {
     const closest = e.target.closest ? e.target.closest.bind(e.target) : null;
     if (!closest) return;
+
+    // Clicks inside the currently open link popover — let them through.
     if (currentPopover && currentPopover.contains(e.target)) return;
 
+    // Clicks inside the active Tiptap editor — let the browser handle them
+    // (caret placement, link clicks, etc.). Don't start a new edit.
+    if (closest('[' + ACTIVE_ATTR + ']')) return;
+
+    // Clicks on the bubble menu (button toolbar) — let mousedown handlers
+    // do their thing. Never treat this as "clicked away".
+    if (closest('.edit-bubble-menu')) return;
+
     const anchor = closest('[' + ANCHOR_ATTR + ']');
+    const textEl = closest('[' + TEXT_ATTR + ']');
+
+    // If an editor is active and the click landed somewhere else, save first.
+    if (currentTiptap && (anchor || textEl || true)) {
+      closeTiptap({ cancel: false });
+    }
+
     if (anchor) {
       e.preventDefault();
       e.stopPropagation();
       openAnchorPopover(anchor);
       return;
     }
-    const textEl = closest('[' + TEXT_ATTR + ']');
     if (textEl) {
       e.preventDefault();
       e.stopPropagation();
       beginTextEdit(textEl);
     }
+    // Clicks on non-editable parts of the page are left alone (no preventDefault).
   }
 
   function enable() {
@@ -318,9 +590,9 @@ export function createEditor(doc, opts = {}) {
     disable,
     _state: () => ({ active, editable: doc.querySelectorAll('[' + TEXT_ATTR + '], [' + ANCHOR_ATTR + ']').length }),
     _simulateClick: (el) => onClick({ target: el, preventDefault() {}, stopPropagation() {} }),
-    _beginEdit: beginTextEdit,
-    _openAnchorPopover: openAnchorPopover,
+    _beginTextEdit: beginTextEdit,
     _currentPopover: () => currentPopover,
+    _currentTiptap: () => currentTiptap,
     _lastResults: () => lastResults.slice(),
   };
 }

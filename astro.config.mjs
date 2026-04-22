@@ -8,6 +8,20 @@ export default defineConfig({
   base: '/msa-website',
   integrations: [edit()],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: ['@tiptap/core', '@tiptap/starter-kit', '@tiptap/extension-link', '@tiptap/extension-bubble-menu'],
+    },
+    resolve: {
+      dedupe: [
+        '@tiptap/core',
+        'prosemirror-state',
+        'prosemirror-view',
+        'prosemirror-model',
+        'prosemirror-transform',
+        'prosemirror-commands',
+        'prosemirror-keymap',
+      ],
+    },
   }
 });

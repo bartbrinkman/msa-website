@@ -29,7 +29,7 @@ const upcomingEvents = events
 <Base title="Home">
   <!-- Hero -->
   <section class="relative overflow-hidden">
-    <img src={asset('/images/alkmaarbaan/alkmaar_bouw9.jpg')} alt="" class="absolute inset-0 w-full h-full object-cover" />
+    <img src={asset('/images/hero/index.jpg')} alt="" class="absolute inset-0 w-full h-full object-cover" />
     <div class="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary-dark/90 to-primary/70"></div>
     <div class="relative text-white py-16 md:py-24">
       <div class="max-w-6xl mx-auto px-4">
@@ -75,7 +75,7 @@ const upcomingEvents = events
 
   <!-- Upcoming activities -->
   {upcomingEvents.length > 0 && (
-    <section class="py-12 bg-warm">
+    <section class="py-12">
       <div class="max-w-6xl mx-auto px-4">
         <div class="flex items-baseline justify-between mb-6 flex-wrap gap-2">
           <h2 class="text-2xl font-medium text-primary font-heading uppercase tracking-normal">Aankomende activiteiten</h2>
@@ -94,7 +94,7 @@ const upcomingEvents = events
               type === 'clubavond' ? 'bg-primary/20 text-primary' :
               'bg-gray-100 text-gray-600';
             return (
-              <div class="bg-white rounded-lg p-6 shadow-sm flex gap-4">
+              <div class="bg-white border border-gray-200 hover:border-primary/30 transition-all rounded-lg p-6 flex gap-4">
                 <div class="text-center min-w-[3.5rem]">
                   {endD && endD.getTime() !== startD.getTime() ? (
                     <>
@@ -134,7 +134,7 @@ const upcomingEvents = events
   )}
 
   <!-- Featured layouts -->
-  <section class="py-12">
+  <section class="py-12 bg-warm">
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex items-baseline justify-between mb-6 flex-wrap gap-2">
         <h2 class="text-2xl font-medium text-primary font-heading uppercase tracking-normal">Onze banen</h2>

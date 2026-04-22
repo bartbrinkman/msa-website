@@ -8,7 +8,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { EDITABLE_TAGS, lineColToOffset, rewriteTag, rewriteAnchor, readAnchorHref } from './rewrite.mjs';
+import { EDITABLE_TAGS, lineColToOffset, rewriteTag, rewriteAnchor, rewriteBlock, readAnchorHref } from './rewrite.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -52,6 +52,34 @@ function middleware(root) {
     }
 
     if (req.method !== 'POST') return next();
+
+    // Block rewrite: Tiptap-driven edit of an entire element (opening +
+    // inner + closing tag). Newly-introduced blocks (e.g. another <li>) are
+    // written verbatim from what Tiptap produces.
+    if (req.url.startsWith('/__edit/block')) {
+      let body = '';
+      req.on('data', (c) => { body += c; });
+      req.on('end', async () => {
+        try {
+          const data = JSON.parse(body || '{}');
+          const prep = await prepareEdit(data, root);
+          if (prep.error) return fail(res, 400, prep.error);
+          if (typeof data.tag !== 'string' || typeof data.newOuter !== 'string') {
+            return fail(res, 400, 'bad payload');
+          }
+          if (data.newOuter.length > 50_000) return fail(res, 400, 'too long');
+          const result = rewriteBlock(prep.src, prep.offset, data.tag, data.newOuter);
+          if (!result.ok) return fail(res, 400, result.error);
+          await fs.writeFile(prep.absFile, result.out, 'utf8');
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ ok: true }));
+        } catch (err) {
+          fail(res, 500, err.message);
+        }
+      });
+      return;
+    }
+
     const isTag = req.url.startsWith('/__edit/anchor')
       ? false
       : req.url.startsWith('/__edit')
@@ -134,6 +162,70 @@ export default function edit() {
               document.addEventListener('DOMContentLoaded', snap, { once: true });
             } else {
               snap();
+            }
+
+            // Rotate the Astro dev toolbar to a vertical pill pinned to the
+            // left-middle. Astro's native \`placement\` only offers bottom-*,
+            // so we override its shadow-DOM CSS.
+            const TOOLBAR_CSS = \`
+              #dev-toolbar-root {
+                bottom: auto !important;
+                top: 50% !important;
+                left: 16px !important;
+                right: auto !important;
+                transform: translateY(-50%) !important;
+                transition: left 0.35s cubic-bezier(0.485, -0.050, 0.285, 1.505) !important;
+              }
+              #dev-toolbar-root[data-hidden] { left: 16px !important; bottom: auto !important; }
+              #dev-toolbar-root[data-hidden] #dev-bar .item { opacity: 1 !important; }
+              #dev-bar { height: auto !important; width: 40px !important; }
+              #dev-bar #bar-container { flex-direction: column !important; }
+              #dev-bar .item { width: 40px !important; height: 44px !important; }
+              #dev-bar .separator { width: auto !important; height: 1px !important; }
+              #dev-bar .item:first-of-type {
+                border-radius: 9999px 9999px 0 0 !important;
+                padding: 4px 0 0 0 !important;
+                height: 42px !important;
+              }
+              #dev-bar .item:last-of-type {
+                border-radius: 0 0 9999px 9999px !important;
+                padding: 0 0 4px 0 !important;
+                height: 42px !important;
+              }
+              #dev-bar-hitbox-above, #dev-bar-hitbox-below {
+                width: 16px !important;
+                height: auto !important;
+                align-self: stretch !important;
+              }
+              #dev-bar .item-tooltip {
+                top: 50% !important;
+                left: calc(100% + 10px) !important;
+                transform: translateY(-50%) !important;
+                white-space: nowrap !important;
+              }
+              #dev-bar .item-tooltip::after {
+                left: -5px !important;
+                top: calc(50% - 5px) !important;
+                bottom: auto !important;
+                border-left: none !important;
+                border-top: 5px solid transparent !important;
+                border-bottom: 5px solid transparent !important;
+                border-right: 5px solid #343841 !important;
+              }
+            \`;
+            function injectToolbarCss() {
+              const dt = document.querySelector('astro-dev-toolbar');
+              if (!dt || !dt.shadowRoot) return false;
+              if (dt.shadowRoot.getElementById('__edit-toolbar-layout')) return true;
+              const s = document.createElement('style');
+              s.id = '__edit-toolbar-layout';
+              s.textContent = TOOLBAR_CSS;
+              dt.shadowRoot.append(s);
+              return true;
+            }
+            if (!injectToolbarCss()) {
+              const obs = new MutationObserver(() => { if (injectToolbarCss()) obs.disconnect(); });
+              obs.observe(document.documentElement, { childList: true, subtree: true });
             }
           })();
         `);

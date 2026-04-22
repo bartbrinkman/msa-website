@@ -1,7 +1,3 @@
-// Astro Dev Toolbar App. All real logic lives in `client.mjs` (testable).
-// This file wires the toolbar's `onToggled` to the editor's enable/disable,
-// and injects minimal CSS for the editable state.
-
 import { defineToolbarApp } from 'astro/toolbar';
 import { createEditor } from './client.mjs';
 
@@ -12,9 +8,34 @@ function ensureStyle(doc) {
   const s = doc.createElement('style');
   s.id = STYLE_ID;
   s.textContent = `
-    [data-editable] { outline: 1px dashed rgba(0,24,136,0.4); outline-offset: 2px; cursor: text; }
-    [data-editable]:hover { outline: 2px solid #001888; background: rgba(0,24,136,0.05); }
-    [data-editable][contenteditable="true"] { outline: 2px solid #ffc400; background: rgba(255,196,0,0.08); }
+    [data-editable], [data-editable-anchor] {
+      outline: 1px solid transparent;
+      outline-offset: 2px;
+      cursor: text;
+      transition: outline-color 0.12s ease;
+    }
+    [data-editable]:hover,
+    [data-editable-anchor]:hover { outline: 2px solid #001888; }
+    [data-edit-active] .ProseMirror,
+    [data-edit-active] .ProseMirror:focus {
+      outline: none;
+      display: inline;
+    }
+    [data-edit-active] .ProseMirror > p,
+    [data-edit-active] .ProseMirror > h1,
+    [data-edit-active] .ProseMirror > h2,
+    [data-edit-active] .ProseMirror > h3,
+    [data-edit-active] .ProseMirror > h4,
+    [data-edit-active] .ProseMirror > h5,
+    [data-edit-active] .ProseMirror > h6 {
+      margin: 0;
+      display: inline;
+      font: inherit;
+      color: inherit;
+    }
+    [data-edit-active] .ProseMirror > ul,
+    [data-edit-active] .ProseMirror > ol { margin: 0; }
+    [data-edit-active] .ProseMirror br.ProseMirror-trailingBreak { display: none; }
   `;
   doc.head.append(s);
 }

@@ -8,9 +8,19 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import prettier from 'prettier';
 import { EDITABLE_TAGS, lineColToOffset, rewriteTag, rewriteAnchor, rewriteBlock, readAnchorHref } from './rewrite.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+
+async function formatWithPrettier(absFile) {
+  const raw = await fs.readFile(absFile, 'utf8');
+  const options = await prettier.resolveConfig(absFile) || {};
+  options.filepath = absFile;
+  options.plugins = ['prettier-plugin-astro'];
+  const formatted = await prettier.format(raw, options);
+  if (formatted !== raw) await fs.writeFile(absFile, formatted, 'utf8');
+}
 
 // Common validation + file-read shared by /__edit and /__edit/anchor.
 async function prepareEdit(body, root) {
@@ -71,6 +81,7 @@ function middleware(root) {
           const result = rewriteBlock(prep.src, prep.offset, data.tag, data.newOuter);
           if (!result.ok) return fail(res, 400, result.error);
           await fs.writeFile(prep.absFile, result.out, 'utf8');
+          await formatWithPrettier(prep.absFile);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ ok: true }));
         } catch (err) {
@@ -116,6 +127,7 @@ function middleware(root) {
 
         if (!result.ok) return fail(res, 400, result.error);
         await fs.writeFile(prep.absFile, result.out, 'utf8');
+        await formatWithPrettier(prep.absFile);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: true }));
       } catch (err) {

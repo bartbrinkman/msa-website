@@ -5,7 +5,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lineColToOffset, rewriteTag, parseOpeningTagEnd, findAttributeValueBounds, rewriteAnchor, readAnchorHref, rewriteBlock, cleanTiptapHtml, reshapeOuterForSave, formatBlock, indentBefore } from './rewrite.mjs';
+import { lineColToOffset, rewriteTag, parseOpeningTagEnd, findAttributeValueBounds, rewriteAnchor, readAnchorHref, rewriteBlock, cleanTiptapHtml, reshapeOuterForSave } from './rewrite.mjs';
 
 // --- lineColToOffset ----------------------------------------------------
 
@@ -369,7 +369,7 @@ test('rewriteBlock: <ul> edit can add / remove <li>s (pretty-prints to match .as
   const src = '<ul>\n  <li>One</li>\n  <li>Two</li>\n</ul>';
   const r = rewriteBlock(src, contentOffsetFor(src, 'ul'), 'ul', '<ul><li>One</li><li>Two</li><li>Three</li></ul>');
   assert.ok(r.ok, r.error);
-  assert.equal(r.out, '<ul>\n  <li>One</li>\n  <li>Two</li>\n  <li>Three</li>\n</ul>');
+  assert.equal(r.out, '<ul><li>One</li><li>Two</li><li>Three</li></ul>');
 });
 
 test('rewriteBlock: tag mismatch is rejected', () => {
@@ -390,7 +390,7 @@ test('rewriteBlock: nested <ul> inside <ul> is handled via depth counter', () =>
   const src = '<ul><li>a<ul><li>nested</li></ul></li></ul>';
   const r = rewriteBlock(src, contentOffsetFor(src, 'ul'), 'ul', '<ul><li>flat</li></ul>');
   assert.ok(r.ok, r.error);
-  assert.equal(r.out, '<ul>\n  <li>flat</li>\n</ul>');
+  assert.equal(r.out, '<ul><li>flat</li></ul>');
 });
 
 test('rewriteBlock: newly-added content can include inline markup', () => {
@@ -705,99 +705,3 @@ test('reshapeOuterForSave: does not mistake a span/div prefix for a block', () =
   );
 });
 
-// --- formatBlock --------------------------------------------------------
-//
-// Tiptap emits flat HTML. The .astro source in this repo puts each block
-// child on its own line, indented one step past its parent. The save path
-// pretty-prints to match that convention.
-
-test('formatBlock: inline-only <p> stays on one line', () => {
-  assert.equal(formatBlock('<p>hello</p>'), '<p>hello</p>');
-});
-
-test('formatBlock: <p> with inline markup stays on one line', () => {
-  assert.equal(
-    formatBlock('<p>foo <strong>bold</strong> bar</p>'),
-    '<p>foo <strong>bold</strong> bar</p>'
-  );
-});
-
-test('formatBlock: heading stays on one line', () => {
-  assert.equal(formatBlock('<h2>Title</h2>'), '<h2>Title</h2>');
-});
-
-test('formatBlock: <ul> breaks each <li> onto its own line', () => {
-  assert.equal(
-    formatBlock('<ul><li>a</li><li>b</li></ul>'),
-    '<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>'
-  );
-});
-
-test('formatBlock: <ol> breaks each <li> onto its own line', () => {
-  assert.equal(
-    formatBlock('<ol><li>first</li><li>second</li></ol>'),
-    '<ol>\n  <li>first</li>\n  <li>second</li>\n</ol>'
-  );
-});
-
-test('formatBlock: <li> inline content stays on the <li> line', () => {
-  // Regression guard: inline content inside a leaf <li> must NOT get split.
-  assert.equal(
-    formatBlock('<ul><li>text with <a href="/x">link</a> and <strong>bold</strong></li></ul>'),
-    '<ul>\n  <li>text with <a href="/x">link</a> and <strong>bold</strong></li>\n</ul>'
-  );
-});
-
-test('formatBlock: list indent composes with outer indent', () => {
-  assert.equal(
-    formatBlock('<ul><li>a</li></ul>', '    '),
-    '<ul>\n      <li>a</li>\n    </ul>'
-  );
-});
-
-test('formatBlock: non-block outer returns input unchanged', () => {
-  // Safety: we only pretty-print our known editable blocks. Anything else
-  // (e.g. a <div> wrapper we don't own) passes through.
-  assert.equal(formatBlock('<div>x</div>'), '<div>x</div>');
-});
-
-test('formatBlock: malformed HTML returns input unchanged', () => {
-  // If parsing fails, don't risk corrupting the save — leave it to rewriteBlock
-  // to reject further downstream.
-  assert.equal(formatBlock('<p>unclosed'), '<p>unclosed');
-});
-
-test('rewriteBlock: formats using the source indent of the element', () => {
-  // The <ul> is indented 4 spaces in the source; children should land at 6.
-  const src = 'prefix\n    <ul>\n      <li>One</li>\n    </ul>\nsuffix';
-  const offset = src.indexOf('<ul>') + '<ul>'.length;
-  const r = rewriteBlock(src, offset, 'ul', '<ul><li>One</li><li>Two</li></ul>');
-  assert.ok(r.ok, r.error);
-  assert.equal(r.out, 'prefix\n    <ul>\n      <li>One</li>\n      <li>Two</li>\n    </ul>\nsuffix');
-});
-
-test('rewriteBlock: <p> with inline markup is NOT split across lines', () => {
-  const src = '  <p>Old</p>';
-  const offset = src.indexOf('<p>') + '<p>'.length;
-  const r = rewriteBlock(src, offset, 'p', '<p>With <strong>bold</strong> text</p>');
-  assert.ok(r.ok, r.error);
-  assert.equal(r.out, '  <p>With <strong>bold</strong> text</p>');
-});
-
-// --- indentBefore -------------------------------------------------------
-
-test('indentBefore: returns the whitespace prefix of the line', () => {
-  const src = 'line one\n    <p>hi</p>';
-  assert.equal(indentBefore(src, src.indexOf('<p>')), '    ');
-});
-
-test('indentBefore: element at start of file has no indent', () => {
-  assert.equal(indentBefore('<p>x</p>', 0), '');
-});
-
-test('indentBefore: returns empty when other non-whitespace precedes on same line', () => {
-  // If the <p> shares a line with other content, we can't safely assume its
-  // "indent" — return '' so formatBlock collapses to single-line output.
-  const src = 'text before <p>hi</p>';
-  assert.equal(indentBefore(src, src.indexOf('<p>')), '');
-});

@@ -36,7 +36,7 @@ To deploy manually: Actions tab > "Deploy to GitHub Pages" > Run workflow.
 
 ### Pages
 
-All pages live in `src/pages/`. Most are `.astro` files with inline HTML content. Edit the text directly.
+All pages live in `src/pages/`. Most are `.astro` files with inline HTML content. Use the Astro dev tool or edit the text directly.
 
 ### Banen (layouts)
 

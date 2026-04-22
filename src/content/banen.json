@@ -7,16 +7,16 @@
     "category": "vast"
   },
   {
-    "title": "Marklinbaan",
-    "href": "/banen/marklinbaan",
-    "scale": "H0 (1:87), Marklin 3-rail AC",
+    "title": "Märklinbaan",
+    "href": "/banen/märklinbaan",
+    "scale": "H0 (1:87), 3-rail AC",
     "description": "Fictieve baan met bergen, tunnels, rijdende auto's en bewegende figuren. Besturing via iTrain met 15+ locomotieven.",
     "category": "vast"
   },
   {
     "title": "Hoogovenbaan",
     "href": "/banen/hoogovenbaan",
-    "scale": "H0 (1:87), Marklin 3-rail AC",
+    "scale": "H0 (1:87), 3-rail AC",
     "description": "Indrukwekkend industriecomplex met hoogovens, cokesfabriek en oxystaalfabriek. Rook-, licht- en geluidseffecten.",
     "category": "vast"
   },
@@ -52,7 +52,7 @@
   {
     "title": "Kinderbaan",
     "href": "/banen/kinderbaan",
-    "scale": "H0 (1:87), Marklin 3-rail AC",
+    "scale": "H0 (1:87), 3-rail AC",
     "description": "Educatieve baan voor kinderen vanaf 5-6 jaar. Treinen besturen en een Machinistendiploma verdienen!",
     "category": "educatie"
   }

@@ -21,7 +21,7 @@ A complete rebuild of the [Modelspoorclub Alkmaar](https://www.modelspoorclubalk
 /de-club                  Club history, 40-year anniversary, Darmstadt sister city
 /banen/                   Overview split into Vaste banen / Modulebanen / Educatie
   alkmaarbaan             H0, iTrain, with carousel (17 photos)
-  marklinbaan             Marklin 3-rail AC, iTrain, with carousel
+  märklinbaan             3-rail AC, iTrain, with carousel
   hoogovenbaan            Steel industry theme, with carousel
   nbaan                   N-schaal Eifel, with carousel
   modulebaan              45m Hoorn-Medemblik + 3 sub-modules
@@ -79,8 +79,8 @@ When pointing `modelspoorclubalkmaar.nl` at GitHub Pages:
 From the shared ALV notulen + jaaragenda 2026:
 
 - **Board**: Mario Jonkhart, Hans Cornelissen, Cees Maulus, Remco Jansen, Maurits Kortenoeven
-- **Hoogovenbaan**: now disconnected from Marklinbaan
-- **Marklinbaan**: 15+ locs on iTrain, kabelbaan added
+- **Hoogovenbaan**: now disconnected from Märklinbaan
+- **Märklinbaan**: 15+ locs on iTrain, kabelbaan added
 - **Bergen–Bergen aan Zee**: major renovation with new modules + digitalisering
 - **N-modulebaan**: new project starting January 2026
 - **Events 2026**: Darmstadt 14-17 mei, Bello Festival Hoorn, Open Monumentendag 12 sep (Grote Kerk), Open Dag MSA 25 okt, Ruilbeurs 8 nov (OSG Willem Blaeu)

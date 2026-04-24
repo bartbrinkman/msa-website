@@ -19,7 +19,7 @@ A complete rebuild of the [Modelspoorclub Alkmaar](https://www.modelspoorclubalk
 ```
 /                         Home (hero with bg image, info cards, layout grid)
 /de-club                  Club history, 40-year anniversary, Darmstadt sister city
-/banen/                   Overview split into Vaste banen / Modulebanen / Educatie
+/banen/                   Overview split into Vaste banen / Modulebanen
   alkmaarbaan             H0, iTrain, with carousel (17 photos)
   märklinbaan             3-rail AC, iTrain, with carousel
   hoogovenbaan            Steel industry theme, with carousel
@@ -27,12 +27,10 @@ A complete rebuild of the [Modelspoorclub Alkmaar](https://www.modelspoorclubalk
   modulebaan              45m Hoorn-Medemblik + 3 sub-modules
   bergen                  Bergen-Bergen aan Zee (in renovation)
   n-modulebaan            New N-scale module (in development)
-  kinderbaan              Educational children's layout
 /activiteiten/            Activity overview
   clubavonden             Thursday evenings
   modelspoordagen         NMD exhibition (with carousel)
   darmstadt               Annual museum trip (with carousel)
-  kinderbaan              Children's educational activities
 /agenda                   Calendar of upcoming events
 /links                    Partner clubs, sponsors, model brands
 /contact                  Address, hours, board, email

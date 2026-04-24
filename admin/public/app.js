@@ -538,7 +538,6 @@ function selectField(label, row, key, options, ed) {
 const BANEN_CATEGORIES = [
   { value: 'vast', label: 'vast' },
   { value: 'module', label: 'module' },
-  { value: 'educatie', label: 'educatie' },
 ];
 
 const banenEditor = createRowEditor({

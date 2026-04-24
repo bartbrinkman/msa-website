@@ -89,3 +89,5 @@ src/
 public/
   images/           # All images, organized by section
 ```
+
+## TODO

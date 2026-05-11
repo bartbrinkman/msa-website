@@ -93,8 +93,12 @@ const upcomingEvents = events
               type === 'beurs' ? 'bg-violet-100 text-violet-800' :
               type === 'clubavond' ? 'bg-primary/20 text-primary' :
               'bg-gray-100 text-gray-600';
+            const Tag = event.link ? 'a' : 'div';
+            const linkProps = event.link
+              ? { href: asset(event.link), class: 'group bg-white border border-gray-200 hover:border-primary/30 hover:shadow-lg transition-all rounded-lg p-6 flex gap-4' }
+              : { class: 'bg-white border border-gray-200 rounded-lg p-6 flex gap-4' };
             return (
-              <div class="bg-white border border-gray-200 hover:border-primary/30 transition-all rounded-lg p-6 flex gap-4">
+              <Tag {...linkProps}>
                 <div class="text-center min-w-[3.5rem]">
                   {endD && endD.getTime() !== startD.getTime() ? (
                     <>
@@ -110,11 +114,7 @@ const upcomingEvents = events
                 </div>
                 <div class="flex-1 min-w-0">
                   <span class={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${badgeClass}`}>{typeLabels[type]}</span>
-                  {event.link ? (
-                    <a href={asset(event.link!)} class="block font-semibold text-primary hover:underline">{event.title}</a>
-                  ) : (
-                    <div class="font-semibold text-primary">{event.title}</div>
-                  )}
+                  <div class="font-semibold text-primary group-hover:text-primary-light transition-colors">{event.title}</div>
                   {event.description && <p class="text-sm text-gray-600 mt-1">{event.description}</p>}
                   {(event.startTime || event.endTime || event.location) && (
                     <div class="text-xs text-gray-500 mt-2 flex flex-wrap gap-x-3">
@@ -133,7 +133,7 @@ const upcomingEvents = events
                     </div>
                   )}
                 </div>
-              </div>
+              </Tag>
             );
           })}
         </div>

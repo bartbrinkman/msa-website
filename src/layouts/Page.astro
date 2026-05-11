@@ -7,9 +7,12 @@ interface Props {
   description?: string;
   hero?: string;
   heroImage?: string;
+  frequency?: 'Wekelijks' | 'Maandelijks' | 'Jaarlijks';
+  when?: string;
+  where?: string;
 }
 
-const { title, description, hero, heroImage } = Astro.props;
+const { title, description, hero, heroImage, frequency, when, where } = Astro.props;
 ---
 
 <Base title={title} description={description}>
@@ -22,7 +25,28 @@ const { title, description, hero, heroImage } = Astro.props;
       )}
       <div class="relative text-white py-12">
         <div class="max-w-4xl mx-auto px-4">
+          {frequency && (
+            <span class="inline-block text-xs bg-white/15 text-white px-2 py-0.5 rounded font-medium mb-3">
+              {frequency}
+            </span>
+          )}
           <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">{hero}</h1>
+          {(when || where) && (
+            <dl class="mt-4 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm text-white/90">
+              {when && (
+                <>
+                  <dt class="font-semibold">Wanneer</dt>
+                  <dd>{when}</dd>
+                </>
+              )}
+              {where && (
+                <>
+                  <dt class="font-semibold">Waar</dt>
+                  <dd>{where}</dd>
+                </>
+              )}
+            </dl>
+          )}
         </div>
       </div>
     </div>

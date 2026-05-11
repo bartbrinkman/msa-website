@@ -1,0 +1,24 @@
+---
+import Page from '../../layouts/Page.astro';
+import { asset } from '../../utils';
+---
+
+<Page
+  title="Open Dag Huider"
+  hero="Open Dag Huider"
+  frequency="Maandelijks"
+  when="Tweede zaterdag van de maand (behalve juli en augustus)"
+  where="M. de Klerkweg 10, Heerhugowaard"
+>
+  <p>
+    Op deze open zaterdagen zijn wij met een van onze modulebanen te gast
+    bij Huider in Heerhugowaard. Een mooie gelegenheid om de baan in
+    bedrijf te zien en met onze leden in gesprek te gaan.
+  </p>
+
+  <p>
+    Kijk voor het volledige programma op
+    <a href="https://www.huider.nl/agenda/" target="_blank" rel="noopener">huider.nl/agenda</a>,
+    of bekijk onze eigen <a href={asset("/agenda")}>agenda</a>.
+  </p>
+</Page>

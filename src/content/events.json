@@ -22,7 +22,8 @@
     "title": "Open Monumentendag",
     "description": "De MSA exposeert in de Grote Kerk van Alkmaar",
     "location": "Grote Kerk, Alkmaar",
-    "type": "opendag"
+    "type": "opendag",
+    "link": "/activiteiten/open-monumentendag"
   },
   {
     "date": "2026-10-25",

@@ -3,7 +3,7 @@ import Page from '../layouts/Page.astro';
 import { asset } from '../utils';
 ---
 
-<Page title="Links & Sponsors" hero="Links & Sponsors">
+<Page title="Links" hero="Links">
   <h2>Bevriende clubs & organisaties</h2>
   <ul>
     <li>
@@ -17,8 +17,10 @@ import { asset } from '../utils';
     </li><li>
       <a target="_blank" rel="noopener" href="https://www.hetwaeghspoor.nl"
         >Het Waeghspoor
-      </a>: Alkmaarse modulegroep, opgericht in 1985. Wij organiseren samen open
-      dagen.
+      </a>: Alkmaarse modulegroep, opgericht in 1985. Wij organiseren samen
+      evenementen zoals de <a href={asset("/activiteiten/ruilbeurs")}>ruilbeurs</a>
+      en de <a href={asset("/activiteiten/modelspoordagen")}>Noord-Hollandse
+      Modelspoordagen</a>.
     </li><li>
       <a target="_blank" rel="noopener" href="https://www.bahnwelt.de"
         >Eisenbahnmuseum Darmstadt
@@ -26,39 +28,4 @@ import { asset } from '../utils';
     </li>
   </ul>
 
-  <h2>Sponsors</h2>
-  <p>
-    Deze sponsors houden de MSA op de rails. Zonder hun steun zouden wij niet
-    kunnen doen wat wij doen.
-  </p>
-  <p>
-    <em
-      >Bent u geïnteresseerd in sponsoring van de MSA? Neem dan
-      <a href={asset('/contact')}>contact</a> met ons op.</em
-    >
-  </p>
-
-  <h2>Modelspoormerken</h2>
-  <p>Bij de MSA werken wij met diverse merken en schalen:</p>
-
-  <h3>H0-schaal (1:87)</h3>
-  <p>
-    De meest populaire schaal in Europa. Merken die wij gebruiken: Märklin,
-    Fleischmann, Roco, Piko, Lima, Trix, Rivarossi en Mehano.
-  </p>
-
-  <h3>N-schaal (1:160)</h3>
-  <p>
-    De kleinere schaal, ideaal voor beperkte ruimte maar met verrassend veel
-    detail. Merken: Fleischmann, Minitrix, KleiNSpoor en Artitec.
-  </p>
-
-  <h3>Systemen</h3>
-  <ul>
-    <li>
-      <strong>3-rail AC</strong>: gebruikt op de Märklinbaan en Hoogovenbaan
-    </li>
-    <li><strong>2-rail DC</strong>: gebruikt op de Alkmaarbaan en N-baan</li>
-    <li><strong>Digitaal</strong>: iTrain besturingssoftware</li>
-  </ul>
 </Page>

@@ -1,5 +1,6 @@
 ---
 import Base from './Base.astro';
+import BrochureStand from '../components/BrochureStand.astro';
 import EventCard from '../components/EventCard.astro';
 import events from '../content/events.json';
 import { asset, upcomingEvents, eventWhen } from '../utils';
@@ -78,30 +79,12 @@ const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
           )}
           </div>
 
-          {brochure && (
-            <figure class="standee">
-              <button type="button" class="standee__paper" data-brochure={asset(brochure)} aria-label="Vergroot de poster">
-                <img src={asset(brochure)} alt={brochureAlt ?? `Poster ${hero}`} loading="lazy" decoding="async" />
-                <span class="standee__zoom" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="7" />
-                    <path stroke-linecap="round" d="M20 20l-3.5-3.5M11 8v6M8 11h6" />
-                  </svg>
-                </span>
-              </button>
-            </figure>
-          )}
+          {brochure && <BrochureStand items={[{ src: brochure, alt: brochureAlt ?? `Poster ${hero}` }]} />}
         </div>
       </div>
     </div>
   )}
 
-  {brochure && (
-    <div class="lightbox" hidden>
-      <button type="button" class="lightbox__close" aria-label="Sluiten">&times;</button>
-      <img class="lightbox__img" src="" alt="" />
-    </div>
-  )}
   <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="prose">
       <slot />
@@ -116,21 +99,3 @@ const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
   </div>
 </Base>
 
-
-<script>
-  const opener = document.querySelector('.standee__paper') as HTMLButtonElement | null;
-  const box = document.querySelector('.lightbox') as HTMLElement | null;
-  if (opener && box) {
-    const img = box.querySelector('.lightbox__img') as HTMLImageElement;
-    const close = () => { box.hidden = true; document.body.style.overflow = ''; opener.focus(); };
-    opener.addEventListener('click', () => {
-      img.src = opener.dataset.brochure || '';
-      img.alt = (opener.querySelector('img') as HTMLImageElement)?.alt || '';
-      box.hidden = false;
-      document.body.style.overflow = 'hidden';
-      (box.querySelector('.lightbox__close') as HTMLButtonElement).focus();
-    });
-    box.addEventListener('click', (e) => { if (e.target !== img) close(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !box.hidden) close(); });
-  }
-</script>

@@ -5,8 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# One deploy at a time: two overlapping FTP uploads would fight over the
-# sync-state file the action keeps on the server.
+# One deploy at a time: two overlapping uploads would interleave writes.
 concurrency:
   group: ftp-deploy
   cancel-in-progress: false
@@ -27,24 +26,46 @@ jobs:
 
       - run: npm ci
 
-      - name: Build for the staging subfolder
+      - name: Build for the site root
         run: npm run build
         env:
           SITE_URL: https://www.modelspoorclubalkmaar.nl
-          BASE_PATH: /nieuw
+          BASE_PATH: /
 
+      # Uploads only; nothing on the server is ever removed. lftp's `mirror`
+      # deletes only when passed --delete, which is deliberately absent here, so
+      # anything already on the host (the old PHP site included) is left alone
+      # and files are overwritten in place.
+      #
+      # Two passes, because Astro rewrites every file on every build and so
+      # every local mtime is newer than the server's:
+      #   1. --ignore-time compares by size instead, so the 74MB of images and
+      #      content-hashed assets only move when they actually change.
+      #   2. the HTML is small and its size can stay identical across a real
+      #      edit ("8 november" -> "9 november"), so it is pushed unconditionally
+      #      with --ignore-size.
       - name: Upload over FTPS
-        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps
-          port: 21
-          # The first attempt at this deploy died on a control-socket timeout at
-          # exactly the 30s default; the identical retry went through. Give the
-          # handshake more room rather than lowering `security` from its strict
-          # default, which verifies the certificate chain.
-          timeout: 60000
-          local-dir: ./dist/
-          server-dir: /httpdocs/nieuw/
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp
+
+          # HTML-only copy of the tree for the forced second pass
+          rsync -a --include='*/' --include='*.html' --exclude='*' --prune-empty-dirs dist/ html-only/
+
+          lftp -c "
+            set cmd:fail-exit true;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate no;
+            set net:max-retries 3;
+            set net:timeout 30;
+            open -u \"\$FTP_USERNAME\",\"\$FTP_PASSWORD\" \"\$FTP_SERVER\";
+            mirror --reverse --ignore-time --parallel=4 --verbose dist/ /httpdocs/;
+            mirror --reverse --ignore-time --ignore-size --parallel=2 --verbose html-only/ /httpdocs/;
+          "
+
+          echo "Upload finished. No --delete was passed, so nothing was removed."

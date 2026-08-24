@@ -1,13 +1,23 @@
 ---
 import Base from '../../layouts/Base.astro';
+import BrochureStand from '../../components/BrochureStand.astro';
 import { asset } from '../../utils';
 ---
 
 <Base title="Activiteiten">
-  <div class="bg-gradient-to-r from-primary-dark to-primary text-white py-12">
-    <div class="max-w-4xl mx-auto px-4">
-      <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">Activiteiten</h1>
-      <p class="mt-3 text-white/80">Wat wij doen: wekelijks, jaarlijks en alles daartussenin.</p>
+  <div class="relative overflow-x-clip bg-gradient-to-r from-primary-dark to-primary text-white py-12">
+    <div class="relative max-w-4xl mx-auto px-4 flex flex-col gap-8 md:block">
+      <div class="min-w-0 flex-1">
+        <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">Activiteiten</h1>
+        <p class="mt-3 text-white/80">Wat wij doen: wekelijks, jaarlijks en alles daartussenin.</p>
+      </div>
+      <BrochureStand
+        float
+        items={[
+          { src: '/images/brochure/modelspoor-ruilbeurs-2026.jpg', alt: 'Poster van de Modelspoor Ruilbeurs' },
+          { src: '/images/brochure/nmd-dagen-2027.jpg', alt: 'Poster van de Noord-Hollandse Modelspoordagen' },
+        ]}
+      />
     </div>
   </div>
 

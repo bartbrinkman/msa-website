@@ -33,7 +33,7 @@ Push to `main` — GitHub Actions builds and deploys to **two** targets automati
 | Workflow | Target | Base path |
 | --- | --- | --- |
 | `deploy.yml` | GitHub Pages — <https://bartbrinkman.github.io/msa-website/> | `/msa-website` |
-| `deploy-ftp.yml` | The club host — <https://www.modelspoorclubalkmaar.nl/nieuw/> | `/nieuw` |
+| `deploy-ftp.yml` | The live site — <https://www.modelspoorclubalkmaar.nl/> | `/` |
 
 To deploy manually: Actions tab > pick the workflow > Run workflow.
 
@@ -54,12 +54,25 @@ these to the repo:
 Rotate them with `gh secret set FTP_PASSWORD` or under Settings > Secrets and
 variables > Actions.
 
-### Going live on the root domain
+### The upload never deletes
 
-The new site currently publishes to the `/nieuw/` subfolder so the old PHP site
-keeps serving the root. To switch over, set `BASE_PATH` to `/` and `server-dir`
-to `/httpdocs/` in `deploy-ftp.yml`, then remove the old `.php` files from the
-host.
+The upload runs `lftp mirror` **without** `--delete`, so a deploy only ever adds
+or overwrites. Nothing on the host is removed — including the old PHP site,
+which still sits in `/httpdocs/` alongside the generated pages. Removing those
+leftovers is a manual job, done deliberately rather than by a deploy.
+
+It uploads in two passes, because Astro rewrites every file on every build and
+so every local timestamp is newer than the server's:
+
+1. `--ignore-time` compares by size instead, so the ~74MB of images and
+   content-hashed assets only move when they actually change.
+2. The HTML is small (~330KB) and its size can stay identical across a real edit
+   (`8 november` → `9 november`), so it is pushed unconditionally with
+   `--ignore-size`.
+
+The host serves a shared-hosting certificate (`CN=ns1.supersnel2.net`) that does
+not match the domain, so certificate verification is off. The transfer is still
+TLS-encrypted; only the identity check is relaxed.
 
 ## Content maintenance
 

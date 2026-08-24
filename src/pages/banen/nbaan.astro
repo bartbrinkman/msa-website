@@ -2,11 +2,14 @@
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import carousels from '../../content/carousels.json';
+import banen from '../../content/banen.json';
 
 const images = carousels.nbaan;
+
+const baan = banen.find(b => b.href === '/banen/nbaan')!;
 ---
 
-<Page title="N-baan" hero="N-baan" heroImage="/images/nbaan/N_2station.jpg">
+<Page backHref="/banen" backLabel="Alle banen" title="N-baan" hero="N-baan" heroImage={baan.image}>
   <p><strong>Schaal:</strong> N (1:160) | <strong>Systeem:</strong> 2-rail DC, 9mm | <strong>Afmetingen:</strong> ca. 1,70 x 6,00 meter</p>
 
   <h2>Het verhaal</h2>

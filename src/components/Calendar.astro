@@ -15,16 +15,17 @@ interface Props {
   events: Event[];
 }
 
+import DateBlock from './DateBlock.astro';
 import { asset } from '../utils';
 const { events } = Astro.props;
 
 const typeColors: Record<string, string> = {
-  clubavond: 'bg-primary/10 border-primary/30 text-primary',
-  expositie: 'bg-emerald-50 border-emerald-200 text-emerald-800',
-  excursie: 'bg-amber-50 border-amber-200 text-amber-800',
-  opendag: 'bg-sky-50 border-sky-200 text-sky-800',
-  beurs: 'bg-violet-50 border-violet-200 text-violet-800',
-  overig: 'bg-gray-50 border-gray-200 text-gray-700',
+  clubavond: 'bg-primary/15 border-primary/40 text-primary',
+  expositie: 'bg-emerald-100 border-emerald-300 text-emerald-900',
+  excursie: 'bg-amber-100 border-amber-300 text-amber-900',
+  opendag: 'bg-sky-100 border-sky-300 text-sky-900',
+  beurs: 'bg-violet-100 border-violet-300 text-violet-900',
+  overig: 'bg-gray-100 border-gray-300 text-gray-800',
 };
 
 const typeLabels: Record<string, string> = {
@@ -51,6 +52,9 @@ const upcomingEvents = events
   .filter(e => new Date(e.endDate || e.date) >= now)
   .sort((a, b) => a.date.localeCompare(b.date));
 
+// Sorted soonest-first, so the head of the list is the next event.
+const nextEvent = upcomingEvents[0];
+
 const grouped: Record<string, Event[]> = {};
 for (const event of upcomingEvents) {
   const d = new Date(event.date);
@@ -73,23 +77,17 @@ for (const event of upcomingEvents) {
             const endD = event.endDate ? new Date(event.endDate) : null;
             const type = event.type || 'overig';
             const colors = typeColors[type] || typeColors.overig;
+            const isNext = event === nextEvent;
             return (
-              <div class={`border rounded-lg p-4 ${colors}`}>
+              <div class={`border rounded-lg p-4 ${colors} ${isNext ? 'ring-1 ring-primary/25 shadow-sm' : ''}`}>
                 <div class="flex items-start gap-4">
-                  <div class="text-center min-w-[3rem]">
-                    {endD && endD.getTime() !== startD.getTime() ? (
-                      <>
-                        <div class="text-2xl font-bold">{startD.getDate()}–{endD.getDate()}</div>
-                        <div class="text-xs capitalize">{days[startD.getDay()]}–{days[endD.getDay()]}</div>
-                      </>
-                    ) : (
-                      <>
-                        <div class="text-2xl font-bold">{startD.getDate()}</div>
-                        <div class="text-xs capitalize">{days[startD.getDay()]}</div>
-                      </>
-                    )}
-                  </div>
+                  <DateBlock date={event.date} endDate={event.endDate} header="weekday" />
                   <div class="flex-1 min-w-0">
+                    {isNext && (
+                      <span class="inline-block mb-1.5 px-2 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary">
+                        Eerstvolgende
+                      </span>
+                    )}
                     {event.link ? (
                       <a href={asset(event.link!)} class="font-semibold underline underline-offset-2 hover:opacity-70">{event.title}</a>
                     ) : (

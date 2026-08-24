@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
-import { asset } from '../utils';
+import { asset, upcomingEvents, eventDateLabel, typeLabels } from '../utils';
+import events from '../content/events.json';
 
 interface Props {
   title: string;
@@ -9,6 +10,13 @@ interface Props {
 
 const { title, description = 'Modelspoorclub Alkmaar — Sinds 1984 bouwen wij met passie aan modelspoorbanen in diverse schalen.' } = Astro.props;
 const currentPath = Astro.url.pathname;
+
+// Streamlined version of the agenda card, pinned to the header on every page.
+const nextEvent = upcomingEvents(events, 1)[0];
+const NextTag = nextEvent?.link ? 'a' : 'div';
+const nextProps = nextEvent?.link
+  ? { href: asset(nextEvent.link), class: 'group flex items-center gap-3 py-3 md:py-4 hover:text-white' }
+  : { class: 'flex items-center gap-3 py-3 md:py-4' };
 
 const nav = [
   { href: asset('/'), label: 'Home' },
@@ -93,6 +101,29 @@ const nav = [
           ))}
         </div>
       </nav>
+
+      <!-- Next upcoming event -->
+      {nextEvent && (
+        <div class="bg-primary-dark/60 border-t border-white/10 text-white/80">
+          <div class="max-w-6xl mx-auto px-4">
+            <NextTag {...nextProps}>
+              <span class="shrink-0 rounded-full bg-white/15 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide">
+                {typeLabels[nextEvent.type ?? 'overig']}
+              </span>
+              <span class="shrink-0 text-lg md:text-xl font-bold text-msa-yellow">{eventDateLabel(nextEvent)}</span>
+              <span class="truncate text-base md:text-lg font-semibold text-white">{nextEvent.title}</span>
+              {nextEvent.location && (
+                <span class="hidden sm:inline truncate text-sm text-white/60">· {nextEvent.location}</span>
+              )}
+              {nextEvent.link && (
+                <span class="ml-auto shrink-0 rounded-md bg-white/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white transition-colors duration-200 delay-0 group-hover:bg-msa-yellow group-hover:text-primary-dark group-hover:delay-300">
+                  Bekijk
+                </span>
+              )}
+            </NextTag>
+          </div>
+        </div>
+      )}
     </header>
 
     <!-- Main content -->

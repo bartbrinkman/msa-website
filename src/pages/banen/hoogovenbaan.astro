@@ -2,12 +2,15 @@
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import carousels from '../../content/carousels.json';
+import banen from '../../content/banen.json';
 
 const images = carousels.hoogovenbaan;
 const prototypeImages = carousels['hoogovenbaan-prototype'];
+
+const baan = banen.find(b => b.href === '/banen/hoogovenbaan')!;
 ---
 
-<Page title="Hoogovenbaan" hero="Hoogovenbaan" heroImage="/images/hoogovenbaan/hoogoven_2overzicht.jpg">
+<Page backHref="/banen" backLabel="Alle banen" title="Hoogovenbaan" hero="Hoogovenbaan" heroImage={baan.image}>
   <p><strong>Schaal:</strong> H0 (1:87) | <strong>Systeem:</strong> 3-rail AC</p>
 
   <h2>Het verhaal</h2>

@@ -5,23 +5,83 @@ interface Props {
   scale: string;
   description: string;
   status?: string;
+  image?: string;
+  /** Card sits on a dark panel (the homepage "Onze banen" section). */
+  dark?: boolean;
 }
 
 import { asset } from '../utils';
-const { title, href, scale, description, status } = Astro.props;
+const { title, href, scale, description, status, image, dark = false } = Astro.props;
 ---
 
-<a href={asset(href)} class="group block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all">
+<a
+  href={asset(href)}
+  class:list={[
+    'group block rounded-lg overflow-hidden border transition-all',
+    dark
+      ? 'bg-white/5 border-white/15 hover:bg-white/10 hover:border-white/35'
+      : 'bg-white border-gray-200 hover:border-primary/30 hover:shadow-lg',
+  ]}
+>
+  {image ? (
+    <div class="relative aspect-[16/10] overflow-hidden">
+      <img
+        src={asset(image)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      />
+      <span
+        class:list={[
+          'absolute top-2 right-2 rounded px-2 py-1 text-xs font-medium backdrop-blur-sm',
+          dark ? 'bg-primary-dark/80 text-white' : 'bg-white/85 text-primary',
+        ]}
+      >{scale}</span>
+    </div>
+  ) : (
+    <div
+      class:list={[
+        'flex aspect-[16/10] items-center justify-center',
+        dark ? 'bg-white/5 text-white/35' : 'bg-warm text-primary/35',
+      ]}
+    >
+      <span class="text-xs uppercase tracking-widest">Nog geen foto</span>
+    </div>
+  )}
+
   <div class="p-6">
-    <div class="flex items-start justify-between mb-2">
-      <h3 class="text-lg font-semibold text-primary group-hover:text-primary-light transition-colors">{title}</h3>
-      <span class="text-xs bg-warm px-2 py-1 rounded font-medium text-primary">{scale}</span>
+    <div class="flex items-start justify-between gap-2 mb-2">
+      <h3
+        class:list={[
+          'text-lg font-semibold transition-colors',
+          dark ? 'text-white group-hover:text-msa-yellow' : 'text-primary group-hover:text-primary-light',
+        ]}
+      >{title}</h3>
+      {!image && (
+        <span
+          class:list={[
+            'shrink-0 text-xs px-2 py-1 rounded font-medium',
+            dark ? 'bg-white/10 text-white/80' : 'bg-warm text-primary',
+          ]}
+        >{scale}</span>
+      )}
     </div>
     {status && (
-      <span class="inline-block text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded mb-2">{status}</span>
+      <span
+        class:list={[
+          'inline-block text-xs px-2 py-0.5 rounded mb-2',
+          dark ? 'bg-amber-400/20 text-amber-200' : 'bg-amber-100 text-amber-800',
+        ]}
+      >{status}</span>
     )}
-    <p class="text-gray-600 text-sm">{description}</p>
-    <div class="mt-4 text-sm text-primary-light font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+    <p class:list={['text-sm', dark ? 'text-white/70' : 'text-gray-600']}>{description}</p>
+    <div
+      class:list={[
+        'mt-4 text-sm font-medium inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform',
+        dark ? 'text-msa-yellow' : 'text-primary-light',
+      ]}
+    >
       Meer lezen &rarr;
     </div>
   </div>

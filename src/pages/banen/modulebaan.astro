@@ -1,9 +1,12 @@
 ---
 import Page from '../../layouts/Page.astro';
 import { asset } from '../../utils';
+import banen from '../../content/banen.json';
+
+const baan = banen.find(b => b.href === '/banen/modulebaan')!;
 ---
 
-<Page title="Modulebaan" hero="Modulebaan">
+<Page backHref="/banen" backLabel="Alle banen" title="Modulebaan" hero="Modulebaan" heroImage={baan.image}>
   <p><strong>Schaal:</strong> H0 (1:87) | <strong>Lengte:</strong> ca. 45 meter</p>
 
   <h2>Het verhaal</h2>

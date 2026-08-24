@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # admin tool staging folder (not for publish)
 public/images/pending/
+
+# full-resolution hero sources (kept out of the build and the repo)
+originals/

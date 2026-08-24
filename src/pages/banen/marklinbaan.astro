@@ -2,11 +2,14 @@
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import carousels from '../../content/carousels.json';
+import banen from '../../content/banen.json';
 
 const images = carousels.märklinbaan;
+
+const baan = banen.find(b => b.href === '/banen/märklinbaan')!;
 ---
 
-<Page title="Märklinbaan" hero="Märklinbaan" heroImage="/images/märklinbaan/märklin_1station.jpg">
+<Page backHref="/banen" backLabel="Alle banen" title="Märklinbaan" hero="Märklinbaan" heroImage={baan.image}>
   <p><strong>Schaal:</strong> H0 (1:87) | <strong>Systeem:</strong> 3-rail AC | <strong>Besturing:</strong> iTrain</p>
 
   <h2>Het verhaal</h2>

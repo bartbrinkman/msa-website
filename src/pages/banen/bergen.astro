@@ -3,11 +3,14 @@ import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
+import banen from '../../content/banen.json';
 
 const verbouwingImages = carousels['bergenbaan-verbouwing'];
+
+const baan = banen.find(b => b.href === '/banen/bergen')!;
 ---
 
-<Page title="Bergen – Bergen aan Zee" hero="Bergen – Bergen aan Zee">
+<Page backHref="/banen" backLabel="Alle banen" title="Bergen – Bergen aan Zee" hero="Bergen – Bergen aan Zee" heroImage={baan.image}>
   <p><strong>Schaal:</strong> H0 (1:87) | <strong>Type:</strong> Modulebaan</p>
 
   <h2>Het verhaal</h2>

@@ -2,12 +2,15 @@
 import Page from '../../layouts/Page.astro';
 import Carousel from '../../components/Carousel.astro';
 import carousels from '../../content/carousels.json';
+import banen from '../../content/banen.json';
 
 const images = carousels.alkmaarbaan;
 const verbouwingImages = carousels['alkmaarbaan-verbouwing'];
+
+const baan = banen.find(b => b.href === '/banen/alkmaarbaan')!;
 ---
 
-<Page title="Alkmaarbaan" hero="Alkmaarbaan" heroImage="/images/alkmaarbaan/Alkmaar-Kanaal.jpg">
+<Page backHref="/banen" backLabel="Alle banen" title="Alkmaarbaan" hero="Alkmaarbaan" heroImage={baan.image}>
   <p><strong>Schaal:</strong> H0 (1:87) | <strong>Systeem:</strong> 2-rail DC | <strong>Besturing:</strong> iTrain</p>
 
   <h2>Het verhaal</h2>

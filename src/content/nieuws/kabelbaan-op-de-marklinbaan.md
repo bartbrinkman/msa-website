@@ -2,7 +2,7 @@
 title: "Kabelbaan op de Märklinbaan"
 date: 2026-05-30
 summary: "De Märklinbaan heeft er een blikvanger bij: een werkende kabelbaan over het bergdeel."
-link: "/banen/märklinbaan"
+link: "/banen/marklinbaan"
 draft: false
 ---
 

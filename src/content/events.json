@@ -52,4 +52,14 @@
     "type": "expositie",
     "link": "/activiteiten/modelspoordagen"
   }
+
+  {
+    "date": "2026-12-05",
+    "endDate": "2026-12-05",
+    "title": "Treinen in Nederland",
+    "description": "Video over treinen in Nederland.",
+    "location": "YouTube kanaal Koplopermau",
+    "type": "Video",
+    "link": ""
+  }
 ]

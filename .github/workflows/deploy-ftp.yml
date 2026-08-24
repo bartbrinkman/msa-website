@@ -41,11 +41,10 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          # The host presents a shared-hosting certificate (CN=ns1.supersnel2.net)
-          # that does not match our domain, so strict verification — the action's
-          # default — fails. The connection is still TLS 1.3 encrypted; only the
-          # identity check is relaxed. Drop this once the host serves a cert for
-          # modelspoorclubalkmaar.nl.
-          security: loose
+          # The first attempt at this deploy died on a control-socket timeout at
+          # exactly the 30s default; the identical retry went through. Give the
+          # handshake more room rather than lowering `security` from its strict
+          # default, which verifies the certificate chain.
+          timeout: 60000
           local-dir: ./dist/
           server-dir: /httpdocs/nieuw/

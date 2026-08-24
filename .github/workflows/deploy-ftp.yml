@@ -63,7 +63,7 @@ jobs:
             set ssl:verify-certificate no;
             set net:max-retries 3;
             set net:timeout 30;
-            open -u \"\$FTP_USERNAME\",\"\$FTP_PASSWORD\" \"\$FTP_SERVER\";
+            open -u \"$FTP_USERNAME\",\"$FTP_PASSWORD\" \"$FTP_SERVER\";
             mirror --reverse --ignore-time --parallel=4 --verbose dist/ /httpdocs/;
             mirror --reverse --ignore-time --ignore-size --parallel=2 --verbose html-only/ /httpdocs/;
           "

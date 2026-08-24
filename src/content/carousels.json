@@ -652,5 +652,42 @@
     }
   ],
   "modulebaan": [],
-  "huider": []
+  "huider": [],
+  "openmonumentendag": [
+    {
+      "src": "/images/openmonumentendag/1000013888.jpg",
+      "title": "Opgebouwd in de Grote Kerk",
+      "description": "De modulebaan staat klaar voor de deuren opengaan"
+    },
+    {
+      "src": "/images/openmonumentendag/20250913_103639.jpg",
+      "title": "Eerste bezoekers",
+      "description": "Meekijken langs het spoor"
+    },
+    {
+      "src": "/images/openmonumentendag/20250913_110630.jpg",
+      "title": "Veertig meter in het middenschip",
+      "description": "De baan loopt over de volle lengte van de kerkvloer"
+    },
+    {
+      "src": "/images/openmonumentendag/20250913_112201.jpg",
+      "title": "Erfgoedmarkt rondom de baan",
+      "description": "Standhouders en publiek in de Grote Kerk"
+    },
+    {
+      "src": "/images/openmonumentendag/20250913_123452.jpg",
+      "title": "Van dichtbij bekeken",
+      "description": "Jong en oud langs de modules"
+    },
+    {
+      "src": "/images/openmonumentendag/20250913_123840.jpg",
+      "title": "Uitleg van onze leden",
+      "description": "Een gesprek over de hobby aan de rand van de baan"
+    },
+    {
+      "src": "/images/openmonumentendag/20250913_135118.jpg",
+      "title": "Drukte langs het spoor",
+      "description": "Bezoekers volgen de treinen door het landschap"
+    }
+  ]
 }

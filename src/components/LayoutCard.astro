@@ -23,8 +23,14 @@ const { title, href, scale, description, status, image, dark = false } = Astro.p
       : 'bg-white border-gray-200 hover:border-primary/30 hover:shadow-lg',
   ]}
 >
-  {image ? (
-    <div class="relative aspect-[16/10] overflow-hidden">
+  <div
+    class:list={[
+      'relative aspect-[16/10] overflow-hidden',
+      !image && 'flex items-center justify-center',
+      !image && (dark ? 'bg-white/5 text-white/35' : 'bg-warm text-primary/35'),
+    ]}
+  >
+    {image ? (
       <img
         src={asset(image)}
         alt=""
@@ -32,49 +38,35 @@ const { title, href, scale, description, status, image, dark = false } = Astro.p
         decoding="async"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
-      <span
-        class:list={[
-          'absolute top-2 right-2 rounded px-2 py-1 text-xs font-medium backdrop-blur-sm',
-          dark ? 'bg-primary-dark/80 text-white' : 'bg-white/85 text-primary',
-        ]}
-      >{scale}</span>
-    </div>
-  ) : (
-    <div
-      class:list={[
-        'flex aspect-[16/10] items-center justify-center',
-        dark ? 'bg-white/5 text-white/35' : 'bg-warm text-primary/35',
-      ]}
-    >
+    ) : (
       <span class="text-xs uppercase tracking-widest">Nog geen foto</span>
-    </div>
-  )}
+    )}
 
-  <div class="card__body p-6">
-    <div class="flex items-start justify-between gap-2 mb-2">
-      <h3
-        class:list={[
-          'text-lg font-semibold',
-          dark ? 'card-on-dark__title' : 'text-primary transition-colors group-hover:text-primary-light',
-        ]}
-      >{title}</h3>
-      {!image && (
-        <span
-          class:list={[
-            'shrink-0 text-xs px-2 py-1 rounded font-medium',
-            dark ? 'bg-white/10 text-white/80' : 'bg-warm text-primary',
-          ]}
-        >{scale}</span>
-      )}
-    </div>
+    {/* Status top left, scale top right, in the same place on every card
+        whether or not there is a photo behind them. */}
     {status && (
       <span
         class:list={[
-          'inline-block text-xs px-2 py-0.5 rounded mb-2',
-          dark ? 'bg-amber-400/20 text-amber-200' : 'bg-amber-100 text-amber-800',
+          'absolute top-2 left-2 rounded px-2 py-1 text-xs font-medium backdrop-blur-sm',
+          dark ? 'bg-amber-300/25 text-amber-100' : 'bg-amber-100/90 text-amber-900',
         ]}
       >{status}</span>
     )}
+    <span
+      class:list={[
+        'absolute top-2 right-2 rounded px-2 py-1 text-xs font-medium backdrop-blur-sm',
+        dark ? 'bg-primary-dark/80 text-white' : 'bg-white/85 text-primary',
+      ]}
+    >{scale}</span>
+  </div>
+
+  <div class="card__body p-6">
+    <h3
+      class:list={[
+        'text-lg font-semibold mb-2',
+        dark ? 'card-on-dark__title' : 'text-primary transition-colors group-hover:text-primary-light',
+      ]}
+    >{title}</h3>
     <p class:list={['text-sm mb-4', dark ? 'text-white/70' : 'text-gray-600']}>{description}</p>
     <div class:list={['btn', dark && 'btn-on-dark']}>
       Meer lezen

@@ -120,6 +120,26 @@
   color: #fff;
 }
 
+/* Frequency label on an activity card. One colour for all of them: the label
+   says how often something happens, not what kind of thing it is, so varying
+   the colour per card implied a distinction that does not exist. */
+.tag {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+/* The one call to action per dark section that should carry weight. Shares the
+   next-event strip's treatment below: faint white at rest, gold on hover. */
+.btn-gold {
+  border: 1px solid transparent;
+}
+
 /* Same control on a navy panel, matching the hero's outline buttons: no fill,
    hairline border, filling faintly on hover. */
 .btn-on-dark {
@@ -155,14 +175,10 @@
   align-self: flex-start;
 }
 
-/* Baan card on the navy panel. */
+/* Baan card on the navy panel. The title stays white throughout: the gold is
+   reserved for the section's single call to action. */
 .card-on-dark__title {
   color: #fff;
-  transition: color 150ms ease;
-}
-
-.card-on-dark:hover .card-on-dark__title {
-  color: var(--color-msa-gold);
 }
 
 /* The next-event strip in the site header. */
@@ -170,17 +186,24 @@
   color: var(--color-msa-gold);
 }
 
-.next-event__cta {
+.next-event__cta,
+.btn-gold {
   background: color-mix(in oklab, #fff 15%, transparent);
   color: #fff;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
 }
 
-/* Delayed on the way in so a fast pass across the bar does not flash it,
-   instant on the way out. */
-.next-event:hover .next-event__cta {
+.next-event:hover .next-event__cta,
+.group:hover .btn-gold,
+.btn-gold:hover {
   background: var(--color-msa-gold);
+  border-color: var(--color-msa-gold);
   color: var(--color-primary-dark);
+}
+
+/* On the strip only: delayed on the way in so a fast pass across the bar does
+   not flash it, instant on the way out. */
+.next-event:hover .next-event__cta {
   transition-delay: 300ms;
 }
 

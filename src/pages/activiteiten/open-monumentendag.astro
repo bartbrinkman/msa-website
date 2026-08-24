@@ -1,6 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
+
+const images = carousels.openmonumentendag;
 ---
 
 <Page
@@ -16,6 +20,8 @@ import { asset } from '../../utils';
     Alkmaar wordt het weekend gecoördineerd door
     <a href="https://www.erfgoedalkmaar.nl/openmonumentendag/" target="_blank" rel="noopener">Erfgoed Alkmaar</a>.
   </p>
+
+  <Carousel images={images} id="openmonumentendag" />
 
   <h2>MSA op de Erfgoedmarkt</h2>
   <p>

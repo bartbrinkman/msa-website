@@ -28,9 +28,38 @@ Output goes to `dist/`.
 
 ## Deploy
 
-Push to `main` — GitHub Actions builds and deploys automatically.
+Push to `main` — GitHub Actions builds and deploys to **two** targets automatically:
 
-To deploy manually: Actions tab > "Deploy to GitHub Pages" > Run workflow.
+| Workflow | Target | Base path |
+| --- | --- | --- |
+| `deploy.yml` | GitHub Pages — <https://bartbrinkman.github.io/msa-website/> | `/msa-website` |
+| `deploy-ftp.yml` | The club host — <https://www.modelspoorclubalkmaar.nl/nieuw/> | `/nieuw` |
+
+To deploy manually: Actions tab > pick the workflow > Run workflow.
+
+The base path and canonical URL come from the `BASE_PATH` and `SITE_URL` env vars
+(see `astro.config.mjs`); the Pages defaults apply when they are unset.
+
+### FTP credentials
+
+`deploy-ftp.yml` uploads over FTPS using three repository secrets — never commit
+these to the repo:
+
+| Secret | Value |
+| --- | --- |
+| `FTP_SERVER` | `ftp.modelspoorclubalkmaar.nl` |
+| `FTP_USERNAME` | the hosting account name |
+| `FTP_PASSWORD` | the hosting account password |
+
+Rotate them with `gh secret set FTP_PASSWORD` or under Settings > Secrets and
+variables > Actions.
+
+### Going live on the root domain
+
+The new site currently publishes to the `/nieuw/` subfolder so the old PHP site
+keeps serving the root. To switch over, set `BASE_PATH` to `/` and `server-dir`
+to `/httpdocs/` in `deploy-ftp.yml`, then remove the old `.php` files from the
+host.
 
 ## Content maintenance
 

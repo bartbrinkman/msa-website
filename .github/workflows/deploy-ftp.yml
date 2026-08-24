@@ -1,0 +1,45 @@
+name: Deploy to modelspoorclubalkmaar.nl
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time: two overlapping FTP uploads would fight over the
+# sync-state file the action keeps on the server.
+concurrency:
+  group: ftp-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build for the staging subfolder
+        run: npm run build
+        env:
+          SITE_URL: https://www.modelspoorclubalkmaar.nl
+          BASE_PATH: /nieuw
+
+      - name: Upload over FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./dist/
+          server-dir: /httpdocs/nieuw/

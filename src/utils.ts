@@ -72,3 +72,22 @@ export function eventDateLabel(event: EventItem): string {
   }
   return `${start.getDate()} ${monthsShort[start.getMonth()]} – ${end.getDate()} ${monthsShort[end.getMonth()]}`;
 }
+
+/** Full date for the "Wanneer" field: "8 november 2026, 10:00-15:00". */
+export function eventWhen(event: EventItem): string {
+  const start = new Date(event.date);
+  const end = event.endDate ? new Date(event.endDate) : null;
+  const day = (d: Date) => `${d.getDate()} ${months[d.getMonth()]}`;
+
+  let when: string;
+  if (!end || end.getTime() === start.getTime()) {
+    when = `${day(start)} ${start.getFullYear()}`;
+  } else if (end.getFullYear() === start.getFullYear() && end.getMonth() === start.getMonth()) {
+    when = `${start.getDate()}–${day(end)} ${end.getFullYear()}`;
+  } else {
+    when = `${day(start)} – ${day(end)} ${end.getFullYear()}`;
+  }
+
+  const time = [event.startTime, event.endTime].filter(Boolean).join('–');
+  return time ? `${when}, ${time}` : when;
+}

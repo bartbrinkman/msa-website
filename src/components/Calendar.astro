@@ -78,12 +78,12 @@ for (const event of upcomingEvents) {
                   <DateBlock date={event.date} endDate={event.endDate} header="weekday" />
                   <div class="flex-1 min-w-0">
                     {isNext && (
-                      <span class="inline-block mb-1.5 px-2 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary">
+                      <span class="block w-fit mb-2.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-primary/10 text-primary">
                         Eerstvolgende
                       </span>
                     )}
                     {event.link ? (
-                      <a href={asset(event.link!)} class="font-semibold underline underline-offset-2 hover:opacity-70">{event.title}</a>
+                      <a href={asset(event.link!)} class="font-semibold hover:opacity-70">{event.title}</a>
                     ) : (
                       <div class="font-semibold">{event.title}</div>
                     )}
@@ -112,8 +112,8 @@ for (const event of upcomingEvents) {
                     </div>
                   </div>
                   {event.link && (
-                    <a href={asset(event.link!)} class="self-center text-sm font-semibold hover:underline whitespace-nowrap">
-                      Meer info →
+                    <a href={asset(event.link!)} class="btn self-center">
+                      Meer info
                     </a>
                   )}
                 </div>

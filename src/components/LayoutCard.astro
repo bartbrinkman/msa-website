@@ -17,9 +17,9 @@ const { title, href, scale, description, status, image, dark = false } = Astro.p
 <a
   href={asset(href)}
   class:list={[
-    'group block rounded-lg overflow-hidden border transition-all',
+    'group card rounded-lg overflow-hidden border transition-all',
     dark
-      ? 'bg-white/5 border-white/15 hover:bg-white/10 hover:border-white/35'
+      ? 'card-on-dark bg-white/5 border-white/15 hover:bg-white/10 hover:border-white/35'
       : 'bg-white border-gray-200 hover:border-primary/30 hover:shadow-lg',
   ]}
 >
@@ -50,12 +50,12 @@ const { title, href, scale, description, status, image, dark = false } = Astro.p
     </div>
   )}
 
-  <div class="p-6">
+  <div class="card__body p-6">
     <div class="flex items-start justify-between gap-2 mb-2">
       <h3
         class:list={[
-          'text-lg font-semibold transition-colors',
-          dark ? 'text-white group-hover:text-msa-yellow' : 'text-primary group-hover:text-primary-light',
+          'text-lg font-semibold',
+          dark ? 'card-on-dark__title' : 'text-primary transition-colors group-hover:text-primary-light',
         ]}
       >{title}</h3>
       {!image && (
@@ -75,14 +75,9 @@ const { title, href, scale, description, status, image, dark = false } = Astro.p
         ]}
       >{status}</span>
     )}
-    <p class:list={['text-sm', dark ? 'text-white/70' : 'text-gray-600']}>{description}</p>
-    <div
-      class:list={[
-        'mt-4 text-sm font-medium inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform',
-        dark ? 'text-msa-yellow' : 'text-primary-light',
-      ]}
-    >
-      Meer lezen &rarr;
+    <p class:list={['text-sm mb-4', dark ? 'text-white/70' : 'text-gray-600']}>{description}</p>
+    <div class:list={['btn', dark && 'btn-on-dark']}>
+      Meer lezen
     </div>
   </div>
 </a>

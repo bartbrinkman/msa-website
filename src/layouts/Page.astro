@@ -1,6 +1,8 @@
 ---
 import Base from './Base.astro';
-import { asset } from '../utils';
+import EventCard from '../components/EventCard.astro';
+import events from '../content/events.json';
+import { asset, upcomingEvents, eventWhen } from '../utils';
 
 interface Props {
   title: string;
@@ -11,23 +13,36 @@ interface Props {
   /** Renders a back link above the title, e.g. back to the banen overview. */
   backHref?: string;
   backLabel?: string;
+  /** Poster/flyer for this activity, shown in the hero as a desk stand. */
+  brochure?: string;
+  brochureAlt?: string;
   when?: string;
   where?: string;
 }
 
-const { title, description, hero, heroImage, frequency, when, where, backHref, backLabel = 'Terug' } = Astro.props;
+const { title, description, hero, heroImage, frequency, when, where, backHref, backLabel = 'Terug', brochure, brochureAlt } = Astro.props;
+
+// If the agenda holds an upcoming event for this page, it is the authority on
+// when this activity happens: the date is shown from the calendar rather than
+// written into the page, so it cannot go stale.
+const here = Astro.url.pathname.replace(/\/$/, '');
+const linkedEvent = upcomingEvents(events).find(
+  e => e.link && asset(e.link).replace(/\/$/, '') === here,
+);
+const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
 ---
 
 <Base title={title} description={description}>
   {hero && (
-    <div class="relative overflow-hidden bg-gradient-to-r from-primary-dark to-primary">
+    <div class="relative bg-gradient-to-r from-primary-dark to-primary">
       {heroImage && (
         <>
           <img src={asset(heroImage!)} alt="" class="absolute inset-0 w-full h-full object-cover opacity-20" />
         </>
       )}
       <div class="relative text-white py-12">
-        <div class="max-w-4xl mx-auto px-4">
+        <div class="max-w-4xl mx-auto px-4 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <div class="min-w-0 flex-1">
           {backHref && (
             <a
               href={asset(backHref)}
@@ -45,29 +60,77 @@ const { title, description, hero, heroImage, frequency, when, where, backHref, b
             </span>
           )}
           <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">{hero}</h1>
-          {(when || where) && (
-            <dl class="mt-4 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm text-white/90">
-              {when && (
-                <>
-                  <dt class="font-semibold">Wanneer</dt>
-                  <dd>{when}</dd>
-                </>
+          {(whenLabel || where) && (
+            <dl class="meta">
+              {whenLabel && (
+                <div>
+                  <dt>Wanneer</dt>
+                  <dd>{whenLabel}</dd>
+                </div>
               )}
               {where && (
-                <>
-                  <dt class="font-semibold">Waar</dt>
+                <div>
+                  <dt>Waar</dt>
                   <dd>{where}</dd>
-                </>
+                </div>
               )}
             </dl>
           )}
+          </div>
+
+          {brochure && (
+            <figure class="standee">
+              <button type="button" class="standee__paper" data-brochure={asset(brochure)} aria-label="Vergroot de poster">
+                <img src={asset(brochure)} alt={brochureAlt ?? `Poster ${hero}`} loading="lazy" decoding="async" />
+                <span class="standee__zoom" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path stroke-linecap="round" d="M20 20l-3.5-3.5M11 8v6M8 11h6" />
+                  </svg>
+                </span>
+              </button>
+            </figure>
+          )}
         </div>
       </div>
+    </div>
+  )}
+
+  {brochure && (
+    <div class="lightbox" hidden>
+      <button type="button" class="lightbox__close" aria-label="Sluiten">&times;</button>
+      <img class="lightbox__img" src="" alt="" />
     </div>
   )}
   <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="prose">
       <slot />
     </div>
+
+    {linkedEvent && (
+      <div class="mt-10">
+        <h2 class="text-lg font-medium font-heading uppercase tracking-normal text-primary mb-3">Eerstvolgende editie</h2>
+        <EventCard event={linkedEvent} linked={false} />
+      </div>
+    )}
   </div>
 </Base>
+
+
+<script>
+  const opener = document.querySelector('.standee__paper') as HTMLButtonElement | null;
+  const box = document.querySelector('.lightbox') as HTMLElement | null;
+  if (opener && box) {
+    const img = box.querySelector('.lightbox__img') as HTMLImageElement;
+    const close = () => { box.hidden = true; document.body.style.overflow = ''; opener.focus(); };
+    opener.addEventListener('click', () => {
+      img.src = opener.dataset.brochure || '';
+      img.alt = (opener.querySelector('img') as HTMLImageElement)?.alt || '';
+      box.hidden = false;
+      document.body.style.overflow = 'hidden';
+      (box.querySelector('.lightbox__close') as HTMLButtonElement).focus();
+    });
+    box.addEventListener('click', (e) => { if (e.target !== img) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !box.hidden) close(); });
+  }
+</script>

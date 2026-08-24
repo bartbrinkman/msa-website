@@ -32,14 +32,16 @@
     "title": "Open Dag MSA",
     "description": "Alle banen te bezichtigen, kinderen gratis onder 12 jaar",
     "location": "Koornlaan 23, Alkmaar",
-    "type": "opendag"
+    "type": "opendag",
+    "link": "/activiteiten/open-dag"
   },
   {
     "date": "2026-11-08",
     "title": "Ruilbeurs",
     "description": "Modelspoorbeurs voor kopers en verkopers",
     "location": "OSG Willem Blaeu, Robonsbosweg 11, Alkmaar",
-    "type": "beurs"
+    "type": "beurs",
+    "link": "/activiteiten/ruilbeurs"
   },
   {
     "date": "2027-02-27",

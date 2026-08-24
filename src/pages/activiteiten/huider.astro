@@ -1,6 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
+
+const images = carousels.huider;
 ---
 
 <Page
@@ -14,6 +18,25 @@ import { asset } from '../../utils';
     Op deze open zaterdagen zijn wij met een van onze modulebanen te gast
     bij Huider in Heerhugowaard. Een mooie gelegenheid om de baan in
     bedrijf te zien en met onze leden in gesprek te gaan.
+  </p>
+
+  {images.length > 0 && <Carousel images={images} id="huider" />}
+
+  <h2>Wat is er nog meer te zien?</h2>
+  <p>
+    Huider stelt de hele bovenverdieping open. Naast onze modulebaan rijden er
+    meerdere banen in H0 en N, en verschillende standhouders geven demonstraties.
+  </p>
+  <p>
+    De blikvanger is <strong>Huiderstad</strong>: veertig meter baan over twee
+    niveaus, met Duitse en Nederlandse taferelen en zo'n 250 computergestuurde
+    treinen.
+  </p>
+
+  <h2>Praktisch</h2>
+  <p>
+    De open dagen duren van 9:30 tot 17:00 uur en de toegang is gratis. Er is
+    een lift naar de bovenverdieping.
   </p>
 
   <p>

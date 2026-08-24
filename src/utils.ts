@@ -34,12 +34,28 @@ export const typeLabels: Record<string, string> = {
   overig: 'Overig',
 };
 
-/** Events that have not finished yet, soonest first. Evaluated at build time. */
-export function upcomingEvents(events: EventItem[], limit?: number): EventItem[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+/** Local calendar day as YYYY-MM-DD, matching the format used in events.json. */
+function isoDay(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/**
+ * Events that have not finished yet, soonest first.
+ *
+ * An event stays in the list for the whole of its own day (and, for a range,
+ * through its endDate) and drops out the day after, so the head of the list is
+ * always the next event. Dates are compared as YYYY-MM-DD strings rather than
+ * Date objects: parsing "2026-09-12" yields UTC midnight, which lands on the
+ * wrong side of a local midnight in negative UTC offsets and would retire an
+ * event a day early.
+ *
+ * `today` is injectable so the rollover can be tested at a fixed date.
+ */
+export function upcomingEvents(events: EventItem[], limit?: number, today: Date = new Date()): EventItem[] {
+  const cutoff = isoDay(today);
   const upcoming = events
-    .filter(e => new Date(e.endDate || e.date) >= today)
+    .filter(e => (e.endDate || e.date) >= cutoff)
     .sort((a, b) => a.date.localeCompare(b.date));
   return limit === undefined ? upcoming : upcoming.slice(0, limit);
 }

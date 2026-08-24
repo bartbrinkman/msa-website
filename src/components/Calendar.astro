@@ -16,7 +16,7 @@ interface Props {
 }
 
 import DateBlock from './DateBlock.astro';
-import { asset } from '../utils';
+import { asset, upcomingEvents as sharedUpcoming } from '../utils';
 const { events } = Astro.props;
 
 const typeColors: Record<string, string> = {
@@ -44,13 +44,7 @@ function formatDate(d: Date) {
   return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
 }
 
-// Filter to future events (using endDate if available, otherwise date)
-const now = new Date();
-now.setHours(0, 0, 0, 0);
-
-const upcomingEvents = events
-  .filter(e => new Date(e.endDate || e.date) >= now)
-  .sort((a, b) => a.date.localeCompare(b.date));
+const upcomingEvents = sharedUpcoming(events);
 
 // Sorted soonest-first, so the head of the list is the next event.
 const nextEvent = upcomingEvents[0];

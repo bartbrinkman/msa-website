@@ -33,7 +33,7 @@ const { images, id } = Astro.props;
             {img.title && (
               <span class="font-semibold text-primary text-sm">{img.title}</span>
             )}
-            {img.title && img.description && <span class="text-sm text-gray-500"> — </span>}
+            {img.title && img.description && <span class="text-sm text-gray-500"> · </span>}
             {img.description && (
               <span class="text-sm text-gray-500">{img.description}</span>
             )}
@@ -189,7 +189,7 @@ const { images, id } = Astro.props;
       const parts = [];
       if (img.title) parts.push(`<strong>${img.title}</strong>`);
       if (img.description) parts.push(img.description);
-      lbCaption.innerHTML = parts.join(' — ');
+      lbCaption.innerHTML = parts.join(' · ');
       lbPrev.style.display = lbImages.length > 1 ? '' : 'none';
       lbNext.style.display = lbImages.length > 1 ? '' : 'none';
     }

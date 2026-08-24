@@ -10,4 +10,4 @@ Naast de bestaande modulebaan in H0 begint de club aan een tweede modulebaan,
 ditmaal in N-schaal. De opzet is dezelfde: losse modules die door verschillende
 leden thuis gebouwd worden en op exposities aan elkaar gekoppeld worden.
 
-Wie mee wil bouwen kan op een clubavond aansluiten — ervaring is geen vereiste.
+Wie mee wil bouwen kan op een clubavond aansluiten. Ervaring is geen vereiste.

@@ -32,7 +32,7 @@ const SLIDE_SECONDS = 8;
 
 <Base title="Home">
   <!-- Hero -->
-  <section class="relative overflow-hidden">
+  <section class="relative flex items-center overflow-hidden min-h-[clamp(280px,26vw,520px)]">
     <div class="absolute inset-0" aria-hidden="true">
       {heroSlides.map((slide, i) => (
         <img
@@ -48,16 +48,19 @@ const SLIDE_SECONDS = 8;
     <!-- Scrim: opaque behind the copy, thinning to the right so the layout's
          greens and yellows stay visible. -->
     <div class="absolute inset-0 bg-gradient-to-r from-primary-dark/95 to-primary-dark/75 md:from-primary-dark/95 md:via-primary-dark/75 md:via-45% md:to-primary-dark/10"></div>
-    <div class="relative text-white py-12 md:py-16">
+    <div class="relative w-full text-white py-12 md:py-16">
       <div class="max-w-6xl mx-auto px-4">
         <h1 class="text-3xl md:text-4xl font-medium mb-3 font-heading uppercase tracking-normal">Modelspoorclub Alkmaar</h1>
         <p class="text-base md:text-lg text-white/80 max-w-2xl mb-6">
           Al meer dan 40 jaar bouwen wij met passie aan modelspoorbanen.
-          Van historisch Alkmaar tot industriele hoogovens — ontdek onze banen.
+          Van historisch Alkmaar tot industriële hoogovens. Ontdek onze banen.
         </p>
         <div class="flex gap-4 flex-wrap">
           <a href={asset("/banen")} class="bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-warm transition-colors">
             Bekijk onze banen
+          </a>
+          <a href={asset("/de-club")} class="border border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+            Wie zijn wij
           </a>
           <a href={asset("/contact")} class="border border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
             Bezoek ons
@@ -183,7 +186,7 @@ const SLIDE_SECONDS = 8;
       100%    { opacity: 0; transform: scale(1.04); }
     }
 
-    /* No drift, no crossfade — just the first frame. */
+    /* No drift, no crossfade: just the first frame. */
     @media (prefers-reduced-motion: reduce) {
       .hero-slide { animation: none; transform: none; opacity: 0; }
       .hero-slide:first-child { opacity: 1; }

@@ -7,7 +7,7 @@ import { glob } from 'astro/loaders';
 // than rendering blank on the site.
 //
 // Note on dates: the project rule is that dates stay out of article copy. The
-// `date` here is structured metadata used for sorting and the dateline — keep
+// `date` here is structured metadata used for sorting and the dateline; keep
 // the body text itself undated so it does not go stale.
 const nieuws = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/nieuws' }),

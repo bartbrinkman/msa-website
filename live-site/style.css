@@ -1,0 +1,156 @@
+#wrapper
+{
+	margin-top: 10px;
+	font-family: Arial, Helvetica, Verdana;
+	color: #000000;
+	width: 100%;
+	line-height: 140%;
+}
+
+#header
+{
+	
+	width: 950px;
+	background-image: url("images/header_blokkendoos.jpg");
+	border-top-left-radius: 25px;
+	border-top-right-radius: 25px;
+	/* border-bottom: 2px solid #001888; */
+	height: 300px;
+}
+
+#header img
+{
+	margin-left: 25px;
+	margin-top: 75px;
+}
+
+#clearboth
+{
+	clear: both;
+}
+
+#wrapper-content
+{
+	
+	width: 950px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#menu
+{
+	width: 200px;
+	float: left;
+	background-color: #001888;
+	line-height: 100%;
+	padding: 5px;
+}
+
+#menu ul
+{
+	list-style-type: none;
+	display: inline;
+	font-size: 0px; 
+	/* Font size voor verticale ruimte */
+}
+
+#menu ul ul
+{
+	display: block;
+	margin-left: -20px;
+	/* Font size voor verticale ruimte */
+}
+
+#menu li
+{
+	padding: 10px;
+	background-color: #001888;
+	font-size: 16px;
+}
+
+#menu li:hover
+{
+	padding: 10px;
+	background-color: #001DA3;
+}
+
+#menu a
+{
+	text-decoration: none;
+	color: white;
+	font-weight: bold;
+}
+
+#menu a:visited
+{
+	text-decoration: none;
+	color: white;
+	font-weight: bold;
+}
+
+#content
+{
+	margin-right: 10px;
+	width: 710px;
+	float: right;
+	text-align: justify;
+}
+
+#wrapper-footer
+{
+	width: 100%;
+	margin-top: 10px;
+}
+
+#footer
+{	
+	margin-left: auto;
+	margin-right: auto;
+	width: 950px;
+	height: 100px;
+	/* border-top: 4px solid #001888; */
+	text-align: center;
+}
+
+h1
+{
+	color: #001888;
+}
+
+.imagefloatleft
+{
+	float: left;
+	margin: 20px;
+}
+
+.imagefloatright
+{
+	float: right;
+	margin: 20px;
+}
+
+.msasponsor
+{
+	font-size: 10px;
+	text-align: center;
+	color: #FFFFFF;
+}
+
+.footer
+{
+	color: #000000;
+	font-size: 10px;
+	text-align: center;
+}
+
+.footerimage
+{
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.emailplaatje
+{
+	margin-bottom: -3px;
+}

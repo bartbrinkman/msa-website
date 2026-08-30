@@ -1,6 +1,15 @@
 ---
 import Page from '../layouts/Page.astro';
+import { getCollection } from 'astro:content';
 import { asset } from '../utils';
+
+// A taste of the begrippenlijst: the terms a visitor most often runs into on
+// the banen pages, in this order. The full list lives on /begrippen.
+const featuredIds = ['schaal', 'twee-rail', 'drie-rail', 'analoog-digitaal', 'itrain', 'dinamo'];
+const begrippen = await getCollection('begrippen');
+const featured = featuredIds
+  .map(id => begrippen.find(b => b.id === id))
+  .filter((b): b is NonNullable<typeof b> => !!b);
 ---
 
 <Page title="Links" hero="Links">
@@ -27,4 +36,24 @@ import { asset } from '../utils';
       </a>: spoorwegmuseum in Darmstadt dat wij jaarlijks bezoeken.
     </li>
   </ul>
+
+  <h2>Begrippenlijst</h2>
+  <div class="not-prose">
+    <p class="text-gray-600 mb-5">
+      Wat is H0, wat doet iTrain, en wat is het verschil tussen 2-rail en
+      3-rail? Korte uitleg van de begrippen die je op deze site tegenkomt.
+    </p>
+    <div class="grid gap-5 sm:grid-cols-2">
+      {featured.map(item => (
+        <a
+          href={asset(`/begrippen/${item.id}`)}
+          class="group card-hover bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:border-primary/30"
+        >
+          <span class="block text-lg font-semibold text-primary group-hover:text-primary-light transition-colors">{item.data.title}</span>
+          <span class="block text-sm text-gray-600 mt-1.5 leading-relaxed">{item.data.summary}</span>
+        </a>
+      ))}
+    </div>
+    <a href={asset('/begrippen')} class="btn mt-6">Alle begrippen ({begrippen.length})</a>
+  </div>
 </Page>

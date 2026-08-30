@@ -15,6 +15,107 @@
   --font-heading: 'Gabarito', system-ui, sans-serif;
 }
 
+/* ---------------------------------------------------------------------------
+   Page-wide
+   --------------------------------------------------------------------------- */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Cream page ground, so white cards read as cards instead of vanishing. */
+body {
+  background: var(--color-warm);
+}
+
+/* One focus ring everywhere, only for keyboard users. */
+:focus-visible {
+  outline: 2px solid var(--color-msa-gold);
+  outline-offset: 2px;
+}
+
+/* Section heading with a short gold rule beneath it. */
+.section-title {
+  position: relative;
+  padding-bottom: 0.625rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2.5rem;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--color-msa-gold);
+}
+
+/* Lift-on-hover for any card that links somewhere. */
+.card-hover {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+@media (hover: hover) {
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px -14px rgba(0, 16, 92, 0.35), 0 2px 6px rgba(0, 16, 92, 0.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .card-hover { transition: none; }
+  .card-hover:hover { transform: none; }
+}
+
+/* Desktop nav link: gold underline marks the current section. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.25rem;
+  height: 2px;
+  border-radius: 9999px;
+  background: var(--color-msa-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms ease;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-link--active::after {
+  transform: scaleX(1);
+}
+
+/* Mobile menu slides open rather than popping. */
+#mobile-menu {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease;
+}
+
+#mobile-menu > div {
+  overflow: hidden;
+}
+
+#mobile-menu.is-open {
+  grid-template-rows: 1fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #mobile-menu { transition: none; }
+}
+
 /* Markdown content styling */
 .prose h2 {
   font-family: var(--font-heading);
@@ -67,6 +168,35 @@
 .prose img {
   border-radius: 0.5rem;
   margin: 1.5rem 0;
+}
+
+/* A block of component markup (cards, buttons) inside article copy: switch
+   the prose typography off so the block's own classes apply. */
+.prose .not-prose h2,
+.prose .not-prose h3 {
+  margin: 0;
+  border: 0;
+}
+
+.prose .not-prose a:not(.btn, .pill) {
+  color: inherit;
+  font-weight: inherit;
+}
+
+/* .btn inside article copy keeps its own colours over the .prose link rules. */
+.prose .btn {
+  color: var(--color-primary);
+}
+
+.prose .btn:hover {
+  color: #fff;
+}
+
+/* Gallery tiles butt up against each other; the grid owns the spacing and the
+   outer radius, not the individual photos. */
+.prose .carousel img {
+  border-radius: 0;
+  margin: 0;
 }
 
 .prose table {
@@ -132,6 +262,81 @@
   font-weight: 500;
   background: color-mix(in oklab, var(--color-primary) 10%, transparent);
   color: var(--color-primary);
+}
+
+/* A term from the begrippenlijst mentioned in article copy: dashed underline,
+   summary in a tooltip on hover, and a link to the begrip. Colour stays that
+   of the running text so it does not compete with real links. */
+.prose a.begrip {
+  position: relative;
+  color: inherit;
+  font-weight: inherit;
+  text-decoration: underline dashed;
+  text-decoration-color: color-mix(in oklab, var(--color-primary) 45%, transparent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.prose a.begrip:hover {
+  color: var(--color-primary);
+  text-decoration-color: var(--color-primary);
+}
+
+@media (hover: hover) {
+  .prose a.begrip::after {
+    content: attr(data-summary);
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 0.5rem);
+    z-index: 20;
+    width: max-content;
+    max-width: 18rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--color-primary-dark);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    line-height: 1.4;
+    text-decoration: none;
+    box-shadow: 0 10px 24px -8px rgba(0, 16, 92, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 150ms ease, transform 150ms ease;
+  }
+
+  .prose a.begrip:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Link to a sibling page, in a row of them (the other terms in a begrip's
+   section). Outlined so it reads lighter than the .btn call to action. */
+.pill {
+  display: inline-block;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-warm-dark);
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+/* Also matched as .prose .pill so it beats the .prose a / a:hover colours. */
+.pill,
+.prose .pill {
+  color: var(--color-primary);
+}
+
+.pill:hover,
+.prose .pill:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
 }
 
 /* The one call to action per dark section that should carry weight. Shares the

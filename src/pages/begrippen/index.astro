@@ -1,0 +1,117 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { asset } from '../../utils';
+
+const categories: { key: string; label: string; intro: string }[] = [
+  { key: 'schaal', label: 'Schaal en spoor', intro: 'Hoe groot is een model, en wat betekenen die letters en getallen?' },
+  { key: 'techniek', label: 'Stroom en digitaal', intro: 'Hoe komt de stroom bij de trein, en wat is het verschil tussen analoog en digitaal?' },
+  { key: 'besturing', label: 'Besturing', intro: 'De systemen en software waarmee onze banen automatisch rijden.' },
+  { key: 'baanbouw', label: 'Baanbouw', intro: 'Begrippen die je tegenkomt bij het ontwerpen en bouwen van een baan.' },
+];
+
+const all = (await getCollection('begrippen')).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title, 'nl'),
+);
+---
+
+<Base title="Begrippenlijst" description="Korte uitleg van modelspoorbegrippen: schaal, 2-rail en 3-rail, digitaal, iTrain, Dinamo en meer.">
+  <div class="bg-gradient-to-r from-primary-dark to-primary text-white py-12 md:py-16">
+    <div class="max-w-4xl mx-auto px-4">
+      <a
+        href={asset('/links')}
+        class="group inline-flex items-center gap-1.5 mb-4 rounded-md bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+      >
+        <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Links
+      </a>
+      <h1 class="text-3xl md:text-5xl font-medium font-heading uppercase tracking-normal leading-tight">Begrippenlijst</h1>
+      <p class="mt-3 text-white/80 max-w-2xl">
+        Modelspoor heeft zijn eigen taal. Hier leggen wij in het kort uit wat de
+        begrippen betekenen die je op deze site en op onze zolder tegenkomt.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+    <!-- Filter -->
+    <label class="block mb-8">
+      <span class="sr-only">Zoek een begrip</span>
+      <span class="relative block">
+        <svg class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0Z" />
+        </svg>
+        <input
+          id="begrip-filter"
+          type="search"
+          placeholder="Zoek een begrip, bijvoorbeeld iTrain of schaal"
+          autocomplete="off"
+          class="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-base shadow-sm placeholder:text-gray-400 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15"
+        />
+      </span>
+    </label>
+
+    <div class="space-y-12">
+      {categories.map(({ key, label, intro }) => {
+        const items = all.filter(e => e.data.category === key);
+        if (items.length === 0) return null;
+        return (
+          <section data-category={key}>
+            <h2 class="section-title text-xl md:text-2xl font-medium font-heading uppercase text-primary mb-2">{label}</h2>
+            <p class="text-gray-600 mb-5">{intro}</p>
+            <div class="grid gap-4 sm:grid-cols-2">
+              {items.map(item => (
+                <a
+                  href={asset(`/begrippen/${item.id}`)}
+                  data-begrip
+                  data-search={`${item.data.title} ${item.data.summary}`.toLowerCase()}
+                  class="group card card__body card-hover bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:border-primary/30"
+                >
+                  <h3 class="text-lg font-semibold text-primary group-hover:text-primary-light transition-colors">{item.data.title}</h3>
+                  <p class="text-gray-600 text-sm mt-1 mb-4">{item.data.summary}</p>
+                  <span class="btn">Lees meer</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+
+    <p id="begrip-empty" hidden class="text-gray-500 italic">Geen begrip gevonden. Mis je iets? Vraag het gerust op een clubavond.</p>
+
+    <div class="mt-12 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
+      <h2 class="font-heading uppercase text-lg font-medium text-primary mb-2">Zelf zien hoe het werkt?</h2>
+      <p class="text-gray-700">
+        Op de <a href={asset('/activiteiten/clubavonden')} class="text-primary-light font-semibold">clubavond</a>
+        en tijdens de <a href={asset('/activiteiten/open-dag')} class="text-primary-light font-semibold">open dag</a>
+        leggen de leden graag uit hoe de banen in elkaar zitten.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Filter the cards as you type. A category without a visible card hides
+    // its heading too, so the page never shows an empty section.
+    const input = document.getElementById('begrip-filter') as HTMLInputElement | null;
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-begrip]'));
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-category]'));
+    const empty = document.getElementById('begrip-empty');
+
+    input?.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      let shown = 0;
+      cards.forEach(card => {
+        const hit = !q || (card.dataset.search ?? '').includes(q);
+        card.hidden = !hit;
+        if (hit) shown++;
+      });
+      sections.forEach(section => {
+        section.hidden = !section.querySelector('[data-begrip]:not([hidden])');
+      });
+      if (empty) empty.hidden = shown > 0;
+    });
+  </script>
+</Base>

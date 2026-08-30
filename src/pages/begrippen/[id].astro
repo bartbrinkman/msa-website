@@ -1,0 +1,46 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getCollection } from 'astro:content';
+import { asset } from '../../utils';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('begrippen');
+  return entries.map(entry => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+
+// The markdown is written with root-relative links (/banen/..., /begrippen/...)
+// so it reads naturally in the editor; prefix them with the site base here,
+// which is what asset() does for links in templates.
+const html = (entry.rendered?.html ?? '').replace(/href="\//g, `href="${asset('/')}`);
+
+// The other terms in the same section, so the reader can keep browsing.
+const siblings = (await getCollection('begrippen'))
+  .filter(e => e.data.category === entry.data.category && e.id !== entry.id)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'nl'));
+---
+
+<Page
+  title={`${entry.data.title} – Begrippenlijst`}
+  description={entry.data.summary}
+  hero={entry.data.title}
+  backHref="/begrippen"
+  backLabel="Begrippenlijst"
+  begrip={entry.id}
+>
+  <p class="text-lg text-gray-700 mb-6">{entry.data.summary}</p>
+
+  <Fragment set:html={html} />
+
+  {siblings.length > 0 && (
+    <div class="not-prose mt-10">
+      <span class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">Meer begrippen</span>
+      <div class="flex flex-wrap gap-2">
+        {siblings.map(s => (
+          <a href={asset(`/begrippen/${s.id}`)} title={s.data.summary} class="pill">{s.data.title}</a>
+        ))}
+      </div>
+    </div>
+  )}
+</Page>

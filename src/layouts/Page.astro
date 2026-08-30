@@ -19,9 +19,11 @@ interface Props {
   brochureAlt?: string;
   when?: string;
   where?: string;
+  /** Id of the begrip this page is about, so it is not linked to itself. */
+  begrip?: string;
 }
 
-const { title, description, hero, heroImage, frequency, when, where, backHref, backLabel = 'Terug', brochure, brochureAlt } = Astro.props;
+const { title, description, hero, heroImage, frequency, when, where, backHref, backLabel = 'Terug', brochure, brochureAlt, begrip } = Astro.props;
 
 // If the agenda holds an upcoming event for this page, it is the authority on
 // when this activity happens: the date is shown from the calendar rather than
@@ -38,10 +40,11 @@ const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
     <div class="relative bg-gradient-to-r from-primary-dark to-primary">
       {heroImage && (
         <>
-          <img src={asset(heroImage!)} alt="" class="absolute inset-0 w-full h-full object-cover opacity-20" />
+          <img src={asset(heroImage!)} alt="" class="absolute inset-0 w-full h-full object-cover opacity-25" />
+          <div class="absolute inset-0 bg-gradient-to-r from-primary-dark/80 to-primary/40" aria-hidden="true"></div>
         </>
       )}
-      <div class="relative text-white py-12">
+      <div class="relative text-white py-12 md:py-16">
         <div class="max-w-4xl mx-auto px-4 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div class="min-w-0 flex-1">
           {backHref && (
@@ -60,7 +63,7 @@ const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
               {frequency}
             </span>
           )}
-          <h1 class="text-3xl md:text-4xl font-medium font-heading uppercase tracking-normal">{hero}</h1>
+          <h1 class="text-3xl md:text-5xl font-medium font-heading uppercase tracking-normal leading-tight">{hero}</h1>
           {(whenLabel || where) && (
             <dl class="meta">
               {whenLabel && (
@@ -85,14 +88,14 @@ const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
     </div>
   )}
 
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <div class="prose">
+  <div class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+    <div class="prose" data-begrip={begrip}>
       <slot />
     </div>
 
     {linkedEvent && (
       <div class="mt-10">
-        <h2 class="text-lg font-medium font-heading uppercase tracking-normal text-primary mb-3">Eerstvolgende editie</h2>
+        <h2 class="section-title text-lg font-medium font-heading uppercase tracking-normal text-primary mb-4">Eerstvolgende editie</h2>
         <EventCard event={linkedEvent} linked={false} />
       </div>
     )}

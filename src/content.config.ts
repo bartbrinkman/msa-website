@@ -27,4 +27,19 @@ const nieuws = defineCollection({
   }),
 });
 
-export const collections = { nieuws };
+// Begrippenlijst: short explainers of the terms the site uses (schaal, iTrain,
+// Dinamo, ...). One markdown file per term in src/content/begrippen/; the
+// filename becomes the URL under /begrippen/.
+const begrippen = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/begrippen' }),
+  schema: z.object({
+    /** The term as shown in headings, e.g. "iTrain". */
+    title: z.string(),
+    /** One sentence for the list card. */
+    summary: z.string(),
+    /** Groups the list. */
+    category: z.enum(['schaal', 'techniek', 'besturing', 'baanbouw']),
+  }),
+});
+
+export const collections = { nieuws, begrippen };

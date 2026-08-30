@@ -1,7 +1,19 @@
 ---
 import '../styles/global.css';
-import { asset, upcomingEvents, eventDateLabel, typeLabels } from '../utils';
+import { getCollection } from 'astro:content';
+import { asset, upcomingEvents, eventDateLabel } from '../utils';
 import events from '../content/events.json';
+
+// Terms from the begrippenlijst, handed to the page so the first mention of
+// each one in article copy becomes a link with the summary as a tooltip.
+// The match text is the title without any bracketed qualifier, so
+// "2-rail (gelijkstroom)" matches "2-rail".
+const begrippen = (await getCollection('begrippen')).map(b => ({
+  id: b.id,
+  term: b.data.title.replace(/\s*\(.*\)$/, ''),
+  summary: b.data.summary,
+  href: asset(`/begrippen/${b.id}`),
+}));
 
 interface Props {
   title: string;
@@ -42,63 +54,76 @@ const nav = [
     <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>{title} | MSA</title>
   </head>
-  <body class="min-h-screen flex flex-col bg-white text-gray-800 font-sans">
+  <body class="min-h-screen flex flex-col text-gray-800 font-sans">
     <!-- Header -->
     <header class="bg-primary text-white shadow-lg">
-      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href={asset('/')} class="flex items-center gap-3 hover:opacity-90 transition-opacity">
-          <img src={asset('/images/logo.png')} alt="MSA" class="h-10 w-auto" />
-          <div>
-            <div class="text-xl font-medium tracking-normal font-heading uppercase">Modelspoorclub Alkmaar</div>
-            <div class="text-sm text-white/70">Sinds 1984</div>
+      <div class="max-w-6xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between gap-3">
+        <a href={asset('/')} class="flex items-center gap-3 min-w-0 hover:opacity-90 transition-opacity">
+          <img src={asset('/images/logo.png')} alt="MSA" class="h-9 md:h-10 w-auto shrink-0" />
+          <div class="min-w-0">
+            <div class="text-base sm:text-xl leading-tight font-medium tracking-normal font-heading uppercase truncate">Modelspoorclub Alkmaar</div>
+            <div class="text-xs sm:text-sm text-white/70">Sinds 1984</div>
           </div>
         </a>
 
         <!-- Mobile menu button -->
         <button
           id="menu-toggle"
-          class="md:hidden p-2 rounded hover:bg-white/10"
+          class="md:hidden shrink-0 -mr-2 p-2.5 rounded-md hover:bg-white/10 transition-colors"
           aria-label="Menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="menu-icon--open w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg class="menu-icon--close w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M6 18L18 6" />
           </svg>
         </button>
 
         <!-- Desktop nav -->
-        <nav class="hidden md:flex gap-1">
-          {nav.map(({ href, label }) => (
-            <a
-              href={href}
-              class:list={[
-                'px-3 py-2 rounded text-sm font-medium transition-colors',
-                currentPath === href || (href !== asset('/') && currentPath.startsWith(href))
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white',
-              ]}
-            >
-              {label}
-            </a>
-          ))}
+        <nav class="hidden md:flex gap-1" aria-label="Hoofdmenu">
+          {nav.map(({ href, label }) => {
+            const active = currentPath === href || (href !== asset('/') && currentPath.startsWith(href));
+            return (
+              <a
+                href={href}
+                aria-current={active ? 'page' : undefined}
+                class:list={[
+                  'nav-link px-3 py-2 text-sm font-medium transition-colors',
+                  active ? 'nav-link--active text-white' : 'text-white/80 hover:text-white',
+                ]}
+              >
+                {label}
+              </a>
+            );
+          })}
         </nav>
       </div>
 
       <!-- Mobile nav -->
-      <nav id="mobile-menu" class="hidden md:hidden border-t border-white/10">
-        <div class="max-w-6xl mx-auto px-4 py-2">
-          {nav.map(({ href, label }) => (
-            <a
-              href={href}
-              class:list={[
-                'block px-3 py-2 rounded text-sm font-medium transition-colors',
-                currentPath === href || (href !== asset('/') && currentPath.startsWith(href))
-                  ? 'bg-white/20 text-white'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white',
-              ]}
-            >
-              {label}
-            </a>
-          ))}
+      <nav id="mobile-menu" class="md:hidden border-t border-white/10" aria-label="Hoofdmenu">
+        <div>
+          <div class="max-w-6xl mx-auto px-4 py-2 flex flex-col">
+            {nav.map(({ href, label }) => {
+              const active = currentPath === href || (href !== asset('/') && currentPath.startsWith(href));
+              return (
+                <a
+                  href={href}
+                  aria-current={active ? 'page' : undefined}
+                  class:list={[
+                    'block px-3 py-3 rounded-md text-base font-medium transition-colors border-l-2',
+                    active
+                      ? 'border-msa-gold bg-white/10 text-white'
+                      : 'border-transparent text-white/80 hover:bg-white/10 hover:text-white',
+                  ]}
+                >
+                  {label}
+                </a>
+              );
+            })}
+          </div>
         </div>
       </nav>
 
@@ -107,13 +132,10 @@ const nav = [
         <div class="bg-primary-dark/60 border-t border-white/10 text-white/80">
           <div class="max-w-6xl mx-auto px-4">
             <NextTag {...nextProps}>
-              <span class="shrink-0 rounded-full bg-white/15 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide">
-                {typeLabels[nextEvent.type ?? 'overig']}
-              </span>
-              <span class="next-event__date shrink-0 text-lg md:text-xl font-bold">{eventDateLabel(nextEvent)}</span>
-              <span class="truncate text-base md:text-lg font-semibold text-white">{nextEvent.title}</span>
+              <span class="truncate text-base font-semibold text-white">{nextEvent.title}</span>
+              <span class="next-event__date shrink-0 text-base font-semibold">{eventDateLabel(nextEvent)}</span>
               {nextEvent.location && (
-                <span class="hidden sm:inline truncate text-sm text-white/60">· {nextEvent.location}</span>
+                <span class="hidden sm:inline truncate text-base text-white/60">· {nextEvent.location}</span>
               )}
               {nextEvent.link && (
                 <span class="next-event__cta ml-auto shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-wide">
@@ -134,37 +156,101 @@ const nav = [
     <!-- Footer -->
 
     <footer class="bg-primary-dark text-white/70 text-sm">
-      <div class="max-w-6xl mx-auto px-4 py-8">
-        <div class="grid md:grid-cols-3 gap-8">
+      <div class="max-w-6xl mx-auto px-4 py-10 md:py-12">
+        <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
           <div>
-            <div class="font-semibold text-white mb-2">Modelspoorclub Alkmaar</div>
+            <a href={asset('/')} class="inline-flex items-center gap-3 mb-3">
+              <img src={asset('/images/logo.png')} alt="" class="h-8 w-auto" loading="lazy" />
+              <span class="font-heading uppercase text-white text-base">Modelspoorclub Alkmaar</span>
+            </a>
             <p>Koornlaan 23</p>
             <p>1815 GE Alkmaar</p>
-            <p>Iedere donderdagavond vanaf 19:30</p>
+            <p class="mt-2">Iedere donderdagavond vanaf 19:30</p>
           </div>
           <div>
-            <div class="font-semibold text-white mb-2">Navigatie</div>
-            <div class="flex flex-col gap-1">
+            <div class="font-semibold text-white mb-3">Navigatie</div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:block sm:space-y-1.5">
               {nav.map(({ href, label }) => (
-                <a href={href} class="hover:text-white transition-colors">{label}</a>
+                <a href={href} class="block hover:text-white transition-colors">{label}</a>
               ))}
             </div>
           </div>
           <div>
-            <div class="font-semibold text-white mb-2">Volg ons</div>
+            <div class="font-semibold text-white mb-3">Volg ons</div>
             <p><a href="https://www.facebook.com/modelspoorclubalkmaar/" target="_blank" rel="noopener" class="font-medium hover:text-white transition-colors">Facebook</a></p>
-            <p class="mt-2"><a href="mailto:secretarismsa@gmail.com">secretarismsa@gmail.com</a></p>
+            <p class="mt-2"><a href="mailto:secretarismsa@gmail.com" class="hover:text-white transition-colors break-all">secretarismsa@gmail.com</a></p>
           </div>
         </div>
-        <div class="mt-8 pt-4 border-t border-white/10 text-center">
+        <div class="mt-10 pt-4 border-t border-white/10 text-center text-xs text-white/50">
           &copy; {new Date().getFullYear()} Modelspoorclub Alkmaar
         </div>
       </div>
     </footer>
 
+    <script type="application/json" id="begrippen-data" set:html={JSON.stringify(begrippen)}></script>
     <script>
-      document.getElementById('menu-toggle')?.addEventListener('click', () => {
-        document.getElementById('mobile-menu')?.classList.toggle('hidden');
+      // Link the first mention of each begrip in the article copy. Runs over
+      // text nodes only, so existing links, headings and code are left alone.
+      // The begrip's own page is skipped (data-begrip on the wrapper).
+      type Begrip = { id: string; term: string; summary: string; href: string };
+      const data = document.getElementById('begrippen-data');
+      const prose = document.querySelector<HTMLElement>('.prose');
+      if (data && prose) {
+        const self = prose.dataset.begrip;
+        const terms: Begrip[] = JSON.parse(data.textContent || '[]')
+          .filter((b: Begrip) => b.id !== self)
+          // Longest first, so "N-schaal" wins over "N" if both ever exist.
+          .sort((a: Begrip, b: Begrip) => b.term.length - a.term.length);
+        const done = new Set<string>();
+        const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // A "-ing" term (Bezetmelding) is matched on its stem so "bezetmelder"
+        // counts too; the stem is what the lookup below compares against.
+        const stem = (t: string) => t.replace(/ing$/i, '');
+        // Whole word, case-insensitive, allowing the usual Dutch endings so
+        // "blokken", "decoders" and "bezetmelders" are mentions, while
+        // "2-railloc" is not.
+        const pattern = new RegExp(
+          `(?<![\\p{L}\\p{N}-])(${terms.map(t => escape(stem(t.term))).join('|')})(?:ing|ingen|ers|er|ken|en|e|s)?(?![\\p{L}\\p{N}-])`,
+          'iu',
+        );
+        const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+          acceptNode: node =>
+            node.parentElement?.closest('a, h1, h2, h3, h4, th, code, pre, .not-prose')
+              ? NodeFilter.FILTER_REJECT
+              : NodeFilter.FILTER_ACCEPT,
+        });
+        const nodes: Text[] = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+
+        for (const node of nodes) {
+          let text = node;
+          for (;;) {
+            const m = pattern.exec(text.data);
+            if (!m || m.index === undefined) break;
+            const begrip = terms.find(t => stem(t.term).toLowerCase() === m[1].toLowerCase());
+            const after = text.splitText(m.index);
+            const rest = after.splitText(m[0].length);
+            if (begrip && !done.has(begrip.id)) {
+              done.add(begrip.id);
+              const a = document.createElement('a');
+              a.className = 'begrip';
+              a.href = begrip.href;
+              a.dataset.summary = begrip.summary;
+              a.textContent = after.data;
+              after.replaceWith(a);
+            }
+            text = rest;
+          }
+        }
+      }
+
+      const toggle = document.getElementById('menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+      toggle?.addEventListener('click', () => {
+        const open = menu?.classList.toggle('is-open') ?? false;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.querySelector('.menu-icon--open')?.classList.toggle('hidden', open);
+        toggle.querySelector('.menu-icon--close')?.classList.toggle('hidden', !open);
       });
     </script>
   </body>

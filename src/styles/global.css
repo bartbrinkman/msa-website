@@ -447,15 +447,26 @@ body {
    Brochure standee
 
    Event posters are tall A-format sheets, an awkward shape for a wide hero.
-   Each sits tilted on its stand; with two, they overlap in a fan and trade
-   places on a slow loop so neither is permanently buried. Clicking opens the
-   poster full size.
+   Each sits tilted on its stand, overlapping the next in a fan. Clicking opens
+   the poster full size.
 
-   The swap lives on .standee__slot and the hover lift on .standee__paper --
-   two elements, so the animated transform and the hover transform compose
-   instead of one overriding the other.
+   Geometry is driven by two custom properties the component sets: --i, the
+   slot's position, and --n, how many there are. Everything below is derived
+   from those, so the fan works for any number of sheets and no rule is written
+   per count.
+
+   Reading order is the agenda's: the soonest event is leftmost and on top, so
+   the stacking runs the opposite way to the DOM and has to be set explicitly.
+
+   The fan-out lives on .standee__slot and the hover lift on .standee__paper --
+   two elements, so the two transforms compose instead of one overriding the
+   other.
    --------------------------------------------------------------------------- */
 .standee {
+  /* Tilt between neighbouring sheets, and how far a sheet is nudged aside to
+     clear the one being read. */
+  --standee-step: 5.5deg;
+  --standee-shift: 2.75rem;
   position: relative;
   z-index: 10;
   flex-shrink: 0;
@@ -466,10 +477,15 @@ body {
 }
 
 .standee__slot {
+  /* Position measured from the middle of the fan, so the spread stays centred
+     however many sheets there are: -1, 0, 1 for three; -0.5, 0.5 for two. */
+  --offset: calc(var(--i, 0) - (var(--n, 1) - 1) / 2);
   display: block;
   width: 8rem;
   transform-origin: 50% 60%;
-  transform: rotateX(7deg) rotateZ(-6deg);
+  /* Soonest first: slot 0 ends up highest. */
+  z-index: calc(var(--n, 1) - var(--i, 0));
+  transform: rotateX(7deg) rotateZ(calc(var(--offset) * var(--standee-step)));
   transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -477,10 +493,14 @@ body {
   .standee__slot { width: 9rem; }
 }
 
+/* A fan of one is not a fan: centring would stand it bolt upright, so a lone
+   sheet keeps the lean that makes it read as propped on a stand. */
+.standee__slot:only-child {
+  transform: rotateX(7deg) rotateZ(-6deg);
+}
+
 .standee__slot + .standee__slot {
   margin-left: -3.75rem;
-  z-index: 2;
-  transform: rotateX(7deg) rotateZ(4.5deg);
 }
 
 /* Floated: taken out of flow so the sheets overhang the section rather than
@@ -495,16 +515,31 @@ body {
   }
 }
 
-/* The stacking order is fixed: the second sheet is always on top. To see the
-   one behind it, the top sheet slides aside -- mostly a sideways nudge, with
-   just enough extra tilt to read as a sheet being moved rather than sliding on
-   rails. Nothing changes places, so nothing has to pass through anything.
+/* Reading a sheet fans the others out of its way: the ones stacked over it go
+   left, the ones it covers go right, each with a little extra tilt so it reads
+   as sheets being moved rather than sliding on rails. Both halves are written
+   as sibling relationships rather than by index, so they hold for any sheet in
+   a fan of any size -- :has() supplies the "before the hovered one" direction
+   that a sibling combinator alone cannot express.
 
    The hovered sheet itself never moves: sliding it out from under the pointer
-   would drop the hover and flicker. */
-.standee__slot:first-child:hover ~ .standee__slot,
-.standee__slot:first-child:focus-within ~ .standee__slot {
-  transform: rotateX(7deg) rotateZ(8deg) translate(3rem, 0.5rem);
+   would drop the hover and flicker. It only rises, which is enough to clear
+   whatever was overlapping it. */
+.standee__slot:hover,
+.standee__slot:focus-within {
+  z-index: calc(var(--n, 1) + 1);
+}
+
+.standee__slot:has(~ .standee__slot:hover),
+.standee__slot:has(~ .standee__slot:focus-within) {
+  transform: rotateX(7deg) rotateZ(calc(var(--offset) * var(--standee-step) - 3deg))
+    translate(calc(var(--standee-shift) * -1), 0.5rem);
+}
+
+.standee__slot:hover ~ .standee__slot,
+.standee__slot:focus-within ~ .standee__slot {
+  transform: rotateX(7deg) rotateZ(calc(var(--offset) * var(--standee-step) + 3deg))
+    translate(var(--standee-shift), 0.5rem);
 }
 
 .standee__paper {

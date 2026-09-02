@@ -1,7 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import BrochureStand from '../../components/BrochureStand.astro';
-import { asset } from '../../utils';
+import events from '../../content/events.json';
+import { asset, eventPosters } from '../../utils';
+
+// Ordered by the agenda: soonest first, and a poster leaves with its edition.
+const posters = eventPosters(events);
 ---
 
 <Base title="Activiteiten">
@@ -11,18 +15,18 @@ import { asset } from '../../utils';
         <h1 class="text-3xl md:text-5xl font-medium font-heading uppercase tracking-normal leading-tight">Activiteiten</h1>
         <p class="mt-3 text-white/80">Wat wij doen: wekelijks, jaarlijks en alles daartussenin.</p>
       </div>
-      <BrochureStand
-        float
-        items={[
-          { src: '/images/brochure/modelspoor-ruilbeurs-2026.jpg', alt: 'Poster van de Modelspoor Ruilbeurs' },
-          { src: '/images/brochure/nmd-dagen-2027.jpg', alt: 'Poster van de Noord-Hollandse Modelspoordagen' },
-        ]}
-      />
+      <BrochureStand float items={posters} />
     </div>
   </div>
 
 
   <div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="mb-8 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
+      <p class="text-gray-700">
+        Bekijk de <a href={asset("/agenda")} class="text-primary-light font-semibold">agenda</a> voor aankomende data.
+      </p>
+    </div>
+
     <div class="grid md:grid-cols-2 gap-6">
 
       <a href={asset("/activiteiten/clubavonden")} class="group card card__body card-hover bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:border-primary/30">
@@ -102,12 +106,6 @@ import { asset } from '../../utils';
         </div>
       </a>
 
-    </div>
-
-    <div class="mt-8 p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
-      <p class="text-gray-700">
-        Bekijk de <a href={asset("/agenda")} class="text-primary-light font-semibold">agenda</a> voor aankomende data.
-      </p>
     </div>
   </div>
 </Base>

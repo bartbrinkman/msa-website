@@ -1,6 +1,12 @@
 ---
 // One or more event posters shown as sheets on a desk stand. With several, they
-// overlap in a fan and hovering brings one forward. Clicking opens it full size.
+// overlap in a fan; the leftmost sheet is the next event and sits on top, and
+// hovering any sheet brings it forward while the rest fan out of its way.
+// Clicking opens a sheet full size.
+//
+// Any number of sheets works: each slot carries its own position (--i) and the
+// total (--n), and the stylesheet derives the tilt, the stacking order and the
+// fan-out from those two numbers. Nothing here is per-count.
 import { asset } from '../utils';
 
 interface Brochure {
@@ -19,9 +25,9 @@ const { items, float = false } = Astro.props;
 ---
 
 {items.length > 0 && (
-  <div class:list={['standee', float && 'standee--float']}>
-    {items.map((item) => (
-      <span class="standee__slot">
+  <div class:list={['standee', float && 'standee--float']} style={`--n:${items.length}`}>
+    {items.map((item, i) => (
+      <span class="standee__slot" style={`--i:${i}`}>
         <button
           type="button"
           class="standee__paper"

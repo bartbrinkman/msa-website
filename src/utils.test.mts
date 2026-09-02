@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { upcomingEvents, eventDateLabel, type EventItem } from './utils.ts';
+import { upcomingEvents, eventDateLabel, eventPosters, type EventItem } from './utils.ts';
 
 const EVENTS: EventItem[] = [
   { date: '2026-05-14', endDate: '2026-05-17', title: 'Excursie Darmstadt' },
@@ -47,6 +47,35 @@ test('rollover holds in a negative UTC offset', () => {
   } finally {
     process.env.TZ = prev;
   }
+});
+
+const POSTER_EVENTS: EventItem[] = [
+  { date: '2026-10-25', title: 'Open Dag MSA', poster: '/a.jpg' },
+  { date: '2026-09-12', title: 'Open Monumentendag' },
+  { date: '2027-02-27', title: 'Modelspoordagen', poster: '/c.jpg', posterAlt: 'Eigen alt' },
+  { date: '2026-11-08', title: 'Ruilbeurs', poster: '/b.jpg' },
+];
+
+const postersOn = (day: string) => eventPosters(POSTER_EVENTS, new Date(`${day}T12:00:00`));
+
+test('posters run soonest first, whatever order the agenda is written in', () => {
+  assert.deepEqual(postersOn('2026-09-01').map(p => p.src), ['/a.jpg', '/b.jpg', '/c.jpg']);
+});
+
+test('an event without a poster does not leave a gap in the fan', () => {
+  // Open Monumentendag is the next event but has no poster.
+  assert.equal(postersOn('2026-09-01').length, 3);
+});
+
+test('a poster retires with its own edition', () => {
+  assert.deepEqual(postersOn('2026-10-26').map(p => p.src), ['/b.jpg', '/c.jpg']);
+  assert.deepEqual(postersOn('2027-03-01'), []);
+});
+
+test('alt text falls back to the event title but an explicit one wins', () => {
+  const [openDag, , modelspoordagen] = postersOn('2026-09-01');
+  assert.equal(openDag.alt, 'Poster van Open Dag MSA');
+  assert.equal(modelspoordagen.alt, 'Eigen alt');
 });
 
 test('date labels cover single days, ranges, and cross-month ranges', () => {

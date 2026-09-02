@@ -33,7 +33,9 @@
     "description": "Alle banen te bezichtigen, kinderen gratis onder 12 jaar",
     "location": "Koornlaan 23, Alkmaar",
     "type": "opendag",
-    "link": "/activiteiten/open-dag"
+    "link": "/activiteiten/open-dag",
+    "poster": "/images/brochure/open-dag-2026.jpg",
+    "posterAlt": "Poster van de Open Dag MSA"
   },
   {
     "date": "2026-11-08",
@@ -41,7 +43,9 @@
     "description": "Modelspoorbeurs voor kopers en verkopers",
     "location": "OSG Willem Blaeu, Robonsbosweg 11, Alkmaar",
     "type": "beurs",
-    "link": "/activiteiten/ruilbeurs"
+    "link": "/activiteiten/ruilbeurs",
+    "poster": "/images/brochure/modelspoor-ruilbeurs-2026.jpg",
+    "posterAlt": "Poster van de Modelspoor Ruilbeurs"
   },
   {
     "date": "2027-02-27",
@@ -50,6 +54,8 @@
     "description": "15e editie van de jaarlijkse modelspoorexpositie",
     "location": "OSG Willem Blaeu, Robonsbosweg 11, Alkmaar",
     "type": "expositie",
-    "link": "/activiteiten/modelspoordagen"
+    "link": "/activiteiten/modelspoordagen",
+    "poster": "/images/brochure/nmd-dagen-2027.jpg",
+    "posterAlt": "Poster van de Noord-Hollandse Modelspoordagen"
   }
 ]

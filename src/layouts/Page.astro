@@ -14,7 +14,9 @@ interface Props {
   /** Renders a back link above the title, e.g. back to the banen overview. */
   backHref?: string;
   backLabel?: string;
-  /** Poster/flyer for this activity, shown in the hero as a desk stand. */
+  /** Poster/flyer for this activity, shown in the hero as a desk stand. Only
+      needed for a page with no event in the agenda -- where there is one, its
+      poster is used and this can be left off. */
   brochure?: string;
   brochureAlt?: string;
   when?: string;
@@ -33,6 +35,13 @@ const linkedEvent = upcomingEvents(events).find(
   e => e.link && asset(e.link).replace(/\/$/, '') === here,
 );
 const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
+
+// Same for the poster: the edition on show is the one in the agenda, so it
+// changes over with the event rather than being repointed by hand here.
+const posterSrc = linkedEvent?.poster ?? brochure;
+const posterAlt = linkedEvent?.poster
+  ? linkedEvent.posterAlt ?? `Poster van ${linkedEvent.title}`
+  : brochureAlt ?? `Poster ${hero}`;
 ---
 
 <Base title={title} description={description}>
@@ -82,7 +91,7 @@ const whenLabel = linkedEvent ? eventWhen(linkedEvent) : when;
           )}
           </div>
 
-          {brochure && <BrochureStand items={[{ src: brochure, alt: brochureAlt ?? `Poster ${hero}` }]} />}
+          {posterSrc && <BrochureStand items={[{ src: posterSrc, alt: posterAlt }]} />}
         </div>
       </div>
     </div>

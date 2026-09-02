@@ -14,6 +14,15 @@ export interface EventItem {
   endTime?: string;
   type?: string;
   link?: string;
+  /** Poster for this edition, e.g. /images/brochure/open-dag-2026.jpg */
+  poster?: string;
+  /** Alt text for the poster; falls back to the event title. */
+  posterAlt?: string;
+}
+
+export interface Poster {
+  src: string;
+  alt: string;
 }
 
 export const daysShort = ['zo', 'ma', 'di', 'wo', 'do', 'vr', 'za'];
@@ -58,6 +67,20 @@ export function upcomingEvents(events: EventItem[], limit?: number, today: Date 
     .filter(e => (e.endDate || e.date) >= cutoff)
     .sort((a, b) => a.date.localeCompare(b.date));
   return limit === undefined ? upcoming : upcoming.slice(0, limit);
+}
+
+/**
+ * Posters of the events still to come, soonest first.
+ *
+ * The agenda is the authority here too: a poster hangs off its event, so the
+ * standee orders itself by date and a poster retires with its edition instead
+ * of having to be pulled from a hand-kept list. Order is left-to-right in the
+ * fan, which puts the next event on the left and on top.
+ */
+export function eventPosters(events: EventItem[], today: Date = new Date()): Poster[] {
+  return upcomingEvents(events, undefined, today)
+    .filter(e => e.poster)
+    .map(e => ({ src: e.poster!, alt: e.posterAlt ?? `Poster van ${e.title}` }));
 }
 
 /** Compact date label: "12 sep", or "14–17 mei" for a range within one month. */

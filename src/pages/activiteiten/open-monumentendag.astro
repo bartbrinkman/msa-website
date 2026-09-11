@@ -5,6 +5,7 @@ import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
 
 const images = carousels.openmonumentendag;
+const opbouw = carousels['openmonumentendag-opbouw'];
 ---
 
 <Page
@@ -37,6 +38,16 @@ const images = carousels.openmonumentendag;
     over de hobby, de geschiedenis van de club en de banen die wij in
     Alkmaar onderhouden.
   </p>
+
+  <h2 id="opbouw">De opbouw</h2>
+  <p>
+    De dag voor de Erfgoedmarkt rijden wij de modules naar de Grote
+    Kerk en bouwen wij de baan op in het middenschip. Modules aansluiten,
+    de bedrading controleren en proefrijden: aan het eind van de middag
+    staat alles klaar voor de bezoekers van de volgende dag.
+  </p>
+
+  <Carousel images={opbouw} id="openmonumentendag-opbouw" />
 
   <h2>Voor wie?</h2>
   <p>

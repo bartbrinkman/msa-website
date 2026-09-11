@@ -689,5 +689,32 @@
       "title": "Drukte langs het spoor",
       "description": "Bezoekers volgen de treinen door het landschap"
     }
+  ],
+  "openmonumentendag-opbouw": [
+    {
+      "src": "/images/openmonumentendag-opbouw/1000090905.jpg",
+      "title": "Klaar voor de Erfgoedmarkt",
+      "description": "De modulebaan opgesteld in het middenschip van de Grote Kerk"
+    },
+    {
+      "src": "/images/openmonumentendag-opbouw/1000090906.jpg",
+      "title": "Meters spoor onder de gewelven",
+      "description": "De modules aaneengesloten langs de kerkmuur"
+    },
+    {
+      "src": "/images/openmonumentendag-opbouw/1000090899.jpg",
+      "title": "Laatste controle",
+      "description": "Leden sluiten de modules aan en testen de baan"
+    },
+    {
+      "src": "/images/openmonumentendag-opbouw/1000090896.jpg",
+      "title": "Onze banner bij de ingang",
+      "description": "Zo vinden bezoekers de weg naar de baan"
+    },
+    {
+      "src": "/images/openmonumentendag-opbouw/1000090902.jpg",
+      "title": "Tussen de grafzerken",
+      "description": "Een kopmodule naast de vitrines van de kerk"
+    }
   ]
 }

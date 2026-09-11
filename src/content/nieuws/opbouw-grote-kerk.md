@@ -7,9 +7,10 @@ link: "/activiteiten/open-monumentendag#opbouw"
 draft: false
 ---
 
-De modules zijn naar de Grote Kerk gereden en in het middenschip aan elkaar
-gekoppeld. Na het aansluiten van de bedrading en een proefrit staat de baan
-klaar voor de bezoekers van de Erfgoedmarkt.
+De modules van onze baan Bergen – Bergen aan Zee zijn naar de Grote Kerk
+gereden en in het middenschip aan elkaar gekoppeld. Na het aansluiten van de
+bedrading en een proefrit staat de baan klaar voor de bezoekers van de
+Erfgoedmarkt.
 
 Kom langs op Open Monumentendag en zie de treinen rijden onder de gewelven
 van de kerk.

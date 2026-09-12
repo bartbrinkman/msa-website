@@ -43,29 +43,51 @@ export const typeLabels: Record<string, string> = {
   overig: 'Overig',
 };
 
-/** Local calendar day as YYYY-MM-DD, matching the format used in events.json. */
-function isoDay(d: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+/**
+ * The clock the agenda runs on. The site is built wherever the build happens
+ * to run (GitHub Actions is UTC), so the club's own time zone is fixed here
+ * rather than taken from the machine.
+ */
+const SITE_TIMEZONE = 'Europe/Amsterdam';
+
+const clockFormat = new Intl.DateTimeFormat('en-GB', {
+  timeZone: SITE_TIMEZONE,
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+});
+
+/**
+ * Calendar day as YYYY-MM-DD and clock time as HH:MM in the site's time zone,
+ * matching the formats used in events.json.
+ */
+function siteClock(d: Date): { day: string; time: string } {
+  const p: Record<string, string> = {};
+  for (const { type, value } of clockFormat.formatToParts(d)) p[type] = value;
+  return { day: `${p.year}-${p.month}-${p.day}`, time: `${p.hour}:${p.minute}` };
 }
 
 /**
  * Events that have not finished yet, soonest first.
  *
- * An event stays in the list for the whole of its own day (and, for a range,
- * through its endDate) and drops out the day after, so the head of the list is
- * always the next event. Dates are compared as YYYY-MM-DD strings rather than
- * Date objects: parsing "2026-09-12" yields UTC midnight, which lands on the
- * wrong side of a local midnight in negative UTC offsets and would retire an
- * event a day early.
+ * An event stays in the list through its own day (or, for a range, through
+ * its endDate) and drops out the day after, so the head of the list is always
+ * the next event. An event with an endTime drops out as soon as that time has
+ * passed on its last day, so the evening after an open day already points at
+ * whatever comes next. Days and times are compared as strings rather than Date
+ * objects: parsing "2026-09-12" yields UTC midnight, which lands on the wrong
+ * side of a local midnight in negative UTC offsets and would retire an event a
+ * day early.
  *
- * `today` is injectable so the rollover can be tested at a fixed date.
+ * `today` is injectable so the rollover can be tested at a fixed moment.
  */
 export function upcomingEvents(events: EventItem[], limit?: number, today: Date = new Date()): EventItem[] {
-  const cutoff = isoDay(today);
-  const upcoming = events
-    .filter(e => (e.endDate || e.date) >= cutoff)
-    .sort((a, b) => a.date.localeCompare(b.date));
+  const now = siteClock(today);
+  const stillOn = (e: EventItem) => {
+    const lastDay = e.endDate || e.date;
+    if (lastDay !== now.day) return lastDay > now.day;
+    return !e.endTime || e.endTime > now.time;
+  };
+  const upcoming = events.filter(stillOn).sort((a, b) => a.date.localeCompare(b.date));
   return limit === undefined ? upcoming : upcoming.slice(0, limit);
 }
 

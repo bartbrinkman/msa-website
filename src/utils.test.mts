@@ -49,6 +49,39 @@ test('rollover holds in a negative UTC offset', () => {
   }
 });
 
+const TIMED_EVENTS: EventItem[] = [
+  { date: '2026-09-12', endTime: '17:00', title: 'Open Monumentendag' },
+  { date: '2026-10-25', title: 'Open Dag MSA' },
+];
+
+const timedNextAt = (moment: string) => upcomingEvents(TIMED_EVENTS, undefined, new Date(moment))[0]?.title ?? null;
+
+test('an event with an endTime retires once that time has passed on its day', () => {
+  assert.equal(timedNextAt('2026-09-12T16:59:00+02:00'), 'Open Monumentendag', 'still running');
+  assert.equal(timedNextAt('2026-09-12T17:00:00+02:00'), 'Open Dag MSA', 'closing time');
+  assert.equal(timedNextAt('2026-09-12T21:00:00+02:00'), 'Open Dag MSA', 'that evening');
+});
+
+test('the clock is read in the club\'s time zone, not the build machine\'s', () => {
+  // 15:30 UTC is 17:30 in Alkmaar: the open day is over, whatever TZ the
+  // build runs in.
+  const prev = process.env.TZ;
+  for (const tz of ['UTC', 'America/Los_Angeles', 'Asia/Tokyo']) {
+    process.env.TZ = tz;
+    try {
+      assert.equal(timedNextAt('2026-09-12T15:30:00Z'), 'Open Dag MSA', tz);
+      assert.equal(timedNextAt('2026-09-12T14:30:00Z'), 'Open Monumentendag', tz);
+    } finally {
+      process.env.TZ = prev;
+    }
+  }
+});
+
+test('an event without an endTime keeps showing for the whole of its day', () => {
+  assert.equal(nextOn('2026-09-12'), 'Open Monumentendag');
+  assert.equal(upcomingEvents(EVENTS, undefined, new Date('2026-09-12T23:30:00+02:00'))[0]?.title, 'Open Monumentendag');
+});
+
 const POSTER_EVENTS: EventItem[] = [
   { date: '2026-10-25', title: 'Open Dag MSA', poster: '/a.jpg' },
   { date: '2026-09-12', title: 'Open Monumentendag' },

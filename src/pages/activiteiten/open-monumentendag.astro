@@ -6,6 +6,7 @@ import { asset } from '../../utils';
 
 const images = carousels.openmonumentendag;
 const opbouw = carousels['openmonumentendag-opbouw'];
+const erfgoedmarkt = carousels['openmonumentendag-erfgoedmarkt'];
 ---
 
 <Page
@@ -24,7 +25,7 @@ const opbouw = carousels['openmonumentendag-opbouw'];
 
   <Carousel images={images} id="openmonumentendag" />
 
-  <h2>MSA op de Erfgoedmarkt</h2>
+  <h2 id="erfgoedmarkt">MSA op de Erfgoedmarkt</h2>
   <p>
     De MSA neemt jaarlijks deel aan de Erfgoedmarkt in de Grote Kerk van
     Alkmaar, een ontmoetingsplek voor erfgoedverenigingen, historische
@@ -38,6 +39,8 @@ const opbouw = carousels['openmonumentendag-opbouw'];
     over de hobby, de geschiedenis van de club en de banen die wij in
     Alkmaar onderhouden.
   </p>
+
+  <Carousel images={erfgoedmarkt} id="openmonumentendag-erfgoedmarkt" />
 
   <h2 id="opbouw">De opbouw</h2>
   <p>

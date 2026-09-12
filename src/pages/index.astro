@@ -19,6 +19,7 @@ const nieuws = (await getCollection('nieuws', ({ data }) => !data.draft))
 // Hero slideshow. Each source is pre-cropped (see originals/README.md) to a wide
 // band with its subject on the 2/3 line, so the markup needs no per-image framing.
 const heroSlides = [
+  { src: '/images/hero/4.jpg' },
   { src: '/images/hero/0.jpg' },
   { src: '/images/hero/1.jpg' },
   { src: '/images/hero/2.jpg' },
@@ -111,20 +112,20 @@ const SLIDE_SECONDS = 8;
 
   <style>
     /* Ken Burns: each slide holds for SLIDE_SECONDS, zooming from its own origin,
-       then crossfades into the next. Four slides at 8s = a 32s loop. */
+       then crossfades into the next. Five slides at 8s = a 40s loop. */
     .hero-slide {
       opacity: 0;
       transform: scale(1.04);
-      animation: hero-kenburns 32s linear infinite;
+      animation: hero-kenburns 40s linear infinite;
       will-change: transform, opacity;
     }
 
     @keyframes hero-kenburns {
       0%      { opacity: 0; transform: scale(1.04); }
-      3%      { opacity: 1; }
-      25%     { opacity: 1; }
-      28%     { opacity: 0; transform: scale(1.16); }
-      28.01%  { transform: scale(1.04); }
+      2.4%    { opacity: 1; }
+      20%     { opacity: 1; }
+      22.4%   { opacity: 0; transform: scale(1.16); }
+      22.41%  { transform: scale(1.04); }
       100%    { opacity: 0; transform: scale(1.04); }
     }
 

@@ -1,9 +1,12 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
 import banen from '../../content/banen.json';
 
 const baan = banen.find(b => b.href === '/banen/modulebaan')!;
+const images = carousels.modulebaan;
 ---
 
 <Page backHref="/banen" backLabel="Alle banen" title="Modulebaan" hero="Modulebaan" heroImage={baan.image}>
@@ -15,6 +18,8 @@ const baan = banen.find(b => b.href === '/banen/modulebaan')!;
     baan van de MSA. De baan beeldt de historische Noord-Hollandse
     stoomtramlijnen uit door het West-Friese landschap.
   </p>
+
+  <Carousel images={images} id="modulebaan" />
 
   <h2>Trajecten</h2>
   <p>De modulebaan bestaat uit meerdere deelbanen die ook afzonderlijk naar exposities gaan:</p>

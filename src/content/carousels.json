@@ -1,20 +1,96 @@
 {
   "alkmaarbaan-verbouwing": [
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251106_231956.jpg",
-      "title": "Brug verwijderd"
+      "src": "/images/alkmaarbaan-verbouwing/20260924_222125.jpg",
+      "title": "Brug in aanbouw",
+      "description": "De bovenbouw van de brug over het kanaal wordt opnieuw opgebouwd"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251106_232008.jpg",
-      "title": "Spoor verwijderd"
+      "src": "/images/alkmaarbaan-verbouwing/20260924_220520.jpg",
+      "title": "Proefrijden met iTrain",
+      "description": "Op de nieuwe sporen van het schaduwstation wordt de aansturing vanuit iTrain getest"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251106_232014.jpg",
-      "title": "Brug verwijderd"
+      "src": "/images/alkmaarbaan-verbouwing/20260924_220516.jpg",
+      "title": "Nieuwe systeemkaarten",
+      "description": "Het besturingspaneel is uitgebreid met extra Dinamo-kaarten en relais voor de vernieuwde sporen"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251113_201221.jpg",
-      "title": "Inweken"
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002252.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002243.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002239.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260417_002232.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_230138.jpg",
+      "title": "Meer spoor"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_230134.jpg",
+      "title": "Meer spoor"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_230131.jpg",
+      "title": "Meer spoor"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_220717.jpg",
+      "title": "Tweede schaduwstation"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_220636.jpg",
+      "title": "Bijwerken"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_220628.jpg",
+      "title": "Spoor opbouwen"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_220620.jpg",
+      "title": "Spoor opbouwen"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_220614.jpg",
+      "title": "Spoor opbouwen"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20260129_220611.jpg",
+      "title": "Spoor opbouwen"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251211_202301.jpg",
+      "title": "Verfen"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251211_202256.jpg",
+      "title": "Verfen"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251204_232105.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251204_232103.jpg",
+      "title": ""
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251113_230137.jpg",
+      "title": "Wegbikken"
+    },
+    {
+      "src": "/images/alkmaarbaan-verbouwing/20251113_221503.jpg",
+      "title": "Het oude station Heerhugowaard",
+      "description": "Dit deel van de baan kan in het geheel worden verwijderd en worden vervangen voor een station met ruimte voor langere treinen."
     },
     {
       "src": "/images/alkmaarbaan-verbouwing/20251113_201230.jpg",
@@ -25,81 +101,20 @@
       "title": "Inweken"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251113_221503.jpg",
-      "title": "Het oude station Heerhugowaard",
-      "description": "Dit deel van de baan kan in het geheel worden verwijderd en worden vervangen voor een station met ruimte voor langere treinen."
+      "src": "/images/alkmaarbaan-verbouwing/20251113_201221.jpg",
+      "title": "Inweken"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251113_230137.jpg",
-      "title": "Wegbikken"
+      "src": "/images/alkmaarbaan-verbouwing/20251106_232014.jpg",
+      "title": "Brug verwijderd"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251211_202256.jpg",
-      "title": "Verfen"
+      "src": "/images/alkmaarbaan-verbouwing/20251106_232008.jpg",
+      "title": "Spoor verwijderd"
     },
     {
-      "src": "/images/alkmaarbaan-verbouwing/20251204_232103.jpg",
-      "title": ""
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20251204_232105.jpg",
-      "title": ""
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20251211_202301.jpg",
-      "title": "Verfen"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_220611.jpg",
-      "title": "Spoor opbouwen"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_220614.jpg",
-      "title": "Spoor opbouwen"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_220620.jpg",
-      "title": "Spoor opbouwen"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_220628.jpg",
-      "title": "Spoor opbouwen"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_220636.jpg",
-      "title": "Bijwerken"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_220717.jpg",
-      "title": "Tweede schaduwstation"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_230131.jpg",
-      "title": "Meer spoor"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_230134.jpg",
-      "title": "Meer spoor"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260129_230138.jpg",
-      "title": "Meer spoor"
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260417_002232.jpg",
-      "title": ""
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260417_002239.jpg",
-      "title": ""
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260417_002243.jpg",
-      "title": ""
-    },
-    {
-      "src": "/images/alkmaarbaan-verbouwing/20260417_002252.jpg",
-      "title": ""
+      "src": "/images/alkmaarbaan-verbouwing/20251106_231956.jpg",
+      "title": "Brug verwijderd"
     }
   ],
   "alkmaarbaan": [

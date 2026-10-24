@@ -1,7 +1,11 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
 import banen from '../../content/banen.json';
+
+const images = carousels['n-modulebaan'];
 
 const baan = banen.find(b => b.href === '/banen/n-modulebaan')!;
 ---
@@ -12,9 +16,11 @@ const baan = banen.find(b => b.href === '/banen/n-modulebaan')!;
   <h2>Het verhaal</h2>
   <p>
     Naast de bestaande N-baan wordt er gewerkt aan een geheel nieuwe
-    modulebaan in N-schaal. De bouw is gestart met de eerste vier modules
-    en twee keerlussen. De benodigde techniek is grotendeels al beschikbaar.
+    modulebaan in N-schaal. De bouw is gestart met de eerste
+    modules. De benodigde techniek is grotendeels al beschikbaar.
   </p>
+
+  <Carousel images={images} id="n-modulebaan" />
 
   <p>
     <em>Meer informatie volgt naarmate het project vordert. Kom gerust langs

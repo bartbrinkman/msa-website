@@ -213,6 +213,55 @@
   ],
   "märklinbaan": [
     {
+      "src": "/images/marklinbaan/20260903_231457.jpg",
+      "title": "Stad en station",
+      "description": "Met de tunnels in de berg erachter"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231555.jpg",
+      "title": "Verkeersbrug over het water",
+      "description": "Met vrachtwagens op de brug en boten eronder"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231905.jpg",
+      "title": "Voetbalstadion"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231736.jpg",
+      "title": "Rijdende auto's",
+      "description": "Druk verkeer door de stad"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_232205.jpg",
+      "title": "Seinen bij het emplacement"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231722.jpg",
+      "title": "Spoorbruggen",
+      "description": "Twee boogbruggen over de rivier"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231512.jpg",
+      "title": "Aankomst op het station"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231439.jpg",
+      "title": "Stadsgezicht"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231833.jpg",
+      "title": "Langs de rotswand"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231744.jpg",
+      "title": "Over het viaduct"
+    },
+    {
+      "src": "/images/marklinbaan/20260903_231639.jpg",
+      "title": "Achter de schermen",
+      "description": "Onder en achter de baan"
+    },
+    {
       "src": "/images/marklinbaan/marklin_1station.jpg",
       "title": "Het station"
     },
@@ -276,6 +325,15 @@
   ],
   "hoogovenbaan": [
     {
+      "src": "/images/hoogovenbaan/20261023_005131.jpg",
+      "title": "De walserij"
+    },
+    {
+      "src": "/images/hoogovenbaan/20261023_005158.jpg",
+      "title": "Lange goederentreinen",
+      "description": "Ketelwagens en open wagens voor grondstoffen en producten"
+    },
+    {
       "src": "/images/hoogovenbaan/hoogoven_1oven.jpg",
       "title": "De hoogoven",
       "description": "Met rook- en lichteffecten"
@@ -298,6 +356,88 @@
     }
   ],
   "nbaan": [
+    {
+      "src": "/images/nbaan/20261015_202300.jpg",
+      "title": "Kopstation",
+      "description": "Met 5 sporen en het grote stationsgebouw"
+    },
+    {
+      "src": "/images/nbaan/20261015_202256.jpg",
+      "title": "Aan het perron"
+    },
+    {
+      "src": "/images/nbaan/20261015_221411.jpg",
+      "title": "Draaischijf",
+      "description": "Bij het locomotiefdepot"
+    },
+    {
+      "src": "/images/nbaan/20261015_221511.jpg",
+      "title": "Eifellandschap",
+      "description": "Rotsen, een waterval en huizen tegen de berg"
+    },
+    {
+      "src": "/images/nbaan/20261015_202054.jpg",
+      "title": "Hondekoppen"
+    },
+    {
+      "src": "/images/nbaan/20261015_221502.jpg",
+      "title": "Nieuw gras",
+      "description": "Bij het locomotiefdepot en rangeerterrein"
+    },
+    {
+      "src": "/images/nbaan/20261015_220845.jpg",
+      "title": "Inmeten van een 2200"
+    },
+    {
+      "src": "/images/nbaan/20260910_215231.jpg",
+      "title": "Stationsplein",
+      "description": "Het kopstation met de stad erachter"
+    },
+    {
+      "src": "/images/nbaan/20260910_215855.jpg",
+      "title": "Vectron in NS-kleuren"
+    },
+    {
+      "src": "/images/nbaan/20260910_215436.jpg",
+      "title": "Burcht op de rots"
+    },
+    {
+      "src": "/images/nbaan/20260910_215022.jpg",
+      "title": "Locomotief van DRS"
+    },
+    {
+      "src": "/images/nbaan/20260910_215425.jpg",
+      "title": "Koeien in de wei"
+    },
+    {
+      "src": "/images/nbaan/20260910_215118.jpg",
+      "title": "Koploper",
+      "description": "Langs de huizen van de stad"
+    },
+    {
+      "src": "/images/nbaan/20260910_215049.jpg",
+      "title": "Aan het perron"
+    },
+    {
+      "src": "/images/nbaan/20260910_215300.jpg",
+      "title": "Muziektent"
+    },
+    {
+      "src": "/images/nbaan/20260910_215324.jpg",
+      "title": "Laden en lossen"
+    },
+    {
+      "src": "/images/nbaan/20260910_215310.jpg",
+      "title": "Werk aan de weg"
+    },
+    {
+      "src": "/images/nbaan/20260910_215245.jpg",
+      "title": "Seinhuis"
+    },
+    {
+      "src": "/images/nbaan/20260910_215221.jpg",
+      "title": "Locomotiefdepot"
+    },
     {
       "src": "/images/nbaan/N_spoorplan.png",
       "title": "Sporenplan",
@@ -325,6 +465,13 @@
       "src": "/images/nbaan/N_5bergen.jpg",
       "title": "Berglandschap",
       "description": "Geïnspireerd op de Eifel"
+    }
+  ],
+  "n-modulebaan": [
+    {
+      "src": "/images/n-modulebaan/20261015_205505.jpg",
+      "title": "Onderkant van een module",
+      "description": "De bedrading wordt aangelegd"
     }
   ],
   "darmstadt": [

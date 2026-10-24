@@ -11,9 +11,9 @@
     "title": "Märklinbaan",
     "href": "/banen/marklinbaan",
     "scale": "H0 (1:87), 3-rail AC",
-    "description": "Fictieve baan met bergen, tunnels, rijdende auto's en bewegende figuren. Besturing via iTrain met 15+ locomotieven.",
+    "description": "Fictieve baan met bergen, tunnels, rijdende auto's en bewegende figuren. Besturing via iTrain.",
     "category": "vast",
-    "image": "/images/marklinbaan/marklin_1station.jpg"
+    "image": "/images/marklinbaan/20260903_231457.jpg"
   },
   {
     "title": "Hoogovenbaan",
@@ -29,7 +29,7 @@
     "scale": "N (1:160), 2-rail DC",
     "description": "Duits stadsbeeld en Eifellandschap op 1,70 x 6,00 meter. Met dag/nacht LED-cyclus en geluidseffecten.",
     "category": "vast",
-    "image": "/images/nbaan/N_2station.jpg"
+    "image": "/images/nbaan/20261015_202300.jpg"
   },
   {
     "title": "Modulebaan",
@@ -43,8 +43,9 @@
     "title": "Bergen – Bergen aan Zee",
     "href": "/banen/bergen",
     "scale": "H0 (1:87)",
-    "description": "Deelbaan van de modulebaan, momenteel in grondige renovatie met nieuwe modules en digitalisering.",
+    "description": "Deel van de modulebaan dat van de grond af wordt vernieuwd: nieuwe modules, nieuw spoor en digitale besturing.",
     "category": "module",
+    "status": "In vernieuwing",
     "image": "/images/bergenbaan-verbouwing/20251216_212057.jpg"
   },
   {
@@ -53,6 +54,7 @@
     "scale": "N (1:160)",
     "description": "Nieuwe modulebaan in N-schaal.",
     "category": "module",
-    "status": "In ontwikkeling"
+    "status": "In ontwikkeling",
+    "image": "/images/n-modulebaan/20261015_205505.jpg"
   }
 ]

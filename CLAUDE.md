@@ -5,5 +5,6 @@ See [OVERVIEW.md](OVERVIEW.md) for stack and structure.
 ## Content rules
 
 - **Dates only in the calendar** ([src/content/events.json](src/content/events.json)). Never in article copy — it goes stale. Phrase narrative pages undated ("voor de jaarlijkse open dag", not "op 25 oktober 2026").
+- **No counts of things that change** in page copy: modules, schaduwstations, locomotieven ("de eerste modules", "meerdere schaduwstations", not "vier modules", "3 tot 4 schaduwstations", "15+ locomotieven"). Like dates, they go stale. Dated news items are snapshots and may keep theirs.
 - **Calendar is public-facing only.** No werkavonden, laadlogistiek, bestuursvergaderingen, ALV, of opruimavonden. Test: would a visitor without club ties want to attend?
 - **Link calendar events to their activity page** when one exists. If an event in [src/content/events.json](src/content/events.json) corresponds to a page under [src/pages/activiteiten/](src/pages/activiteiten/), set its `link` field. Check both directions when adding events or activity pages.

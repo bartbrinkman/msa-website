@@ -119,6 +119,52 @@
   ],
   "alkmaarbaan": [
     {
+      "src": "/images/alkmaarbaan/20261025_104644.jpg",
+      "title": "Station Alkmaar",
+      "description": "Het emplacement vol treinen"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_104648.jpg",
+      "title": "Volle sporen"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_104456.jpg",
+      "title": "Langs het perron"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_144420.jpg",
+      "title": "Locomotieven op het emplacement"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_145133.jpg",
+      "title": "Treinstel bij het station"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_145150.jpg",
+      "title": "Treinen voor het station"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_145337.jpg",
+      "title": "De brug over het kanaal"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_145755.jpg",
+      "title": "In de bocht"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_150018.jpg",
+      "title": "Overzicht van de baan"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_150033.jpg",
+      "title": "De besturing",
+      "description": "Alle treinen in beeld in iTrain"
+    },
+    {
+      "src": "/images/alkmaarbaan/20261025_150044.jpg",
+      "title": "Nachtsfeer"
+    },
+    {
       "src": "/images/alkmaarbaan/20260326_205538.jpg",
       "title": ""
     },
@@ -212,6 +258,34 @@
     }
   ],
   "märklinbaan": [
+    {
+      "src": "/images/marklinbaan/20261025_145958.jpg",
+      "title": "Over de brug"
+    },
+    {
+      "src": "/images/marklinbaan/20261025_145852.jpg",
+      "title": "Stoomtrein langs de stad"
+    },
+    {
+      "src": "/images/marklinbaan/20261025_145017.jpg",
+      "title": "Stoom en elektrisch"
+    },
+    {
+      "src": "/images/marklinbaan/20261025_144821.jpg",
+      "title": "Onder de stationskap"
+    },
+    {
+      "src": "/images/marklinbaan/20261025_144834.jpg",
+      "title": "Treinstel aan het perron"
+    },
+    {
+      "src": "/images/marklinbaan/20261025_145036.jpg",
+      "title": "Locomotieven op het emplacement"
+    },
+    {
+      "src": "/images/marklinbaan/20261025_145043.jpg",
+      "title": "Goederentrein bij het station"
+    },
     {
       "src": "/images/marklinbaan/20260903_231457.jpg",
       "title": "Stad en station",
@@ -325,6 +399,22 @@
   ],
   "hoogovenbaan": [
     {
+      "src": "/images/hoogovenbaan/20261025_104739.jpg",
+      "title": "Bij het station"
+    },
+    {
+      "src": "/images/hoogovenbaan/20261025_145924.jpg",
+      "title": "Over het viaduct"
+    },
+    {
+      "src": "/images/hoogovenbaan/20261025_104328.jpg",
+      "title": "Spoorbrug"
+    },
+    {
+      "src": "/images/hoogovenbaan/20261024_143804.jpg",
+      "title": "Ketelwagens"
+    },
+    {
       "src": "/images/hoogovenbaan/20261023_005131.jpg",
       "title": "De walserij"
     },
@@ -356,6 +446,31 @@
     }
   ],
   "nbaan": [
+    {
+      "src": "/images/nbaan/20261025_104508.jpg",
+      "title": "Stad en kopstation"
+    },
+    {
+      "src": "/images/nbaan/20261025_150102.jpg",
+      "title": "Bij nacht",
+      "description": "De dag-en-nachtcyclus in actie"
+    },
+    {
+      "src": "/images/nbaan/20261025_103612.jpg",
+      "title": "Overzicht van de baan"
+    },
+    {
+      "src": "/images/nbaan/20261025_103628.jpg",
+      "title": "Treinstel in het landschap"
+    },
+    {
+      "src": "/images/nbaan/20261025_104516.jpg",
+      "title": "Het emplacement"
+    },
+    {
+      "src": "/images/nbaan/20261025_150106.jpg",
+      "title": "Avondtrein"
+    },
     {
       "src": "/images/nbaan/20261015_202300.jpg",
       "title": "Kopstation",
@@ -764,6 +879,59 @@
   ],
   "opendag": [
     {
+      "src": "/images/opendag/20261025_103424.jpg",
+      "title": "Druk bij de Alkmaarbaan"
+    },
+    {
+      "src": "/images/opendag/20261025_095128.jpg",
+      "title": "Klaar voor de bezoekers"
+    },
+    {
+      "src": "/images/opendag/20261025_103426.jpg",
+      "title": "Volle zolder"
+    },
+    {
+      "src": "/images/opendag/20261025_104726.jpg",
+      "title": "Bij de Märklinbaan"
+    },
+    {
+      "src": "/images/opendag/20261025_103429.jpg",
+      "title": "Uitleg bij de banen"
+    },
+    {
+      "src": "/images/opendag/20261025_145946.jpg",
+      "title": "Even filmen"
+    },
+    {
+      "src": "/images/opendag/20261025_103652.jpg",
+      "title": "Langs de Alkmaarbaan"
+    },
+    {
+      "src": "/images/opendag/20261025_145530.jpg",
+      "title": "Aan de bediening"
+    },
+    {
+      "src": "/images/opendag/20261025_104722.jpg",
+      "title": "Rondkijken"
+    },
+    {
+      "src": "/images/opendag/20261025_145538.jpg",
+      "title": "Uitzicht over de zolder"
+    },
+    {
+      "src": "/images/opendag/20261025_145506.jpg",
+      "title": "Kijken bij de Märklinbaan"
+    },
+    {
+      "src": "/images/opendag/20261024_141001.jpg",
+      "title": "Rijden met de handregelaar"
+    },
+    {
+      "src": "/images/opendag/20261025_150111.jpg",
+      "title": "Avond op de N-baan",
+      "description": "De dag-en-nachtcyclus in actie"
+    },
+    {
       "src": "/images/opendag/20251026_110513.jpg",
       "title": ""
     },
@@ -773,10 +941,6 @@
     },
     {
       "src": "/images/opendag/20251026_151657.jpg",
-      "title": ""
-    },
-    {
-      "src": "/images/opendag/20251028_112714.jpg",
       "title": ""
     }
   ],

@@ -1,6 +1,10 @@
 ---
 import Page from '../../layouts/Page.astro';
+import Carousel from '../../components/Carousel.astro';
+import carousels from '../../content/carousels.json';
 import { asset } from '../../utils';
+
+const images = carousels.opendag;
 ---
 
 <Page
@@ -21,7 +25,16 @@ import { asset } from '../../utils';
     <li>Alle banen op de zolder</li>
     <li>Digitale besturing met iTrain, van dichtbij te volgen</li>
     <li>Leden die uitleg geven over bouwen, bedraden en rijden</li>
+    <li>Extra's om zelf te bedienen, zoals de draaischijf op de Alkmaarbaan en de brandweerknop op de Hoogovenbaan</li>
   </ul>
+
+  <h2 id="fotos">Foto's</h2>
+  <p>
+    Een indruk van de open dag: een volle zolder, rijdende treinen op alle
+    banen en leden die graag vertellen over hun hobby.
+  </p>
+
+  <Carousel images={images} id="opendag" />
 
   <h2>Voor wie?</h2>
   <p>

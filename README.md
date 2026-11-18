@@ -18,6 +18,8 @@ Clubleden met schrijfrechten op deze repository kunnen Claude vragen de site aan
 3. Bekijk de pull request. Nog iets anders, of stelt Claude een vraag? Reageer **in de pull request** met **@claude** en je antwoord. Claude past dan dezelfde pull request aan. (Een reactie in het issue start een nieuwe, aparte pull request.)
 4. Klik op **Merge** als het goed is. De site wordt dan automatisch bijgewerkt.
 
+Elke pull request krijgt een **preview**: de site zoals die eruitziet met de wijziging, op `https://bartbrinkman.github.io/msa-website/pr/<nummer>/`. Na elke wijziging verschijnt in de pull request een reactie "Preview bijgewerkt" zodra de nieuwe versie klaar is.
+
 Een groen vinkje bij de pull request betekent dat de tests en de build slagen. `@claude` werkt ook bij een regel in **Files changed**, en in een nieuw issue zonder sjabloon. Zie [.github/workflows/claude.yml](.github/workflows/claude.yml) voor de configuratie.
 
 ## Local development

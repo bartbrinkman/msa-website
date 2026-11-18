@@ -1,31 +1,116 @@
 name: Deploy to GitHub Pages
 
+# GitHub Pages hosts main at /msa-website/ and a preview of every open pull
+# request at /msa-website/pr/<number>/.
+#
+# Pages serves one site, so every deploy rebuilds the whole thing: main plus
+# each open PR. A preview disappears with the next deploy after its PR closes.
+#
+# Previews are built here, triggered by the PR's Check run, rather than in the
+# PR's own workflow: the github-pages environment only accepts deploys from
+# main, and a workflow_run job runs on main.
+#
+# Only PRs from branches in this repo are built (people with write access);
+# PRs from forks are skipped. Their checkouts get no credentials.
+
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: [Check]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  pull-requests: write
+  issues: write
+
+# Each run builds everything, so a queued run supersedes an older queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout your repository using git
-        uses: actions/checkout@v6
-      - name: Install, build, and upload your site
-        uses: withastro/action@v6
-
   deploy:
-    needs: build
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PAGES_URL: https://bartbrinkman.github.io/msa-website
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build main
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+          mkdir -p site
+          cp -r dist/. site/
+
+      # Writes "number sha ok|failed" per PR to previews.txt for the comment step.
+      - name: Build a preview per open pull request
+        run: |
+          : > previews.txt
+          gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 50 \
+            --json number,headRefOid,isCrossRepository \
+            --jq '.[] | select(.isCrossRepository | not) | "\(.number) \(.headRefOid)"' > prs.txt
+          # The build commands read from /dev/null so they cannot eat the list.
+          while read -r n sha; do
+            echo "::group::PR #$n ($sha)"
+            dir="$RUNNER_TEMP/pr-$n"
+            if git fetch --no-tags --depth=1 origin "pull/$n/head" &&
+               git worktree add --detach "$dir" FETCH_HEAD &&
+               (cd "$dir" && npm ci --no-audit --no-fund && BASE_PATH="/msa-website/pr/$n" npm run build) < /dev/null; then
+              mkdir -p "site/pr/$n"
+              cp -r "$dir/dist/." "site/pr/$n/"
+              echo "$n $sha ok" >> previews.txt
+            else
+              echo "::warning::Preview for PR #$n failed to build"
+              echo "$n $sha failed" >> previews.txt
+            fi
+            echo "::endgroup::"
+          done < prs.txt
+          cat previews.txt
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - id: deployment
         uses: actions/deploy-pages@v5
+
+      # One comment per PR per commit: the marker carries the commit, so a PR
+      # that was rebuilt without changes is not commented on again.
+      - name: Comment the preview link on each updated pull request
+        run: |
+          while read -r n sha status; do
+            marker="<!-- msa-preview:$sha -->"
+            seen=$(gh api --paginate "repos/$GITHUB_REPOSITORY/issues/$n/comments" \
+              --jq ".[] | select(.body | contains(\"$marker\")) | .id" < /dev/null)
+            [ -n "$seen" ] && continue
+            url="$PAGES_URL/pr/$n/"
+            if [ "$status" = ok ]; then
+              body="$marker
+          **Preview bijgewerkt** voor commit \`${sha:0:7}\`: $url
+
+          Zo ziet de site eruit met deze wijziging. De echte website verandert pas als deze pull request is samengevoegd."
+            else
+              body="$marker
+          **Preview kon niet worden gebouwd** voor commit \`${sha:0:7}\`. Zie de Check bij deze pull request voor de foutmelding."
+            fi
+            gh pr comment "$n" --repo "$GITHUB_REPOSITORY" --body "$body" < /dev/null
+          done < previews.txt

@@ -9,6 +9,17 @@ Website van de [Modelspoorclub Alkmaar (MSA)](https://www.modelspoorclubalkmaar.
 - GitHub Pages — hosting
 - GitHub Actions — automatic deploy on push to `main`
 
+## Wijzigingen via GitHub (Claude)
+
+Clubleden met schrijfrechten op deze repository kunnen Claude vragen de site aan te passen, zonder zelf te programmeren:
+
+1. Open een nieuw issue met het sjabloon **Wijziging aanvragen** en beschrijf wat er moet veranderen.
+2. Claude zet de wijziging klaar op een eigen branch en reageert met een link: klik daarop om een pull request te openen.
+3. Bekijk de pull request. Nog iets anders? Reageer met **@claude** en je vraag.
+4. Klik op **Merge** als het goed is. De site wordt dan automatisch bijgewerkt.
+
+Een groen vinkje bij de pull request betekent dat de tests en de build slagen. `@claude` werkt ook in een reactie op een bestaand issue of pull request. Zie [.github/workflows/claude.yml](.github/workflows/claude.yml) voor de configuratie.
+
 ## Local development
 
 ```bash

@@ -60,6 +60,8 @@
   },
   {
     "date": "2027-09-11",
+    "startTime": "10:00",
+    "endTime": "17:00",
     "title": "Open Monumentendag",
     "description": "De MSA exposeert in de Grote Kerk van Alkmaar",
     "location": "Grote Kerk, Alkmaar",
@@ -68,6 +70,8 @@
   },
   {
     "date": "2027-10-24",
+    "startTime": "10:00",
+    "endTime": "16:00",
     "title": "Open Dag MSA",
     "description": "Alle banen te bezichtigen, kinderen gratis onder 12 jaar",
     "location": "Koornlaan 23, Alkmaar",

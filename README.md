@@ -14,7 +14,7 @@ Website van de [Modelspoorclub Alkmaar (MSA)](https://www.modelspoorclubalkmaar.
 Clubleden met schrijfrechten op deze repository kunnen Claude vragen de site aan te passen, zonder zelf te programmeren:
 
 1. Open een nieuw issue met het sjabloon **Wijziging aanvragen** en beschrijf wat er moet veranderen.
-2. Claude zet de wijziging klaar op een eigen branch en reageert met een link: klik daarop om een pull request te openen.
+2. Claude voert de wijziging door op een eigen branch, opent een pull request en zet de link in het issue.
 3. Bekijk de pull request. Nog iets anders? Reageer met **@claude** en je vraag.
 4. Klik op **Merge** als het goed is. De site wordt dan automatisch bijgewerkt.
 

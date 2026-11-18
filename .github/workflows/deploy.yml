@@ -10,8 +10,12 @@ name: Deploy to GitHub Pages
 # PR's own workflow: the github-pages environment only accepts deploys from
 # main, and a workflow_run job runs on main.
 #
-# Only PRs from branches in this repo are built (people with write access);
-# PRs from forks are skipped. Their checkouts get no credentials.
+# Security: building a PR runs that PR's code (package.json scripts, the Astro
+# config, dependencies). So each PR is built in its own job that holds nothing:
+# read-only permissions, no token in its environment or git config, and it can
+# only hand back an artifact. The jobs that can deploy and comment never run
+# PR code; they only copy files. Only PRs from branches in this repo are built
+# (people with write access); PRs from forks are skipped entirely.
 
 on:
   push:
@@ -21,12 +25,7 @@ on:
     types: [completed]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-  pull-requests: write
-  issues: write
+permissions: {}
 
 # Each run builds everything, so a queued run supersedes an older queued one.
 concurrency:
@@ -34,55 +33,121 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  list:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      prs: ${{ steps.prs.outputs.prs }}
+    steps:
+      - id: prs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prs=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 50 \
+            --json number,headRefOid,isCrossRepository \
+            --jq '[.[] | select(.isCrossRepository | not) | {number, sha: .headRefOid}]' | jq -c .)
+          echo "prs=$prs" >> "$GITHUB_OUTPUT"
+          echo "$prs"
+
+  build-main:
+    needs: list
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: site-main
+          path: dist
+          retention-days: 1
+
+  # Runs PR code. Keep this job without permissions, secrets or tokens.
+  build-pr:
+    needs: list
+    if: needs.list.outputs.prs != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.list.outputs.prs) }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.pr.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+        env:
+          BASE_PATH: /msa-website/pr/${{ matrix.pr.number }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: preview-${{ matrix.pr.number }}-${{ matrix.pr.sha }}
+          path: dist
+          retention-days: 1
+
+  # Never runs PR code: only downloads build output and moves it into place.
+  deploy:
+    needs: [list, build-main, build-pr]
+    if: always() && needs.build-main.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+      pull-requests: write
+      issues: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     env:
       GH_TOKEN: ${{ github.token }}
       PAGES_URL: https://bartbrinkman.github.io/msa-website
+      PRS: ${{ needs.list.outputs.prs }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
         with:
-          ref: main
-          persist-credentials: false
+          name: site-main
+          path: site
 
-      - uses: actions/setup-node@v7
+      # Missing previews (no open PRs, or failed builds) are handled below.
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
         with:
-          node-version: 22
-          cache: npm
+          pattern: preview-*
+          path: previews
 
-      - name: Build main
-        run: |
-          npm ci --no-audit --no-fund
-          npm run build
-          mkdir -p site
-          cp -r dist/. site/
-
-      # Writes "number sha ok|failed" per PR to previews.txt for the comment step.
-      - name: Build a preview per open pull request
+      # Writes "number sha ok|failed" per PR for the comment step. An artifact
+      # is only used if its name matches a PR and commit from the list above.
+      - name: Put each preview under /pr/<number>/
         run: |
           : > previews.txt
-          gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 50 \
-            --json number,headRefOid,isCrossRepository \
-            --jq '.[] | select(.isCrossRepository | not) | "\(.number) \(.headRefOid)"' > prs.txt
-          # The build commands read from /dev/null so they cannot eat the list.
+          echo "$PRS" | jq -r '.[] | "\(.number) \(.sha)"' > prs.txt
           while read -r n sha; do
-            echo "::group::PR #$n ($sha)"
-            dir="$RUNNER_TEMP/pr-$n"
-            if git fetch --no-tags --depth=1 origin "pull/$n/head" &&
-               git worktree add --detach "$dir" FETCH_HEAD &&
-               (cd "$dir" && npm ci --no-audit --no-fund && BASE_PATH="/msa-website/pr/$n" npm run build) < /dev/null; then
+            src="previews/preview-$n-$sha"
+            if [ -d "$src" ]; then
               mkdir -p "site/pr/$n"
-              cp -r "$dir/dist/." "site/pr/$n/"
+              cp -r "$src/." "site/pr/$n/"
               echo "$n $sha ok" >> previews.txt
             else
-              echo "::warning::Preview for PR #$n failed to build"
+              echo "::warning::No preview for PR #$n ($sha); its build failed"
               echo "$n $sha failed" >> previews.txt
             fi
-            echo "::endgroup::"
           done < prs.txt
           cat previews.txt
 

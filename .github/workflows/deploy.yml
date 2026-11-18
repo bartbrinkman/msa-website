@@ -108,6 +108,7 @@ jobs:
     if: always() && needs.build-main.result == 'success'
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       pages: write
       id-token: write
       pull-requests: write
@@ -125,17 +126,16 @@ jobs:
           name: site-main
           path: site
 
-      # Missing previews (no open PRs, or failed builds) are handled below.
-      - uses: actions/download-artifact@v8
-        continue-on-error: true
-        with:
-          pattern: preview-*
-          path: previews
-
       # Writes "number sha ok|failed" per PR for the comment step. An artifact
       # is only used if its name matches a PR and commit from the list above.
+      #
+      # gh run download, not actions/download-artifact: with a pattern it always
+      # unpacks each artifact into its own folder, where download-artifact
+      # flattens the folder away when only one artifact matches.
       - name: Put each preview under /pr/<number>/
         run: |
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern 'preview-*' --dir previews ||
+            echo "No preview artifacts"
           : > previews.txt
           echo "$PRS" | jq -r '.[] | "\(.number) \(.sha)"' > prs.txt
           while read -r n sha; do

@@ -2,12 +2,18 @@
 import Base from '../layouts/Base.astro';
 import LayoutCard from '../components/LayoutCard.astro';
 import EventCard from '../components/EventCard.astro';
+import EventSpotlight from '../components/EventSpotlight.astro';
 import banen from '../content/banen.json';
 import events from '../content/events.json';
 import { getCollection } from 'astro:content';
-import { asset, months, upcomingEvents } from '../utils';
+import { asset, months, upcomingEvents, eventUntil } from '../utils';
 
-const upcoming = upcomingEvents(events, 3);
+// All of them, not just the first few: the browser drops the ones that end
+// after this build, and needs the later ones on hand to move up.
+const upcoming = upcomingEvents(events);
+
+// Cards in the row under the spotlight.
+const AFTER_NEXT = 3;
 
 // Six for a 3x2 grid; the rest live on the banen overview.
 const featuredBanen = banen.slice(0, 6);
@@ -72,16 +78,32 @@ const SLIDE_SECONDS = 8;
     </div>
   </section>
 
-  <!-- Upcoming activities -->
+  <!-- Upcoming activities: the next one large, then the few after it. Every
+       event still to come at build time is rendered in both lists and
+       scripts/upcoming.ts shows the right ones, so the page rolls over as
+       events end instead of waiting for the next deploy. -->
   {upcoming.length > 0 && (
-    <section class="py-12 md:py-16">
+    <section class="py-12 md:py-16" data-upcoming-hide-empty>
       <div class="max-w-6xl mx-auto px-4">
         <div class="flex items-baseline justify-between mb-8 flex-wrap gap-2">
           <h2 class="section-title text-2xl md:text-3xl font-medium text-primary font-heading uppercase tracking-normal">Aankomende activiteiten</h2>
           <a href={asset("/agenda")} class="btn">Volledige agenda</a>
         </div>
-        <div class="grid md:grid-cols-3 gap-6">
-          {upcoming.map((event, i) => <EventCard event={event} isNext={i === 0} />)}
+        <div data-upcoming data-limit="1">
+          {upcoming.map((event, i) => (
+            <div data-until={eventUntil(event)} hidden={i > 0}>
+              <EventSpotlight event={event} />
+            </div>
+          ))}
+        </div>
+        <div class="mt-6" data-upcoming-hide-empty hidden={upcoming.length < 2}>
+          <div class="grid md:grid-cols-3 gap-6" data-upcoming data-skip="1" data-limit={AFTER_NEXT}>
+            {upcoming.map((event, i) => (
+              <div class="grid" data-until={eventUntil(event)} hidden={i < 1 || i > AFTER_NEXT}>
+                <EventCard event={event} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

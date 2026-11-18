@@ -1,0 +1,61 @@
+---
+// The next event, large, at the head of the homepage agenda: what, when,
+// where and its poster if it has one. The countdown pill is left empty here
+// and filled by scripts/upcoming.ts, since "over 12 dagen" is only true on the
+// day it is read.
+import { asset, eventWhen, typeLabels, type EventItem } from '../utils';
+
+interface Props {
+  event: EventItem;
+}
+
+const { event } = Astro.props;
+const type = event.type || 'overig';
+const href = event.link ? asset(event.link) : undefined;
+const Tag = href ? 'a' : 'div';
+const cardClass = [
+  'relative grid sm:grid-cols-[1fr_auto] items-center overflow-hidden rounded-2xl bg-gradient-to-r from-primary-dark to-primary text-white shadow-md',
+  href && 'group card-hover',
+].filter(Boolean).join(' ');
+---
+
+<Tag href={href} class={cardClass}>
+  <div class="p-6 sm:p-8 md:p-10 min-w-0">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-4">
+      <span class="text-xs font-semibold uppercase tracking-[0.2em] text-msa-gold">Eerstvolgende activiteit</span>
+      <span class="rounded-full bg-white/15 px-2.5 py-0.5 text-xs font-medium">{typeLabels[type]}</span>
+      <span
+        data-countdown
+        data-date={event.date}
+        data-end-date={event.endDate}
+        class="rounded-full bg-msa-gold px-2.5 py-0.5 text-xs font-semibold text-primary-dark empty:hidden"
+      ></span>
+    </div>
+    <h3 class="text-2xl md:text-4xl font-medium font-heading uppercase tracking-normal leading-tight">{event.title}</h3>
+    {event.description && <p class="mt-3 text-white/80 max-w-xl">{event.description}</p>}
+    <dl class="meta">
+      <div>
+        <dt>Wanneer</dt>
+        <dd>{eventWhen(event)}</dd>
+      </div>
+      {event.location && (
+        <div>
+          <dt>Waar</dt>
+          <dd>{event.location}</dd>
+        </div>
+      )}
+    </dl>
+    {href && <span class="btn btn-gold mt-6">Meer info</span>}
+  </div>
+  {event.poster && (
+    <div class="hidden sm:block self-stretch p-6 md:p-8 md:pl-0">
+      <img
+        src={asset(event.poster)}
+        alt={event.posterAlt ?? `Poster van ${event.title}`}
+        loading="lazy"
+        decoding="async"
+        class="h-full max-h-80 w-auto rounded-md shadow-lg ring-1 ring-white/20 rotate-2 transition-transform duration-200 group-hover:rotate-0"
+      />
+    </div>
+  )}
+</Tag>

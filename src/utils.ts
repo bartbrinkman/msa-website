@@ -66,6 +66,38 @@ function siteClock(d: Date): { day: string; time: string } {
   return { day: `${p.year}-${p.month}-${p.day}`, time: `${p.hour}:${p.minute}` };
 }
 
+/** The moment as "YYYY-MM-DDTHH:MM" on the site's clock, comparable with eventUntil(). */
+export function siteNow(d: Date = new Date()): string {
+  const { day, time } = siteClock(d);
+  return `${day}T${time}`;
+}
+
+/**
+ * When an event stops being upcoming, as "YYYY-MM-DDTHH:MM": its endTime on its
+ * last day, or "24:00" (later than any real clock time) when it has none, so it
+ * lasts the whole day. An event is still on while eventUntil(e) > siteNow().
+ *
+ * One string per event, so the browser can retire events by the same rule
+ * without the data: it is written into the page as data-until.
+ */
+export function eventUntil(e: Pick<EventItem, 'date' | 'endDate' | 'endTime'>): string {
+  return `${e.endDate || e.date}T${e.endTime || '24:00'}`;
+}
+
+const dayNumber = (ymd: string) => Date.UTC(+ymd.slice(0, 4), +ymd.slice(5, 7) - 1, +ymd.slice(8, 10)) / 86_400_000;
+
+/**
+ * How far off a still-upcoming event is: "Vandaag", "Nu bezig" (a multi-day
+ * event already under way), "Morgen" or "Over 12 dagen". Relative to now, so
+ * it is only ever filled in by the browser, never baked into the HTML.
+ */
+export function eventCountdown(e: Pick<EventItem, 'date' | 'endDate'>, today: Date = new Date()): string {
+  const days = dayNumber(e.date) - dayNumber(siteClock(today).day);
+  if (days <= 0) return e.endDate && e.endDate !== e.date ? 'Nu bezig' : 'Vandaag';
+  if (days === 1) return 'Morgen';
+  return `Over ${days} dagen`;
+}
+
 /**
  * Events that have not finished yet, soonest first.
  *
@@ -81,13 +113,8 @@ function siteClock(d: Date): { day: string; time: string } {
  * `today` is injectable so the rollover can be tested at a fixed moment.
  */
 export function upcomingEvents(events: EventItem[], limit?: number, today: Date = new Date()): EventItem[] {
-  const now = siteClock(today);
-  const stillOn = (e: EventItem) => {
-    const lastDay = e.endDate || e.date;
-    if (lastDay !== now.day) return lastDay > now.day;
-    return !e.endTime || e.endTime > now.time;
-  };
-  const upcoming = events.filter(stillOn).sort((a, b) => a.date.localeCompare(b.date));
+  const now = siteNow(today);
+  const upcoming = events.filter(e => eventUntil(e) > now).sort((a, b) => a.date.localeCompare(b.date));
   return limit === undefined ? upcoming : upcoming.slice(0, limit);
 }
 

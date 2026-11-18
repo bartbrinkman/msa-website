@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { upcomingEvents, eventDateLabel, eventPosters, type EventItem } from './utils.ts';
+import { upcomingEvents, eventDateLabel, eventPosters, eventUntil, eventCountdown, siteNow, type EventItem } from './utils.ts';
 
 const EVENTS: EventItem[] = [
   { date: '2026-05-14', endDate: '2026-05-17', title: 'Excursie Darmstadt' },
@@ -109,6 +109,25 @@ test('alt text falls back to the event title but an explicit one wins', () => {
   const [openDag, , modelspoordagen] = postersOn('2026-09-01');
   assert.equal(openDag.alt, 'Poster van Open Dag MSA');
   assert.equal(modelspoordagen.alt, 'Eigen alt');
+});
+
+test('eventUntil gives the moment an event retires, for the browser to compare against', () => {
+  assert.equal(eventUntil({ date: '2026-09-12', endTime: '17:00' }), '2026-09-12T17:00');
+  assert.equal(eventUntil({ date: '2026-09-12' }), '2026-09-12T24:00');
+  assert.equal(eventUntil({ date: '2026-05-14', endDate: '2026-05-17' }), '2026-05-17T24:00');
+  // Same comparison the client script makes.
+  assert.ok(eventUntil({ date: '2026-09-12' }) > siteNow(new Date('2026-09-12T23:59:00+02:00')));
+  assert.ok(!(eventUntil({ date: '2026-09-12' }) > siteNow(new Date('2026-09-13T00:00:00+02:00'))));
+});
+
+test('countdown reads in days on the club\'s clock', () => {
+  const at = (moment: string) => new Date(moment);
+  assert.equal(eventCountdown({ date: '2026-09-12' }, at('2026-09-12T09:00:00+02:00')), 'Vandaag');
+  assert.equal(eventCountdown({ date: '2026-09-12' }, at('2026-09-11T23:30:00+02:00')), 'Morgen');
+  assert.equal(eventCountdown({ date: '2026-09-12' }, at('2026-09-01T12:00:00+02:00')), 'Over 11 dagen');
+  assert.equal(eventCountdown({ date: '2026-05-14', endDate: '2026-05-17' }, at('2026-05-15T12:00:00+02:00')), 'Nu bezig');
+  // Across the October DST change the count stays in whole days.
+  assert.equal(eventCountdown({ date: '2026-10-26' }, at('2026-10-24T12:00:00+02:00')), 'Over 2 dagen');
 });
 
 test('date labels cover single days, ranges, and cross-month ranges', () => {

@@ -8,7 +8,7 @@ body:
       value: |
         Claude pakt dit verzoek automatisch op, voert de wijziging door en opent een pull request. De link verschijnt hieronder. Pas als die pull request is samengevoegd, staat de wijziging op de website.
 
-        Wil je daarna nog iets anders? Reageer dan in dit issue of in de pull request met **@claude** gevolgd door je vraag.
+        Wil je daarna nog iets veranderen, of stelt Claude een vraag? Reageer dan **in de pull request** (niet in dit issue) met **@claude** gevolgd door je antwoord of vraag. Een reactie in dit issue start een nieuwe, aparte pull request.
   - type: input
     id: pagina
     attributes:

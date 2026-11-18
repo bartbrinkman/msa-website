@@ -15,10 +15,10 @@ Clubleden met schrijfrechten op deze repository kunnen Claude vragen de site aan
 
 1. Open een nieuw issue met het sjabloon **Wijziging aanvragen** en beschrijf wat er moet veranderen.
 2. Claude voert de wijziging door op een eigen branch, opent een pull request en zet de link in het issue.
-3. Bekijk de pull request. Nog iets anders? Reageer met **@claude** en je vraag.
+3. Bekijk de pull request. Nog iets anders, of stelt Claude een vraag? Reageer **in de pull request** met **@claude** en je antwoord. Claude past dan dezelfde pull request aan. (Een reactie in het issue start een nieuwe, aparte pull request.)
 4. Klik op **Merge** als het goed is. De site wordt dan automatisch bijgewerkt.
 
-Een groen vinkje bij de pull request betekent dat de tests en de build slagen. `@claude` werkt ook in een reactie op een bestaand issue of pull request. Zie [.github/workflows/claude.yml](.github/workflows/claude.yml) voor de configuratie.
+Een groen vinkje bij de pull request betekent dat de tests en de build slagen. `@claude` werkt ook bij een regel in **Files changed**, en in een nieuw issue zonder sjabloon. Zie [.github/workflows/claude.yml](.github/workflows/claude.yml) voor de configuratie.
 
 ## Local development
 
